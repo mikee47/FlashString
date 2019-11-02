@@ -32,15 +32,15 @@
  *	_F(string_literal) - Like F() except buffer is allocated on stack. Most useful where nul-terminated data is required.
  *		m_printf(_F("C-style string\n"));
  *
- *	DEFINE_PSTR(_name, _str) - declares a PSTR stored in flash. The variable (_name) points to flash
+ *	DEFINE_PSTR(name, str) - declares a PSTR stored in flash. The variable (name) points to flash
  *	memory so must be accessed using the appropriate xxx_P function.
  *
- *	LOAD_PSTR(_name, _flash_str) - loads pre-defined PSTR into buffer on stack
+ *	LOAD_PSTR(name, flash_str) - loads pre-defined PSTR into buffer on stack
  *		DEFINE_PSTR_LOCAL(testFlash, "This is a test string\n"); // Function scope requires static allocation
  *		LOAD_PSTR(test, testFlash)
  *		m_printf(test);
  *
- *	PSTR_ARRAY(_name, _str) - creates and loads string into named stack buffer
+ *	PSTR_ARRAY(name, str) - creates and loads string into named stack buffer
  *	Ensures loaded string stays in scope, unlike _F()
  *		String testfunc() {
  *			PSTR_ARRAY(test, "This is the test string");
@@ -87,38 +87,38 @@
 #include "FakePgmSpace.h"
 
 /** @brief Define a FlashString
- *  @param _name variable to identify the string
- *  @param _str content of the string
+ *  @param name variable to identify the string
+ *  @param str content of the string
  *  @note the whole thing is word-aligned
  *  Example: DEFINE_FSTR(test, "This is a test\0Another test\0hello")
  *  The data includes the nul terminator but the length does not.
  */
-#define DEFINE_FSTR(_name, _str)                                                                                       \
-	DEFINE_FSTR_STRUCT(_##_name, _str);                                                                                \
-	const FlashString& _name PROGMEM = _##_name.fstr;
+#define DEFINE_FSTR(name, str)                                                                                         \
+	DEFINE_FSTR_STRUCT(_##name, str);                                                                                  \
+	const FlashString& name PROGMEM = _##name.fstr;
 
 /** @brief Define a FlashString for local (static) use
- *  @param _name variable to identify the string
- *  @param _str content of the string
+ *  @param name variable to identify the string
+ *  @param str content of the string
  */
-#define DEFINE_FSTR_LOCAL(_name, _str)                                                                                 \
-	static DEFINE_FSTR_STRUCT(_##_name, _str);                                                                         \
-	static const FlashString& _name PROGMEM = _##_name.fstr;
+#define DEFINE_FSTR_LOCAL(name, str)                                                                                   \
+	static DEFINE_FSTR_STRUCT(_##name, str);                                                                           \
+	static const FlashString& name PROGMEM = _##name.fstr;
 
-#define DEFINE_FSTR_STRUCT(_name, _str)                                                                                \
+#define DEFINE_FSTR_STRUCT(name, str)                                                                                  \
 	constexpr struct {                                                                                                 \
 		FlashString fstr;                                                                                              \
-		char data[ALIGNUP(sizeof(_str))];                                                                              \
-	} _name PROGMEM = {{sizeof(_str) - 1}, _str};
+		char data[ALIGNUP(sizeof(str))];                                                                               \
+	} name PROGMEM = {{sizeof(str) - 1}, str};
 
 // Declare a global reference to a FlashString instance
-#define DECLARE_FSTR(_name) extern const FlashString& _name;
+#define DECLARE_FSTR(name) extern const FlashString& name;
 
 // Get a pointer to the actual FlashString, used when creating tables
 #define FSTR_PTR(_struct) &_##_struct.fstr
 
 /** @brief declare a table of FlashStrings
- *  @param _name name of the table
+ *  @param name name of the table
  *  @note Declares a lookup table stored in flash memory. Example:
  *
  *  	DEFINE_FSTR(fstr1, "Test string #1");
@@ -134,7 +134,7 @@
  *  	debugf("fstr2.length() = %u", table[1]->length());
  *
  */
-#define FSTR_TABLE(_name) const FlashString* const _name[] PROGMEM
+#define FSTR_TABLE(name) const FlashString* const name[] PROGMEM
 
 /*
  * Load a FlashString object into a named local (stack) buffer
@@ -146,20 +146,20 @@
  * 	LOAD_FSTR(local, globalTest)
  * 	printf("%s, %u characters, buffer is %u bytes\n", local, globalTest.length, sizeof(local));
  */
-#define LOAD_FSTR(_name, _fstr)                                                                                        \
-	char _name[(_fstr).size()] __attribute__((aligned(4)));                                                            \
-	memcpy_aligned(_name, (_fstr).data(), (_fstr).length());                                                           \
-	_name[(_fstr).length()] = '\0';
+#define LOAD_FSTR(name, fstr)                                                                                          \
+	char name[(fstr).size()] __attribute__((aligned(4)));                                                              \
+	memcpy_aligned(name, (fstr).data(), (fstr).length());                                                              \
+	name[(fstr).length()] = '\0';
 
 /*
  * Define a flash string and load it into a named char[] buffer on the stack.
- * This allows sizeof(_name) to work as if the string were defined thus:
+ * This allows sizeof(name) to work as if the string were defined thus:
  *
- * 	char _name[] = "text";
+ * 	char name[] = "text";
  */
-#define FSTR_ARRAY(_name, _str)                                                                                        \
-	DEFINE_FSTR_LOCAL(_##_name, _str);                                                                                 \
-	LOAD_FSTR(_name, _##_name)
+#define FSTR_ARRAY(name, str)                                                                                          \
+	DEFINE_FSTR_LOCAL(_##name, str);                                                                                   \
+	LOAD_FSTR(name, _##name)
 
 /** @brief Define a FlashString containing data from an external file
  *  @param name Name to use for referencing the FlashString object in code
@@ -206,7 +206,6 @@
 			".incbin \"" file "\"\n"                                                                                   \
 			"_" STR(name) "_end:\n");
 #endif
-
 
 /** @brief describes a counted string stored in flash memory
  *  @note because the string length is stored there is no need to call strlen_P before reading the
