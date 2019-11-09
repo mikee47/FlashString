@@ -86,6 +86,11 @@
 #include "WString.h"
 #include "FakePgmSpace.h"
 
+/**
+ * @brief Provide internal name for generated flash string structures, which are cast to a `FlashString` reference
+ */
+#define FSTR_DATA_NAME(name) fstr_data_##name
+
 /** @brief Define a FlashString
  *  @param name variable to identify the string
  *  @param str content of the string
@@ -94,33 +99,51 @@
  *  The data includes the nul terminator but the length does not.
  */
 #define DEFINE_FSTR(name, str)                                                                                         \
-	DEFINE_FSTR_STRUCT(_##name, str);                                                                                  \
-	const FlashString& name PROGMEM = _##name.fstr;
+	DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                       \
+	DEFINE_FSTR_REF(name, FSTR_DATA_NAME(name));
 
 /** @brief Define a FlashString for local (static) use
  *  @param name variable to identify the string
  *  @param str content of the string
  */
 #define DEFINE_FSTR_LOCAL(name, str)                                                                                   \
-	static DEFINE_FSTR_STRUCT(_##name, str);                                                                           \
-	static const FlashString& name PROGMEM = _##name.fstr;
+	DEFINE_FSTR_DATA_LOCAL(FSTR_DATA_NAME(name), str);                                                                 \
+	DEFINE_FSTR_REF(name, FSTR_DATA_NAME(name));
 
-#define DEFINE_FSTR_STRUCT(name, str)                                                                                  \
+/** @brief Define a string in a FlashString-compatible structure
+ *  @param name Name of FlashString - structure will use this as a base for its own name
+ *  @param str String to store
+ */
+#define DEFINE_FSTR_DATA(name, str)                                                                                    \
 	constexpr struct {                                                                                                 \
-		FlashString fstr;                                                                                              \
+		uint32_t length;                                                                                               \
 		char data[ALIGNUP(sizeof(str))];                                                                               \
-	} name PROGMEM = {{sizeof(str) - 1}, str};
+	} name PROGMEM = {sizeof(str) - 1, str};
 
-// Declare a global reference to a FlashString instance
+#define DEFINE_FSTR_DATA_LOCAL(name, str) static DEFINE_FSTR_DATA(name, str);
+
+/**
+ * @brief Declare a global FlashString instance
+ */
 #define DECLARE_FSTR(name) extern const FlashString& name;
 
-// Get a pointer to the actual FlashString, used when creating tables
-#define FSTR_PTR(_struct) &_##_struct.fstr
+/**
+ * @brief Cast a pointer to FlashString*
+ * @param data Pointer to aligned structure with first word as length
+ */
+#define FSTR_PTR(data) reinterpret_cast<const FlashString*>(data)
 
-/*
- * Load a FlashString object into a named local (stack) buffer
- *
- * For example:
+/**
+ * @brief Define a FlashString reference
+ * @param name Name of the reference variable
+ * @param data Structure to be referenced, in PROGMEM and word-aligned. First element MUST be the length.
+ * @note Use to cast custom data structures into FlashString format.
+ */
+#define DEFINE_FSTR_REF(name, data) const FlashString& name = *FSTR_PTR(&data);
+
+/**
+ * @brief Load a FlashString object into a named local (stack) buffer
+ * @note Example:
  *
  * 	DEFINE_FSTR(globalTest, "This is a testing string")
  * 	...
@@ -132,15 +155,12 @@
 	memcpy_aligned(name, (fstr).data(), (fstr).length());                                                              \
 	name[(fstr).length()] = '\0';
 
-/*
- * Define a flash string and load it into a named char[] buffer on the stack.
- * This allows sizeof(name) to work as if the string were defined thus:
- *
- * 	char name[] = "text";
+/**
+ * @brief Define a flash string and load it into a named char[] buffer on the stack
  */
 #define FSTR_ARRAY(name, str)                                                                                          \
-	DEFINE_FSTR_LOCAL(_##name, str);                                                                                   \
-	LOAD_FSTR(name, _##name)
+	DEFINE_FSTR_LOCAL(FSTR_DATA_NAME(name), str);                                                                      \
+	LOAD_FSTR(name, FSTR_DATA_NAME(name))
 
 /** @brief Define a FlashString containing data from an external file
  *  @param name Name to use for referencing the FlashString object in code
@@ -152,18 +172,18 @@
  *  		IMPORT_FSTR(myFlashString, PROJECT_DIR "/files/my_flash_file.txt");
  */
 #define IMPORT_FSTR(name, file)                                                                                        \
-	IMPORT_FSTR_STRUCT(name, file)                                                                                     \
-	extern const __attribute__((aligned(4))) FlashString name;
+	IMPORT_FSTR_DATA(name, file)                                                                                       \
+	extern const FlashString name;
 
-/*
- * We need inline assembler's `.incbin` instruction to actually import the data.
- * This links the contents of the file and defines a global symbol.
+/**
+ * @brief Link the contents of a file and define a global symbol
+ * @note We need inline assembler's `.incbin` instruction to actually import the data.
  * We use a macro STR() so that if required the name can be resolved from a #defined value.
  */
 #define STR(x) XSTR(x)
 #define XSTR(x) #x
 #ifdef __WIN32
-#define IMPORT_FSTR_STRUCT(name, file)                                                                                 \
+#define IMPORT_FSTR_DATA(name, file)                                                                                   \
 	__asm__(".section .rodata\n"                                                                                       \
 			".global _" STR(name) "\n"                                                                                 \
 			".def _" STR(name) "; .scl 2; .type 32; .endef\n"                                                          \
@@ -178,7 +198,7 @@
 #else
 #define IROM_SECTION ".irom0.text"
 #endif
-#define IMPORT_FSTR_STRUCT(name, file)                                                                                 \
+#define IMPORT_FSTR_DATA(name, file)                                                                                   \
 	__asm__(".section " IROM_SECTION "\n"                                                                              \
 			".global " STR(name) "\n"                                                                                  \
 			".type " STR(name) ", @object\n"                                                                           \
@@ -215,6 +235,16 @@ struct FlashString {
 	// Do NOT access these directly - use member functions
 	uint32_t flashLength; ///< Only needs to be uint16_t but ensures data is aligned
 	char flashData[];
+
+/**
+ * @brief describes a counted string stored in flash memory
+ */
+class FlashString
+{
+public:
+	// Prevent instantiation or copying
+	FlashString() = delete;
+	FlashString(const FlashString&) = delete;
 
 	uint32_t length() const
 	{
@@ -300,4 +330,9 @@ struct FlashString {
 	{
 		return !isEqual(str);
 	}
+
+private:
+	uint32_t flashLength;	 ///< Number of bytes/characters in data
+	char flashData[0x400000]; ///< Arbitrary large size to stop compiler complaining about array bounds
+};
 };
