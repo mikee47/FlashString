@@ -359,3 +359,124 @@ private:
 	const FlashString* const* data;
 	unsigned count;
 };
+
+/**
+ * @brief Declare a FlashStringMap
+ * @param name name of the map
+ * @note Use `DEFINE_FSTR_MAP` to instantiate the global object
+ */
+#define DECLARE_FSTR_MAP(name) extern const FlashStringMap name;
+
+/**
+ * @brief describes a FlashString mapping key => data
+ */
+struct FlashStringPair {
+	const FlashString* key;
+	const FlashString* content;
+};
+
+class FlashStringMapEntry
+{
+	typedef void (FlashStringMapEntry::*IfHelperType)() const;
+	void IfHelper() const
+	{
+	}
+
+public:
+	FlashStringMapEntry() = default;
+
+	FlashStringMapEntry(const FlashStringPair* pair) : value(pair)
+	{
+	}
+
+	operator IfHelperType() const
+	{
+		return value ? &FlashStringMapEntry::IfHelper : 0;
+	}
+
+	const FlashString& key() const
+	{
+		if(value == nullptr) {
+			return FlashString::empty();
+		} else {
+			return *value->key;
+		}
+	}
+
+	const FlashString& content() const
+	{
+		if(value == nullptr) {
+			return FlashString::empty();
+		} else {
+			return *value->content;
+		}
+	}
+
+	operator const FlashString&() const
+	{
+		return content();
+	}
+
+private:
+	const FlashStringPair* value;
+};
+
+/**
+ * @brief Define a map of `FlashString => FlashString` and global FlashStringMap object
+ * @param name name of the map
+ */
+#define DEFINE_FSTR_MAP(name, ...)                                                                                     \
+	static const FlashStringPair FSTR_DATA_NAME(name)[] PROGMEM = {__VA_ARGS__};                                       \
+	const FlashStringMap name(FSTR_DATA_NAME(name), ARRAY_SIZE(FSTR_DATA_NAME(name)));
+
+/**
+ * @brief Define a table of FlashStrings (local scope)
+ * @param name name of the table
+ */
+#define DEFINE_FSTR_MAP_LOCAL(name, ...)                                                                               \
+	static const FlashStringPair FSTR_DATA_NAME(name)[] PROGMEM = {__VA_ARGS__};                                       \
+	static const FlashStringMap name(FSTR_DATA_NAME(name), ARRAY_SIZE(FSTR_DATA_NAME(name)));
+
+/**
+ * @brief Class to access a flash string map
+ */
+class FlashStringMap
+{
+public:
+	FlashStringMap(const FlashStringPair data[], unsigned count) : data(data), count_(count)
+	{
+	}
+
+	FlashStringMapEntry valueAt(unsigned index) const
+	{
+		return (index < count_) ? &data[index] : nullptr;
+	}
+
+	template <typename TKey> int indexOf(const TKey& key) const;
+
+	template <typename TKey> FlashStringMapEntry operator[](const TKey& key) const
+	{
+		int i = indexOf(key);
+		return (i < 0) ? nullptr : &data[i];
+	}
+
+	unsigned count() const
+	{
+		return count_;
+	}
+
+private:
+	const FlashStringPair* data;
+	unsigned count_;
+};
+
+template <typename TKey> int FlashStringMap::indexOf(const TKey& key) const
+{
+	for(unsigned i = 0; i < count_; ++i) {
+		if(*data[i].key == key) {
+			return i;
+		}
+	}
+
+	return -1;
+}
