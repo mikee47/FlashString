@@ -237,36 +237,13 @@ struct FlashString {
 	 *  @retval bool true if strings are identical
 	 *  @note loads string into a stack buffer for the comparison, no heap required
 	 */
-	bool isEqual(const char* cstr, size_t len = 0) const
-	{
-		// Unlikely we'd want an empty flash string, but check anyway
-		if(cstr == nullptr)
-			return flashLength == 0;
-		// Don't use strcmp as our data may contain nuls
-		if(len == 0) {
-			len = strlen(cstr);
-		}
-		if(len != flashLength) {
-			return false;
-		}
-		LOAD_FSTR(buf, *this);
-		return memcmp(buf, cstr, len) == 0;
-	}
+	bool isEqual(const char* cstr, size_t len = 0) const;
 
 	/** @brief Check for equality with another FlashString
 	 *  @param str
 	 *  @retval bool true if strings are identical
 	 */
-	bool isEqual(const FlashString& str) const
-	{
-		if(flashLength != str.flashLength) {
-			return false;
-		}
-		if(flashData == str.flashData) {
-			return true;
-		}
-		return memcmp_aligned(flashData, str.flashData, flashLength) == 0;
-	}
+	bool isEqual(const FlashString& str) const;
 
 	bool isEqual(const String& str) const
 	{
