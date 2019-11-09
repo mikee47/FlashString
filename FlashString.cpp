@@ -11,12 +11,31 @@
  ****/
 
 #include "FlashString.h"
+#include <esp_spi_flash.h>
+
+size_t FlashString::read(size_t offset, void* buffer, size_t bytesToRead, bool readCache) const
+{
+	if(offset >= flashLength) {
+		return 0;
+	}
+
+	auto count = std::min(flashLength - offset, bytesToRead);
+
+	if(readCache) {
+		memcpy_P(buffer, &flashData[offset], count);
+		return count;
+	} else {
+		auto addr = flashmem_get_address(&flashData[offset]);
+		return flashmem_read(buffer, addr, count);
+	}
+}
 
 bool FlashString::isEqual(const char* cstr, size_t len) const
 {
 	// Unlikely we'd want an empty flash string, but check anyway
-	if(cstr == nullptr)
+	if(cstr == nullptr) {
 		return flashLength == 0;
+	}
 	// Don't use strcmp as our data may contain nuls
 	if(len == 0) {
 		len = strlen(cstr);

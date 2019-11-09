@@ -4,9 +4,9 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * @author: 2018 - Mikee47 <mike@sillyhouse.net>
+ * FlashString.h - Defines the FlashString class and associated macros for efficient flash memory string access.
  *
- * Defines the FlashString structure and associated macros for efficient flash memory string access.
+ * @author: 2018 - Mikee47 <mike@sillyhouse.net>
  *
  ****/
 
@@ -22,7 +22,7 @@
  * memory directly is awkard. If locations are not strictly accessed as 4-byte words the system will probably
  * crash; I say 'probably' because sometimes it just behaves weirdly if the RAM address isn't aligned.
  *
- * _FakePgmSpace_ provides the basic mechanisms for storing and reading flash strings, including
+ * `FakePgmSpace.h` provides the basic mechanisms for storing and reading flash strings, including
  * general-purpose string library functions.  These are well-documented Arduino-compatible routines.
  * Some additions have been made to Sming to cater for the ESP8266 use of these strings.
  *
@@ -230,6 +230,22 @@ struct FlashString {
 	{
 		return FPSTR(flashData);
 	}
+
+	/**
+	 * @brief Read contents of a FlashString into RAM
+	 * @param offset Zero-based offset from start of flash data to start reading
+	 * @param buffer Where to store data
+	 * @bytesToRead How many bytes to read (e.g. size of buffer)
+	 * @readCache true to read data via CPU data cache, false to bypass and read flash directly
+	 * @retval size_t Number of bytes actually read, may be less than bufSize
+	 * @note PROGMEM data is accessed via the CPU data cache, so to avoid degrading performance
+	 * you can use this method to read data directly from flash memory.
+	 * This is appropriate for infrequently accessed data, especially if it is large.
+	 * For example, if storing content using `IMPORT_FSTR` instead of SPIFFS then it
+	 * is generally better to avoid contaminating the cache.
+	 * @see See also `FlashMemoryDataStream` class.
+	 */
+	size_t read(size_t offset, void* buffer, size_t bytesToRead, bool readCache) const;
 
 	/** @brief Check for equality with a C-string
 	 *  @param cstr
