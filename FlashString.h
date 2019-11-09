@@ -266,6 +266,11 @@ struct FlashString {
 		return str.equals(*this);
 	}
 
+	operator String() const
+	{
+		return String(data(), length());
+	}
+
 	bool operator==(const char* str) const
 	{
 		return isEqual(str);
