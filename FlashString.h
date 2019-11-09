@@ -85,6 +85,7 @@
 
 #include "WString.h"
 #include "FakePgmSpace.h"
+#include <stringutil.h>
 
 /**
  * @brief Provide internal name for generated flash string structures, which are cast to a `FlashString` reference
@@ -208,33 +209,21 @@
 			"_" STR(name) "_end:\n");
 #endif
 
-/** @brief declare a table of FlashStrings
- *  @param name name of the table
- *  @note Declares a lookup table stored in flash memory. Example:
- *
- *  	DEFINE_FSTR(fstr1, "Test string #1");
- *  	DEFINE_FSTR(fstr2, "Test string #2");
- *
- *  	FSTR_TABLE(table) = {
- *  		FSTR_PTR(fstr1),
- *  		FSTR_PTR(fstr2),
- *  	};
- *
- *  Table entries may be accessed directly as they are word-aligned. Examples:
- *  	debugf("fstr1 = '%s'", String(*table[0]).c_str());
- *  	debugf("fstr2.length() = %u", table[1]->length());
- *
+/**
+ * @brief Declare a table of FlashStrings
  */
-#define FSTR_TABLE(name) const FlashString* const name[] PROGMEM
+#define DECLARE_FSTR_TABLE(name) extern const FlashStringTable name;
 
-/** @brief describes a counted string stored in flash memory
- *  @note because the string length is stored there is no need to call strlen_P before reading the
- *  content into RAM. Data is stored word-aligned so it can be read as efficiently as possible.
+/**
+ * @brief declare a table of FlashStrings
  */
-struct FlashString {
-	// Do NOT access these directly - use member functions
-	uint32_t flashLength; ///< Only needs to be uint16_t but ensures data is aligned
-	char flashData[];
+#define DEFINE_FSTR_TABLE(name, ...)                                                                                   \
+	static const FlashStringData* const FSTR_DATA_NAME(name)[] PROGMEM = {__VA_ARGS__};                                \
+	const FlashStringTable name(FSTR_DATA_NAME(name), ARRAY_SIZE(FSTR_DATA_NAME(name)));
+
+#define DEFINE_FSTR_TABLE_LOCAL(name, ...)                                                                             \
+	static const FlashString* const FSTR_DATA_NAME(name)[] PROGMEM = {__VA_ARGS__};                                    \
+	static const FlashStringTable name(FSTR_DATA_NAME(name), ARRAY_SIZE(FSTR_DATA_NAME(name)));
 
 /**
  * @brief describes a counted string stored in flash memory
@@ -245,6 +234,11 @@ public:
 	// Prevent instantiation or copying
 	FlashString() = delete;
 	FlashString(const FlashString&) = delete;
+
+	static const FlashString& empty()
+	{
+		return *FSTR_PTR(&zero);
+	}
 
 	uint32_t length() const
 	{
@@ -334,5 +328,34 @@ public:
 private:
 	uint32_t flashLength;	 ///< Number of bytes/characters in data
 	char flashData[0x400000]; ///< Arbitrary large size to stop compiler complaining about array bounds
+	static constexpr uint32_t zero = 0;
 };
+
+/**
+ * @brief Class to access a table of flash strings
+ */
+class FlashStringTable
+{
+public:
+	FlashStringTable(const FlashString* const data[], unsigned count) : data(data), count(count)
+	{
+	}
+
+	const FlashString& operator[](unsigned index) const
+	{
+		if(index < count) {
+			return *data[index];
+		} else {
+			return FlashString::empty();
+		}
+	}
+
+	unsigned length() const
+	{
+		return count;
+	}
+
+private:
+	const FlashString* const* data;
+	unsigned count;
 };
