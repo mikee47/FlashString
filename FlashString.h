@@ -117,25 +117,6 @@
 // Get a pointer to the actual FlashString, used when creating tables
 #define FSTR_PTR(_struct) &_##_struct.fstr
 
-/** @brief declare a table of FlashStrings
- *  @param name name of the table
- *  @note Declares a lookup table stored in flash memory. Example:
- *
- *  	DEFINE_FSTR(fstr1, "Test string #1");
- *  	DEFINE_FSTR(fstr2, "Test string #2");
- *
- *  	FSTR_TABLE(table) = {
- *  		FSTR_PTR(fstr1),
- *  		FSTR_PTR(fstr2),
- *  	};
- *
- *  Table entries may be accessed directly as they are word-aligned. Examples:
- *  	debugf("fstr1 = '%s'", String(*table[0]).c_str());
- *  	debugf("fstr2.length() = %u", table[1]->length());
- *
- */
-#define FSTR_TABLE(name) const FlashString* const name[] PROGMEM
-
 /*
  * Load a FlashString object into a named local (stack) buffer
  *
@@ -206,6 +187,25 @@
 			".incbin \"" file "\"\n"                                                                                   \
 			"_" STR(name) "_end:\n");
 #endif
+
+/** @brief declare a table of FlashStrings
+ *  @param name name of the table
+ *  @note Declares a lookup table stored in flash memory. Example:
+ *
+ *  	DEFINE_FSTR(fstr1, "Test string #1");
+ *  	DEFINE_FSTR(fstr2, "Test string #2");
+ *
+ *  	FSTR_TABLE(table) = {
+ *  		FSTR_PTR(fstr1),
+ *  		FSTR_PTR(fstr2),
+ *  	};
+ *
+ *  Table entries may be accessed directly as they are word-aligned. Examples:
+ *  	debugf("fstr1 = '%s'", String(*table[0]).c_str());
+ *  	debugf("fstr2.length() = %u", table[1]->length());
+ *
+ */
+#define FSTR_TABLE(name) const FlashString* const name[] PROGMEM
 
 /** @brief describes a counted string stored in flash memory
  *  @note because the string length is stored there is no need to call strlen_P before reading the
