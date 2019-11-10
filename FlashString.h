@@ -101,32 +101,36 @@
  */
 #define DEFINE_FSTR(name, str)                                                                                         \
 	DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                       \
-	DEFINE_FSTR_REF(name, FSTR_DATA_NAME(name));
+	DEFINE_FSTR_ALIAS(name, FSTR_DATA_NAME(name));
 
 /** @brief Define a FlashString for local (static) use
  *  @param name variable to identify the string
  *  @param str content of the string
  */
-#define DEFINE_FSTR_LOCAL(name, str)                                                                                   \
-	DEFINE_FSTR_DATA_LOCAL(FSTR_DATA_NAME(name), str);                                                                 \
-	DEFINE_FSTR_REF(name, FSTR_DATA_NAME(name));
+#define DEFINE_FSTR_LOCAL(name, str) \
+		DEFINE_FSTR_DATA_LOCAL(FSTR_DATA_NAME(name), str); \
+		DEFINE_FSTR_REF(name, FSTR_DATA_NAME(name));
 
 /** @brief Define a string in a FlashString-compatible structure
  *  @param name Name of FlashString - structure will use this as a base for its own name
  *  @param str String to store
  */
 #define DEFINE_FSTR_DATA(name, str)                                                                                    \
-	constexpr struct {                                                                                                 \
+	extern "C" const struct {                                                                                          \
 		uint32_t length;                                                                                               \
 		char data[ALIGNUP(sizeof(str))];                                                                               \
 	} name PROGMEM = {sizeof(str) - 1, str};
 
-#define DEFINE_FSTR_DATA_LOCAL(name, str) static DEFINE_FSTR_DATA(name, str);
+#define DEFINE_FSTR_DATA_LOCAL(name, str)                                                                              \
+	static const struct {                                                                                              \
+		uint32_t length;                                                                                               \
+		char data[ALIGNUP(sizeof(str))];                                                                               \
+	} name PROGMEM = {sizeof(str) - 1, str};
 
 /**
  * @brief Declare a global FlashString instance
  */
-#define DECLARE_FSTR(name) extern const FlashString& name;
+#define DECLARE_FSTR(name) extern "C" const FlashString name;
 
 /**
  * @brief Cast a pointer to FlashString*
@@ -137,10 +141,19 @@
 /**
  * @brief Define a FlashString reference
  * @param name Name of the reference variable
- * @param data Structure to be referenced, in PROGMEM and word-aligned. First element MUST be the length.
+ * @param data_name Name of structure to be referenced, in PROGMEM and word-aligned. First element MUST be the length.
  * @note Use to cast custom data structures into FlashString format.
  */
 #define DEFINE_FSTR_REF(name, data) const FlashString& name = *FSTR_PTR(&data);
+
+/**
+ * @brief Define a FlashString alias
+ * @param name Name of the FlashString variable to define
+ * @param data_name Name of structure to be aliased, in PROGMEM and word-aligned. First element MUST be the length.
+ * @note Allows a structure which isn't a FlashString to be accessed directly as if it were one
+ */
+#define DEFINE_FSTR_ALIAS(name, data_name)                                                                             \
+	extern "C" const FlashString __attribute__((alias(MACROQUOTE(data_name)))) name;
 
 /**
  * @brief Load a FlashString object into a named local (stack) buffer
@@ -160,8 +173,8 @@
  * @brief Define a flash string and load it into a named char[] buffer on the stack
  */
 #define FSTR_ARRAY(name, str)                                                                                          \
-	DEFINE_FSTR_LOCAL(FSTR_DATA_NAME(name), str);                                                                      \
-	LOAD_FSTR(name, FSTR_DATA_NAME(name))
+	DEFINE_FSTR_DATA_LOCAL(FSTR_DATA_NAME(name), str);                                                                 \
+	LOAD_FSTR(name, *FSTR_PTR(&FSTR_DATA_NAME(name)))
 
 /** @brief Define a FlashString containing data from an external file
  *  @param name Name to use for referencing the FlashString object in code
