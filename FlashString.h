@@ -225,22 +225,6 @@
 #endif
 
 /**
- * @brief Declare a table of FlashStrings
- */
-#define DECLARE_FSTR_TABLE(name) extern const FlashStringTable name;
-
-/**
- * @brief declare a table of FlashStrings
- */
-#define DEFINE_FSTR_TABLE(name, ...)                                                                                   \
-	static const FlashStringData* const FSTR_DATA_NAME(name)[] PROGMEM = {__VA_ARGS__};                                \
-	const FlashStringTable name(FSTR_DATA_NAME(name), ARRAY_SIZE(FSTR_DATA_NAME(name)));
-
-#define DEFINE_FSTR_TABLE_LOCAL(name, ...)                                                                             \
-	static const FlashString* const FSTR_DATA_NAME(name)[] PROGMEM = {__VA_ARGS__};                                    \
-	static const FlashStringTable name(FSTR_DATA_NAME(name), ARRAY_SIZE(FSTR_DATA_NAME(name)));
-
-/**
  * @brief describes a counted string stored in flash memory
  */
 class FlashString
@@ -345,6 +329,22 @@ private:
 	char flashData[0x400000]; ///< Arbitrary large size to stop compiler complaining about array bounds
 	static constexpr uint32_t zero = 0;
 };
+
+/**
+ * @brief Declare a table of FlashStrings
+ */
+#define DECLARE_FSTR_TABLE(name) extern const FlashStringTable name;
+
+/**
+ * @brief declare a table of FlashStrings
+ */
+#define DEFINE_FSTR_TABLE(name, ...)                                                                                   \
+	static const FlashString* const FSTR_DATA_NAME(name)[] PROGMEM = {__VA_ARGS__};                                    \
+	const FlashStringTable name(FSTR_DATA_NAME(name), ARRAY_SIZE(FSTR_DATA_NAME(name)));
+
+#define DEFINE_FSTR_TABLE_LOCAL(name, ...)                                                                             \
+	static const FlashString* const FSTR_DATA_NAME(name)[] PROGMEM = {__VA_ARGS__};                                    \
+	static const FlashStringTable name(FSTR_DATA_NAME(name), ARRAY_SIZE(FSTR_DATA_NAME(name)));
 
 /**
  * @brief Class to access a table of flash strings
