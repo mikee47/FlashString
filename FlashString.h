@@ -134,9 +134,9 @@
 
 /**
  * @brief Cast a pointer to FlashString*
- * @param data Pointer to aligned structure with first word as length
+ * @param data_ptr Pointer to aligned structure with first word as length
  */
-#define FSTR_PTR(data) reinterpret_cast<const FlashString*>(data)
+#define FSTR_PTR(data_ptr) reinterpret_cast<const FlashString*>(data_ptr)
 
 /**
  * @brief Define a FlashString reference
@@ -145,6 +145,9 @@
  * @note Use to cast custom data structures into FlashString format.
  */
 #define DEFINE_FSTR_REF(name, data) const FlashString& name = *FSTR_PTR(&data);
+
+#define MACROQUOT(x) #x
+#define MACROQUOTE(x) MACROQUOT(x)
 
 /**
  * @brief Define a FlashString alias
@@ -331,20 +334,32 @@ private:
 };
 
 /**
- * @brief Declare a table of FlashStrings
+ * @brief Declare a global table of FlashStrings
  */
-#define DECLARE_FSTR_TABLE(name) extern const FlashStringTable name;
+#define DECLARE_FSTR_TABLE(name) extern "C" const FlashStringTable name;
 
-/**
- * @brief declare a table of FlashStrings
- */
+#define ARGSIZE(...) (sizeof((const void*[]){__VA_ARGS__}) / sizeof(void*))
+
+#define DEFINE_FSTR_TABLE_DATA(name, ...)                                                                                   \
+	const struct { \
+		FlashStringTable table;\
+		const FlashString* data[ARGSIZE(__VA_ARGS__)];\
+	} name PROGMEM = { {ARGSIZE(__VA_ARGS__)}, {__VA_ARGS__}};
+
 #define DEFINE_FSTR_TABLE(name, ...)                                                                                   \
-	static const FlashString* const FSTR_DATA_NAME(name)[] PROGMEM = {__VA_ARGS__};                                    \
-	const FlashStringTable name(FSTR_DATA_NAME(name), ARRAY_SIZE(FSTR_DATA_NAME(name)));
+		extern "C" DEFINE_FSTR_TABLE_DATA(FSTR_DATA_NAME(name), __VA_ARGS__);\
+		DEFINE_FSTR_TABLE_ALIAS(name, FSTR_DATA_NAME(name));
 
-#define DEFINE_FSTR_TABLE_LOCAL(name, ...)                                                                             \
-	static const FlashString* const FSTR_DATA_NAME(name)[] PROGMEM = {__VA_ARGS__};                                    \
-	static const FlashStringTable name(FSTR_DATA_NAME(name), ARRAY_SIZE(FSTR_DATA_NAME(name)));
+#define DEFINE_FSTR_TABLE_LOCAL(name, ...)                                                                                   \
+		static DEFINE_FSTR_TABLE_DATA(FSTR_DATA_NAME(name), __VA_ARGS__);\
+		const FlashStringTable& name = FSTR_DATA_NAME(name).table;
+
+#define DEFINE_FSTR_TABLE_REF(name, data_name) const FlashStringTable& name = *FSTR_TABLE_PTR(&data_name);
+
+#define FSTR_TABLE_PTR(data_ptr) reinterpret_cast<const FlashStringTable*>(data_ptr)
+
+#define DEFINE_FSTR_TABLE_ALIAS(name, data_name)                                                                             \
+	extern "C" const FlashStringTable __attribute__((alias(MACROQUOTE(data_name)))) name;
 
 /**
  * @brief Class to access a table of flash strings
@@ -352,14 +367,15 @@ private:
 class FlashStringTable
 {
 public:
-	FlashStringTable(const FlashString* const data[], unsigned count) : data(data), count(count)
-	{
-	}
+	FlashStringTable() = delete;
+	FlashStringTable(const FlashStringTable&) = delete;
 
 	const FlashString& operator[](unsigned index) const
 	{
-		if(index < count) {
-			return *data[index];
+		if(index < tableLength) {
+			auto p = reinterpret_cast<const FlashString*const*>(&tableLength + 1);
+			p += index;
+			return **p;
 		} else {
 			return FlashString::empty();
 		}
@@ -367,12 +383,11 @@ public:
 
 	unsigned length() const
 	{
-		return count;
+		return tableLength;
 	}
 
-private:
-	const FlashString* const* data;
-	unsigned count;
+	uint32_t tableLength;
+//	const FlashString* data[];
 };
 
 /**
