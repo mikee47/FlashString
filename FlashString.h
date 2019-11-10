@@ -162,7 +162,7 @@
  * 	DEFINE_FSTR(globalTest, "This is a testing string")
  * 	...
  * 	LOAD_FSTR(local, globalTest)
- * 	printf("%s, %u characters, buffer is %u bytes\n", local, globalTest.length, sizeof(local));
+ * 	printf("%s, %u characters, buffer is %u bytes\n", local, globalTest.length(), sizeof(local));
  */
 #define LOAD_FSTR(name, fstr)                                                                                          \
 	char name[(fstr).size()] __attribute__((aligned(4)));                                                              \
@@ -171,19 +171,21 @@
 
 /**
  * @brief Define a flash string and load it into a named char[] buffer on the stack
+ * @note Equivalent to `char name[] = "text"` except the buffer is word aligned.
  */
 #define FSTR_ARRAY(name, str)                                                                                          \
 	DEFINE_FSTR_DATA_LOCAL(FSTR_DATA_NAME(name), str);                                                                 \
 	LOAD_FSTR(name, *FSTR_PTR(&FSTR_DATA_NAME(name)))
 
 /** @brief Define a FlashString containing data from an external file
- *  @param name Name to use for referencing the FlashString object in code
+ *  @param name Name for the FlashString object
  *  @param file Path to the file to be included. This should be an absolute path.
  *  @note This provides a more efficient way to read constant (read-only) file data.
  *  The file content is bound into firmware image at link time.
  *  @note The FlashString object must be referenced or the linker won't emit it.
- *  @note Use the PROJECT_DIR to locate files in your project's source tree. For example:
+ *  @note Use PROJECT_DIR to locate files in your project's source tree. For example:
  *  		IMPORT_FSTR(myFlashString, PROJECT_DIR "/files/my_flash_file.txt");
+ *  Use COMPONENT_PATH within a component.
  */
 #define IMPORT_FSTR(name, file)                                                                                        \
 	IMPORT_FSTR_DATA(name, file)                                                                                       \
