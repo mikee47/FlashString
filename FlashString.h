@@ -395,50 +395,69 @@ public:
  * @param name name of the map
  * @note Use `DEFINE_FSTR_MAP` to instantiate the global object
  */
-#define DECLARE_FSTR_MAP(name) extern const FlashStringMap name;
+#define DECLARE_FSTR_MAP(name) extern "C" const FlashStringMap name;
+
+#define ARGSIZE2(...) (sizeof((const FlashStringPair[]){__VA_ARGS__}) / sizeof(FlashStringPair))
+
+/**
+ * @brief Define a map of `FlashString => FlashString` and global FlashStringMap object
+ * @param name name of the map
+ */
+#define DEFINE_FSTR_MAP_DATA(name, ...)                                                                                     \
+	const struct { \
+		FlashStringMap map; \
+		const FlashStringPair data[ARGSIZE2(__VA_ARGS__)]; \
+	} name PROGMEM = { {ARGSIZE2(__VA_ARGS__)}, {__VA_ARGS__}};
+
+#define DEFINE_FSTR_MAP(name, ...)                                                                                     \
+		DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), __VA_ARGS__); \
+		DEFINE_FSTR_MAP_ALIAS(name, FSTR_DATA_NAME(name));
+
+#define DEFINE_FSTR_MAP_REF(name, data_name) const FlashStringMap& name = *FSTR_MAP_PTR(&data_name);
+
+#define FSTR_MAP_PTR(data_ptr) reinterpret_cast<const FlashStringMap*>(data_ptr)
+
+#define DEFINE_FSTR_MAP_ALIAS(name, data_name)                                                                             \
+	extern "C" const FlashStringMap __attribute__((alias(MACROQUOTE(data_name)))) name;
+
+/**
+ * @brief Define a table of FlashStrings (local scope)
+ * @param name name of the table
+ */
+#define DEFINE_FSTR_MAP_LOCAL(name, ...)                                                                               \
+	static DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), __VA_ARGS__); \
+	const FlashStringMap& name = FSTR_DATA_NAME(name).map;
 
 /**
  * @brief describes a FlashString mapping key => data
  */
-struct FlashStringPair {
-	const FlashString* key;
-	const FlashString* content;
-};
-
-class FlashStringMapEntry
+struct FlashStringPair
 {
-	typedef void (FlashStringMapEntry::*IfHelperType)() const;
+	typedef void (FlashStringPair::*IfHelperType)() const;
 	void IfHelper() const
-	{
-	}
-
-public:
-	FlashStringMapEntry() = default;
-
-	FlashStringMapEntry(const FlashStringPair* pair) : value(pair)
 	{
 	}
 
 	operator IfHelperType() const
 	{
-		return value ? &FlashStringMapEntry::IfHelper : 0;
+		return key_ ? &FlashStringPair::IfHelper : 0;
 	}
 
 	const FlashString& key() const
 	{
-		if(value == nullptr) {
+		if(key_ == nullptr) {
 			return FlashString::empty();
 		} else {
-			return *value->key;
+			return *key_;
 		}
 	}
 
 	const FlashString& content() const
 	{
-		if(value == nullptr) {
+		if(content_ == nullptr) {
 			return FlashString::empty();
 		} else {
-			return *value->content;
+			return *content_;
 		}
 	}
 
@@ -447,25 +466,15 @@ public:
 		return content();
 	}
 
-private:
-	const FlashStringPair* value;
+	operator String() const
+	{
+		return content();
+	}
+
+	const FlashString* key_;
+	const FlashString* content_;
+	static const FlashStringPair empty;
 };
-
-/**
- * @brief Define a map of `FlashString => FlashString` and global FlashStringMap object
- * @param name name of the map
- */
-#define DEFINE_FSTR_MAP(name, ...)                                                                                     \
-	static const FlashStringPair FSTR_DATA_NAME(name)[] PROGMEM = {__VA_ARGS__};                                       \
-	const FlashStringMap name(FSTR_DATA_NAME(name), ARRAY_SIZE(FSTR_DATA_NAME(name)));
-
-/**
- * @brief Define a table of FlashStrings (local scope)
- * @param name name of the table
- */
-#define DEFINE_FSTR_MAP_LOCAL(name, ...)                                                                               \
-	static const FlashStringPair FSTR_DATA_NAME(name)[] PROGMEM = {__VA_ARGS__};                                       \
-	static const FlashStringMap name(FSTR_DATA_NAME(name), ARRAY_SIZE(FSTR_DATA_NAME(name)));
 
 /**
  * @brief Class to access a flash string map
@@ -473,37 +482,41 @@ private:
 class FlashStringMap
 {
 public:
-	FlashStringMap(const FlashStringPair data[], unsigned count) : data(data), count_(count)
-	{
-	}
+	FlashStringMap() = delete;
+	FlashStringMap(const FlashStringMap&) = delete;
 
-	FlashStringMapEntry valueAt(unsigned index) const
+	const FlashStringPair& valueAt(unsigned index) const
 	{
-		return (index < count_) ? &data[index] : nullptr;
+		if(index >= mapLength) {
+			return FlashStringPair::empty;
+		}
+
+		auto p = reinterpret_cast<const FlashStringPair*>(&mapLength + 1);
+		p += index;
+		return *p;
 	}
 
 	template <typename TKey> int indexOf(const TKey& key) const;
 
-	template <typename TKey> FlashStringMapEntry operator[](const TKey& key) const
+	template <typename TKey> const FlashStringPair& operator[](const TKey& key) const
 	{
-		int i = indexOf(key);
-		return (i < 0) ? nullptr : &data[i];
+		return valueAt(indexOf(key));
 	}
 
-	unsigned count() const
+	unsigned length() const
 	{
-		return count_;
+		return mapLength;
 	}
 
-private:
-	const FlashStringPair* data;
-	unsigned count_;
+	uint32_t mapLength;
+//	const FlashStringPair* data;
 };
 
 template <typename TKey> int FlashStringMap::indexOf(const TKey& key) const
 {
-	for(unsigned i = 0; i < count_; ++i) {
-		if(*data[i].key == key) {
+	auto p = reinterpret_cast<const FlashStringPair*>(&mapLength + 1);
+	for(unsigned i = 0; i < mapLength; ++i, ++p) {
+		if(*p->key_ == key) {
 			return i;
 		}
 	}

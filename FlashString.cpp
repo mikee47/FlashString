@@ -13,7 +13,8 @@
 #include "FlashString.h"
 #include <esp_spi_flash.h>
 
-constexpr uint32_t FlashString::zero;
+constexpr uint32_t FlashString::zero PROGMEM;
+const FlashStringPair FlashStringPair::empty PROGMEM = { nullptr, nullptr };
 
 size_t FlashString::read(size_t offset, void* buffer, size_t bytesToRead, bool readCache) const
 {
