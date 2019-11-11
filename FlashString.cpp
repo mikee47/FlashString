@@ -16,21 +16,15 @@
 constexpr uint32_t FlashString::zero PROGMEM;
 const FlashStringPair FlashStringPair::empty PROGMEM = { nullptr, nullptr };
 
-size_t FlashString::read(size_t offset, void* buffer, size_t bytesToRead, bool readCache) const
+size_t FlashString::readFlash(size_t offset, void* buffer, size_t bytesToRead) const
 {
 	if(offset >= flashLength) {
 		return 0;
 	}
 
 	auto count = std::min(flashLength - offset, bytesToRead);
-
-	if(readCache) {
-		memcpy_P(buffer, &flashData[offset], count);
-		return count;
-	} else {
-		auto addr = flashmem_get_address(&flashData[offset]);
-		return flashmem_read(buffer, addr, count);
-	}
+	auto addr = flashmem_get_address(&flashData[offset]);
+	return flashmem_read(buffer, addr, count);
 }
 
 bool FlashString::isEqual(const char* cstr, size_t len) const

@@ -264,14 +264,32 @@ public:
 	 * @bytesToRead How many bytes to read (e.g. size of buffer)
 	 * @readCache true to read data via CPU data cache, false to bypass and read flash directly
 	 * @retval size_t Number of bytes actually read, may be less than bufSize
+	 */
+	size_t read(size_t offset, void* buffer, size_t bytesToRead) const
+	{
+		if(offset >= flashLength) {
+			return 0;
+		}
+
+		auto count = std::min(flashLength - offset, bytesToRead);
+		memcpy_P(buffer, &flashData[offset], count);
+		return count;
+	}
+
+	/**
+	 * @brief Read contents of a FlashString into RAM, using flashread()
+	 * @param offset Zero-based offset from start of flash data to start reading
+	 * @param buffer Where to store data
+	 * @bytesToRead How many bytes to read (e.g. size of buffer)
+	 * @retval size_t Number of bytes actually read, may be less than bufSize
 	 * @note PROGMEM data is accessed via the CPU data cache, so to avoid degrading performance
 	 * you can use this method to read data directly from flash memory.
 	 * This is appropriate for infrequently accessed data, especially if it is large.
 	 * For example, if storing content using `IMPORT_FSTR` instead of SPIFFS then it
 	 * is generally better to avoid contaminating the cache.
-	 * @see See also `FlashMemoryDataStream` class.
+	 * @see See also `FlashMemoryStream` class.
 	 */
-	size_t read(size_t offset, void* buffer, size_t bytesToRead, bool readCache) const;
+	size_t readFlash(size_t offset, void* buffer, size_t bytesToRead) const;
 
 	/** @brief Check for equality with a C-string
 	 *  @param cstr
