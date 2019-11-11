@@ -14,7 +14,7 @@
 #include <esp_spi_flash.h>
 
 constexpr uint32_t FlashString::zero PROGMEM;
-const FlashStringPair FlashStringPair::empty PROGMEM = { nullptr, nullptr };
+const FlashStringPair FlashStringPair::empty PROGMEM = {nullptr, nullptr};
 
 size_t FlashString::readFlash(size_t offset, void* buffer, size_t bytesToRead) const
 {
@@ -23,7 +23,7 @@ size_t FlashString::readFlash(size_t offset, void* buffer, size_t bytesToRead) c
 	}
 
 	auto count = std::min(flashLength - offset, bytesToRead);
-	auto addr = flashmem_get_address(&flashData[offset]);
+	auto addr = flashmem_get_address(reinterpret_cast<const uint8_t*>(data()) + offset);
 	return flashmem_read(buffer, addr, count);
 }
 
@@ -46,11 +46,11 @@ bool FlashString::isEqual(const char* cstr, size_t len) const
 
 bool FlashString::isEqual(const FlashString& str) const
 {
+	if(data() == str.data()) {
+		return true;
+	}
 	if(flashLength != str.flashLength) {
 		return false;
 	}
-	if(flashData == str.flashData) {
-		return true;
-	}
-	return memcmp_aligned(flashData, str.flashData, flashLength) == 0;
+	return memcmp_aligned(data(), str.data(), flashLength) == 0;
 }

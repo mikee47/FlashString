@@ -88,9 +88,9 @@
 #include <stringutil.h>
 
 /**
- * @brief Provide internal name for generated flash string structures, which are cast to a `FlashString` reference
+ * @brief Declare a global FlashString instance
  */
-#define FSTR_DATA_NAME(name) fstr_data_##name
+#define DECLARE_FSTR(name) extern const FlashString& name;
 
 /** @brief Define a FlashString
  *  @param name variable to identify the string
@@ -100,63 +100,48 @@
  *  The data includes the nul terminator but the length does not.
  */
 #define DEFINE_FSTR(name, str)                                                                                         \
-	DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                       \
-	DEFINE_FSTR_ALIAS(name, FSTR_DATA_NAME(name));
+	static DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                       \
+	const FlashString& name = FSTR_DATA_NAME(name).fstr;
 
 /** @brief Define a FlashString for local (static) use
  *  @param name variable to identify the string
  *  @param str content of the string
  */
-#define DEFINE_FSTR_LOCAL(name, str) \
-		DEFINE_FSTR_DATA_LOCAL(FSTR_DATA_NAME(name), str); \
-		DEFINE_FSTR_REF(name, FSTR_DATA_NAME(name));
-
-/** @brief Define a string in a FlashString-compatible structure
- *  @param name Name of FlashString - structure will use this as a base for its own name
- *  @param str String to store
- */
-#define DEFINE_FSTR_DATA(name, str)                                                                                    \
-	extern "C" const struct {                                                                                          \
-		uint32_t length;                                                                                               \
-		char data[ALIGNUP(sizeof(str))];                                                                               \
-	} name PROGMEM = {sizeof(str) - 1, str};
-
-#define DEFINE_FSTR_DATA_LOCAL(name, str)                                                                              \
-	static const struct {                                                                                              \
-		uint32_t length;                                                                                               \
-		char data[ALIGNUP(sizeof(str))];                                                                               \
-	} name PROGMEM = {sizeof(str) - 1, str};
-
-/**
- * @brief Declare a global FlashString instance
- */
-#define DECLARE_FSTR(name) extern "C" const FlashString name;
+#define DEFINE_FSTR_LOCAL(name, str)                                                                                   \
+	DEFINE_FSTR_DATA_LOCAL(FSTR_DATA_NAME(name), str);                                                                 \
+	static const FlashString& name = FSTR_DATA_NAME(name).fstr;
 
 /**
  * @brief Cast a pointer to FlashString*
  * @param data_ptr Pointer to aligned structure with first word as length
+ * @note Use if necessary for custom structures
  */
 #define FSTR_PTR(data_ptr) reinterpret_cast<const FlashString*>(data_ptr)
 
 /**
- * @brief Define a FlashString reference
+ * @brief Define a FlashString reference to a structure using a cast
  * @param name Name of the reference variable
  * @param data_name Name of structure to be referenced, in PROGMEM and word-aligned. First element MUST be the length.
  * @note Use to cast custom data structures into FlashString format.
  */
 #define DEFINE_FSTR_REF(name, data) const FlashString& name = *FSTR_PTR(&data);
 
-#define MACROQUOT(x) #x
-#define MACROQUOTE(x) MACROQUOT(x)
-
 /**
- * @brief Define a FlashString alias
- * @param name Name of the FlashString variable to define
- * @param data_name Name of structure to be aliased, in PROGMEM and word-aligned. First element MUST be the length.
- * @note Allows a structure which isn't a FlashString to be accessed directly as if it were one
+ * @brief Provide internal name for generated flash string structures, which are cast to a `FlashString` reference
  */
-#define DEFINE_FSTR_ALIAS(name, data_name)                                                                             \
-	extern "C" const FlashString __attribute__((alias(MACROQUOTE(data_name)))) name;
+#define FSTR_DATA_NAME(name) fstr_data_##name
+
+/** @brief Define a string in a FlashString-compatible structure
+ *  @param name Name of FlashString - structure will use this as a base for its own name
+ *  @param str String to store
+ */
+#define DEFINE_FSTR_DATA(name, str)                                                                                    \
+	const struct {                                                                                                     \
+		FlashString fstr;                                                                                              \
+		char data[ALIGNUP(sizeof(str))];                                                                               \
+	} name PROGMEM = {{sizeof(str) - 1}, str};
+
+#define DEFINE_FSTR_DATA_LOCAL(name, str) static DEFINE_FSTR_DATA(name, str)
 
 /**
  * @brief Load a FlashString object into a named local (stack) buffer
@@ -178,7 +163,7 @@
  */
 #define FSTR_ARRAY(name, str)                                                                                          \
 	DEFINE_FSTR_DATA_LOCAL(FSTR_DATA_NAME(name), str);                                                                 \
-	LOAD_FSTR(name, *FSTR_PTR(&FSTR_DATA_NAME(name)))
+	LOAD_FSTR(name, FSTR_DATA_NAME(name).fstr)
 
 /** @brief Define a FlashString containing data from an external file
  *  @param name Name for the FlashString object
@@ -192,7 +177,7 @@
  */
 #define IMPORT_FSTR(name, file)                                                                                        \
 	IMPORT_FSTR_DATA(name, file)                                                                                       \
-	extern const FlashString name;
+	extern "C" const FlashString name;
 
 /**
  * @brief Link the contents of a file and define a global symbol
@@ -230,9 +215,7 @@
 /**
  * @brief describes a counted string stored in flash memory
  */
-class FlashString
-{
-public:
+struct FlashString {
 	// Prevent instantiation or copying
 	FlashString() = delete;
 	FlashString(const FlashString&) = delete;
@@ -254,7 +237,7 @@ public:
 
 	flash_string_t data() const
 	{
-		return FPSTR(flashData);
+		return reinterpret_cast<flash_string_t>(&flashLength + 1);
 	}
 
 	/**
@@ -272,7 +255,7 @@ public:
 		}
 
 		auto count = std::min(flashLength - offset, bytesToRead);
-		memcpy_P(buffer, &flashData[offset], count);
+		memcpy_P(buffer, reinterpret_cast<const uint8_t*>(data()) + offset, count);
 		return count;
 	}
 
@@ -345,53 +328,46 @@ public:
 		return !isEqual(str);
 	}
 
-private:
-	uint32_t flashLength;	 ///< Number of bytes/characters in data
-	char flashData[0x400000]; ///< Arbitrary large size to stop compiler complaining about array bounds
+	uint32_t flashLength; ///< Number of bytes/characters in data
+	// uint8_t data[]
 	static constexpr uint32_t zero = 0;
 };
 
 /**
  * @brief Declare a global table of FlashStrings
  */
-#define DECLARE_FSTR_TABLE(name) extern "C" const FlashStringTable name;
-
-#define ARGSIZE(...) (sizeof((const void*[]){__VA_ARGS__}) / sizeof(void*))
-
-#define DEFINE_FSTR_TABLE_DATA(name, ...)                                                                                   \
-	const struct { \
-		FlashStringTable table;\
-		const FlashString* data[ARGSIZE(__VA_ARGS__)];\
-	} name PROGMEM = { {ARGSIZE(__VA_ARGS__)}, {__VA_ARGS__}};
+#define DECLARE_FSTR_TABLE(name) extern const FlashStringTable& name;
 
 #define DEFINE_FSTR_TABLE(name, ...)                                                                                   \
-		extern "C" DEFINE_FSTR_TABLE_DATA(FSTR_DATA_NAME(name), __VA_ARGS__);\
-		DEFINE_FSTR_TABLE_ALIAS(name, FSTR_DATA_NAME(name));
+	DEFINE_FSTR_TABLE_DATA(FSTR_DATA_NAME(name), __VA_ARGS__);                                                         \
+	const FlashStringTable& name = FSTR_DATA_NAME(name).table;
 
-#define DEFINE_FSTR_TABLE_LOCAL(name, ...)                                                                                   \
-		static DEFINE_FSTR_TABLE_DATA(FSTR_DATA_NAME(name), __VA_ARGS__);\
-		const FlashStringTable& name = FSTR_DATA_NAME(name).table;
+#define DEFINE_FSTR_TABLE_LOCAL(name, ...)                                                                             \
+	DEFINE_FSTR_TABLE_DATA_LOCAL(FSTR_DATA_NAME(name), __VA_ARGS__);                                                   \
+	static const FlashStringTable& name = FSTR_DATA_NAME(name).table;
 
 #define DEFINE_FSTR_TABLE_REF(name, data_name) const FlashStringTable& name = *FSTR_TABLE_PTR(&data_name);
-
 #define FSTR_TABLE_PTR(data_ptr) reinterpret_cast<const FlashStringTable*>(data_ptr)
 
-#define DEFINE_FSTR_TABLE_ALIAS(name, data_name)                                                                             \
-	extern "C" const FlashStringTable __attribute__((alias(MACROQUOTE(data_name)))) name;
+#define FSTR_TABLE_ARGSIZE(...) (sizeof((const void* []){__VA_ARGS__}) / sizeof(void*))
+#define DEFINE_FSTR_TABLE_DATA(name, ...)                                                                              \
+	const struct {                                                                                                     \
+		FlashStringTable table;                                                                                        \
+		const FlashString* data[FSTR_TABLE_ARGSIZE(__VA_ARGS__)];                                                      \
+	} name PROGMEM = {{FSTR_TABLE_ARGSIZE(__VA_ARGS__)}, {__VA_ARGS__}};
+#define DEFINE_FSTR_TABLE_DATA_LOCAL(name, ...) static DEFINE_FSTR_TABLE_DATA(name, __VA_ARGS__)
 
 /**
  * @brief Class to access a table of flash strings
  */
-class FlashStringTable
-{
-public:
+struct FlashStringTable {
 	FlashStringTable() = delete;
 	FlashStringTable(const FlashStringTable&) = delete;
 
 	const FlashString& operator[](unsigned index) const
 	{
 		if(index < tableLength) {
-			auto p = reinterpret_cast<const FlashString*const*>(&tableLength + 1);
+			auto p = reinterpret_cast<const FlashString* const*>(&tableLength + 1);
 			p += index;
 			return **p;
 		} else {
@@ -405,7 +381,7 @@ public:
 	}
 
 	uint32_t tableLength;
-//	const FlashString* data[];
+	// FlashString* entries[];
 };
 
 /**
@@ -413,44 +389,35 @@ public:
  * @param name name of the map
  * @note Use `DEFINE_FSTR_MAP` to instantiate the global object
  */
-#define DECLARE_FSTR_MAP(name) extern "C" const FlashStringMap name;
+#define DECLARE_FSTR_MAP(name) extern const FlashStringMap& name;
 
-#define ARGSIZE2(...) (sizeof((const FlashStringPair[]){__VA_ARGS__}) / sizeof(FlashStringPair))
+#define DEFINE_FSTR_MAP(name, ...)                                                                                     \
+	DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), __VA_ARGS__);                                                           \
+	const FlashStringMap& name = FSTR_DATA_NAME(name).map;
+
+#define DEFINE_FSTR_MAP_LOCAL(name, ...)                                                                               \
+	DEFINE_FSTR_MAP_DATA_LOCAL(FSTR_DATA_NAME(name), __VA_ARGS__);                                                     \
+	static const FlashStringMap& name = FSTR_DATA_NAME(name).map;
+
+#define DEFINE_FSTR_MAP_REF(name, data_name) const FlashStringMap& name = *FSTR_MAP_PTR(&data_name);
+#define FSTR_MAP_PTR(data_ptr) reinterpret_cast<const FlashStringMap*>(data_ptr)
 
 /**
  * @brief Define a map of `FlashString => FlashString` and global FlashStringMap object
  * @param name name of the map
  */
-#define DEFINE_FSTR_MAP_DATA(name, ...)                                                                                     \
-	const struct { \
-		FlashStringMap map; \
-		const FlashStringPair data[ARGSIZE2(__VA_ARGS__)]; \
-	} name PROGMEM = { {ARGSIZE2(__VA_ARGS__)}, {__VA_ARGS__}};
-
-#define DEFINE_FSTR_MAP(name, ...)                                                                                     \
-		DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), __VA_ARGS__); \
-		DEFINE_FSTR_MAP_ALIAS(name, FSTR_DATA_NAME(name));
-
-#define DEFINE_FSTR_MAP_REF(name, data_name) const FlashStringMap& name = *FSTR_MAP_PTR(&data_name);
-
-#define FSTR_MAP_PTR(data_ptr) reinterpret_cast<const FlashStringMap*>(data_ptr)
-
-#define DEFINE_FSTR_MAP_ALIAS(name, data_name)                                                                             \
-	extern "C" const FlashStringMap __attribute__((alias(MACROQUOTE(data_name)))) name;
-
-/**
- * @brief Define a table of FlashStrings (local scope)
- * @param name name of the table
- */
-#define DEFINE_FSTR_MAP_LOCAL(name, ...)                                                                               \
-	static DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), __VA_ARGS__); \
-	const FlashStringMap& name = FSTR_DATA_NAME(name).map;
+#define FSTR_MAP_ARGSIZE(...) (sizeof((const FlashStringPair[]){__VA_ARGS__}) / sizeof(FlashStringPair))
+#define DEFINE_FSTR_MAP_DATA(name, ...)                                                                                \
+	const struct {                                                                                                     \
+		FlashStringMap map;                                                                                            \
+		const FlashStringPair data[FSTR_MAP_ARGSIZE(__VA_ARGS__)];                                                     \
+	} name PROGMEM = {{FSTR_MAP_ARGSIZE(__VA_ARGS__)}, {__VA_ARGS__}};
+#define DEFINE_FSTR_MAP_DATA_LOCAL(name, ...) static DEFINE_FSTR_MAP_DATA(name, __VA_ARGS__)
 
 /**
  * @brief describes a FlashString mapping key => data
  */
-struct FlashStringPair
-{
+struct FlashStringPair {
 	typedef void (FlashStringPair::*IfHelperType)() const;
 	void IfHelper() const
 	{
@@ -497,9 +464,7 @@ struct FlashStringPair
 /**
  * @brief Class to access a flash string map
  */
-class FlashStringMap
-{
-public:
+struct FlashStringMap {
 	FlashStringMap() = delete;
 	FlashStringMap(const FlashStringMap&) = delete;
 
@@ -527,7 +492,7 @@ public:
 	}
 
 	uint32_t mapLength;
-//	const FlashStringPair* data;
+	// FlashStringPair values[];
 };
 
 template <typename TKey> int FlashStringMap::indexOf(const TKey& key) const
