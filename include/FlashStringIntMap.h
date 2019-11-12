@@ -60,15 +60,16 @@ template <typename TKey> struct FlashStringIntPair {
 		return content_ ? &FlashStringIntPair::IfHelper : 0;
 	}
 
-	static const FlashStringIntPair& empty()
+	static const FlashStringIntPair empty()
 	{
-		static constexpr FlashStringIntPair nullPair PROGMEM = {TKey(0), nullptr};
-		return nullPair;
+		return FlashStringIntPair({TKey(0), nullptr});
 	}
 
 	TKey key() const
 	{
-		return key_;
+		// Ensure access is aligned for 1/2 byte keys
+		volatile auto pair = *this;
+		return pair.key_;
 	}
 
 	const FlashString& content() const
@@ -123,8 +124,8 @@ template <typename TKey> struct FlashStringIntMap {
 		return mapLength;
 	}
 
-	uint32_t mapLength;
-	// FlashStringPair values[];
+	const uint32_t mapLength;
+	// Pair values[];
 };
 
 template <typename TKey> template <typename TKeyRef> int FlashStringIntMap<TKey>::indexOf(const TKeyRef& key) const
@@ -136,9 +137,9 @@ template <typename TKey> template <typename TKeyRef> int FlashStringIntMap<TKey>
 				return i;
 			}
 		} else {
-			// Must access key using aligned instruction
-			volatile Pair tmp = *p;
-			if(tmp.key_ == key) {
+			// Ensure access is aligned for 1/2 byte keys
+			volatile auto pair = *p;
+			if(pair.key_ == key) {
 				return i;
 			}
 		}

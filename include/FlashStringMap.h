@@ -58,10 +58,9 @@ struct FlashStringPair {
 		return key_ ? &FlashStringPair::IfHelper : 0;
 	}
 
-	static const FlashStringPair& empty()
+	static const FlashStringPair empty()
 	{
-		static constexpr FlashStringPair nullPair PROGMEM = {nullptr, nullptr};
-		return nullPair;
+		return FlashStringPair({nullptr, nullptr});
 	}
 
 	const FlashString& key() const
@@ -100,7 +99,7 @@ struct FlashStringPair {
  * @brief Class to access a flash string map
  */
 struct FlashStringMap {
-	const FlashStringPair& valueAt(unsigned index) const
+	const FlashStringPair valueAt(unsigned index) const
 	{
 		if(index >= mapLength) {
 			return FlashStringPair::empty();
@@ -113,7 +112,7 @@ struct FlashStringMap {
 
 	template <typename TKey> int indexOf(const TKey& key) const;
 
-	template <typename TKey> const FlashStringPair& operator[](const TKey& key) const
+	template <typename TKey> const FlashStringPair operator[](const TKey& key) const
 	{
 		return valueAt(indexOf(key));
 	}
@@ -123,8 +122,8 @@ struct FlashStringMap {
 		return mapLength;
 	}
 
-	uint32_t mapLength;
-	// FlashStringPair values[];
+	const uint32_t mapLength;
+	// const FlashStringPair values[];
 };
 
 template <typename TKey> int FlashStringMap::indexOf(const TKey& key) const

@@ -59,6 +59,6 @@ struct FlashStringTable {
 		return tableLength;
 	}
 
-	uint32_t tableLength;
-	// FlashString* entries[];
+	const uint32_t tableLength;
+	// const FlashString* entries[];
 };

@@ -55,9 +55,6 @@ We can now do this::
       }
    }
 
-Note that unlike :doc:`FlashStringMap`, the returned value is not a reference, but a copy of *FlashStringIntPair<TKey>*.
-This is because the key may be only 1 or 2 bytes, so it's not safe to access directly from flash.
-
 
 Additional Macros
 -----------------
