@@ -10,7 +10,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SHEM.
+ * You should have received a copy of the GNU General Public License along with FlashString.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  * @author: Nov 2019 - Mikee47 <mike@sillyhouse.net>
@@ -28,6 +28,9 @@
  */
 #define DECLARE_FSTR_MAP(name) extern const FlashStringMap& name;
 
+/**
+ * @brief Define a FlashString Map with reference
+ */
 #define DEFINE_FSTR_MAP(name, ...)                                                                                     \
 	DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), __VA_ARGS__);                                                           \
 	const FlashStringMap& name PROGMEM = FSTR_DATA_NAME(name).map;
@@ -36,12 +39,19 @@
 	DEFINE_FSTR_MAP_DATA_LOCAL(FSTR_DATA_NAME(name), __VA_ARGS__);                                                     \
 	static const FlashStringMap& name PROGMEM = FSTR_DATA_NAME(name).map;
 
-#define DEFINE_FSTR_MAP_REF(name, data_name) const FlashStringMap& name = *FSTR_MAP_PTR(&data_name);
+/**
+ * @brief Cast a pointer to FlashStringMap*
+ */
 #define FSTR_MAP_PTR(data_ptr) reinterpret_cast<const FlashStringMap*>(data_ptr)
 
 /**
- * @brief Define a map of `FlashString => FlashString` and global FlashStringMap object
- * @param name name of the map
+ * @brief Define a FlashStringMap& reference using a cast
+ */
+#define DEFINE_FSTR_MAP_REF(name, data_name) const FlashStringMap& name = *FSTR_MAP_PTR(&data_name);
+
+/**
+ * @brief Define a structure containing map data
+ * @param name name of the map structure
  */
 #define FSTR_MAP_ARGSIZE(...) (sizeof((const FlashStringPair[]){__VA_ARGS__}) / sizeof(FlashStringPair))
 #define DEFINE_FSTR_MAP_DATA(name, ...)                                                                                \
@@ -60,16 +70,25 @@ struct FlashStringPair {
 	{
 	}
 
+	/**
+	 * @brief Provides bool() operator to determine if Pair is valid
+	 */
 	operator IfHelperType() const
 	{
 		return key_ ? &FlashStringPair::IfHelper : 0;
 	}
 
+	/**
+	 * @brief Get an empty Pair object, identifies as invalid when lookup fails
+	 */
 	static const FlashStringPair empty()
 	{
 		return FlashStringPair({nullptr, nullptr});
 	}
 
+	/**
+	 * @brief Accessor to get a reference to the key
+	 */
 	const FlashString& key() const
 	{
 		if(key_ == nullptr) {
@@ -79,6 +98,9 @@ struct FlashStringPair {
 		}
 	}
 
+	/**
+	 * @brief Accessor to get a reference to the content
+	 */
 	const FlashString& content() const
 	{
 		if(content_ == nullptr) {
@@ -88,11 +110,17 @@ struct FlashStringPair {
 		}
 	}
 
+	/**
+	 * @brief Implicit FlashString cast for this object gets a reference to the content
+	 */
 	operator const FlashString&() const
 	{
 		return content();
 	}
 
+	/**
+	 * @brief Implicit cast to load content into a String object
+	 */
 	operator String() const
 	{
 		return content();
@@ -106,6 +134,10 @@ struct FlashStringPair {
  * @brief Class to access a flash string map
  */
 struct FlashStringMap {
+	/**
+	 * @brief Get a map entry by index, if it exists
+	 * @note Result validity can be checked using if()
+	 */
 	const FlashStringPair valueAt(unsigned index) const
 	{
 		if(index >= mapLength) {
@@ -117,13 +149,25 @@ struct FlashStringMap {
 		return *p;
 	}
 
+	/**
+	 * @brief Lookup a key and return the index, if found
+	 * @retval int If key isn't found, return -1
+	 * @note Comparison is case-sensitive
+	 */
 	template <typename TKey> int indexOf(const TKey& key) const;
 
+	/**
+	 * @brief Lookup a key and return the entry, if found
+	 * @note Result validity can be checked using if()
+	 */
 	template <typename TKey> const FlashStringPair operator[](const TKey& key) const
 	{
 		return valueAt(indexOf(key));
 	}
 
+	/**
+	 * @brief Accessor to get the number of entries in the map
+	 */
 	unsigned length() const
 	{
 		return mapLength;

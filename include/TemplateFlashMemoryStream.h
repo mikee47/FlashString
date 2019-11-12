@@ -10,7 +10,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SHEM.
+ * You should have received a copy of the GNU General Public License along with FlashString.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  * @author: 23 Oct 2018 - mikee47 <mike@sillyhouse.net>

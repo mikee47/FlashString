@@ -10,7 +10,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SHEM.
+ * You should have received a copy of the GNU General Public License along with FlashString.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  * @author: 2018 - Mikee47 <mike@sillyhouse.net>
@@ -54,7 +54,7 @@
 #define FSTR_PTR(data_ptr) reinterpret_cast<const FlashString*>(data_ptr)
 
 /**
- * @brief Define a FlashString reference to a structure using a cast
+ * @brief Define a FlashString& reference to a structure using a cast
  * @param name Name of the reference variable
  * @param data_name Name of structure to be referenced, in PROGMEM and word-aligned. First element MUST be the length.
  * @note Use to cast custom data structures into FlashString format.
@@ -62,12 +62,12 @@
 #define DEFINE_FSTR_REF(name, data) const FlashString& name = *FSTR_PTR(&data);
 
 /**
- * @brief Provide internal name for generated flash string structures, which are cast to a `FlashString` reference
+ * @brief Provide internal name for generated flash string structures
  */
 #define FSTR_DATA_NAME(name) fstr_data_##name
 
 /** @brief Define a string in a FlashString-compatible structure
- *  @param name Name of FlashString - structure will use this as a base for its own name
+ *  @param name Name to use for data structure
  *  @param str String to store
  */
 #define DEFINE_FSTR_DATA(name, str)                                                                                    \

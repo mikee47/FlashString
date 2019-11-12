@@ -10,7 +10,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SHEM.
+ * You should have received a copy of the GNU General Public License along with FlashString.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  * @author: Nov 2019 - Mikee47 <mike@sillyhouse.net>
@@ -29,6 +29,9 @@
  */
 #define DECLARE_FSTR_INTMAP(name, TKey) extern const FlashStringIntMap<TKey>& name;
 
+/**
+ * @brief Define a FlashString IntMap with reference
+ */
 #define DEFINE_FSTR_INTMAP(name, TKey, ...)                                                                            \
 	DEFINE_FSTR_INTMAP_DATA(FSTR_DATA_NAME(name), TKey, __VA_ARGS__);                                                  \
 	const FlashStringIntMap<TKey>& name PROGMEM = FSTR_DATA_NAME(name).map;
@@ -37,12 +40,19 @@
 	DEFINE_FSTR_INTMAP_DATA_LOCAL(FSTR_DATA_NAME(name), TKey, __VA_ARGS__);                                            \
 	static const FlashStringIntMap<TKey>& name PROGMEM = FSTR_DATA_NAME(name).map;
 
-#define DEFINE_FSTR_INTMAP_REF(name, TKey, data_name) const FlashStringIntMap<TKey>& name = *FSTR_MAP_PTR(&data_name);
+/**
+ * @brief Cast a pointer to FlashStringIntMap*
+ */
 #define FSTR_INTMAP_PTR(data_ptr, TKey) reinterpret_cast<const FlashStringIntMap<TKey>*>(data_ptr)
 
 /**
- * @brief Define a map of `TKey => FlashString` and global FlashStringMap object
- * @param name name of the map
+ * @brief Define a FlashStringIntMap& reference using a cast
+ */
+#define DEFINE_FSTR_INTMAP_REF(name, TKey, data_name) const FlashStringIntMap<TKey>& name = *FSTR_MAP_PTR(&data_name);
+
+/**
+ * @brief Define a structure containing map data
+ * @param name name of the map structure
  */
 #define FSTR_INTMAP_ARGSIZE(TKey, ...)                                                                                 \
 	(sizeof((const FlashStringIntPair<TKey>[]){__VA_ARGS__}) / sizeof(FlashStringIntPair<TKey>))
@@ -54,7 +64,7 @@
 #define DEFINE_FSTR_INTMAP_DATA_LOCAL(name, TKey, ...) static DEFINE_FSTR_INTMAP_DATA(name, TKey, __VA_ARGS__)
 
 /**
- * @brief describes a FlashString mapping key => data
+ * @brief describes a FlashString mapping key => data for a specified key type
  */
 template <typename TKey> struct FlashStringIntPair {
 	typedef void (FlashStringIntPair::*IfHelperType)() const;
@@ -62,16 +72,25 @@ template <typename TKey> struct FlashStringIntPair {
 	{
 	}
 
+	/**
+	 * @brief Provides bool() operator to determine if Pair is valid
+	 */
 	operator IfHelperType() const
 	{
 		return content_ ? &FlashStringIntPair::IfHelper : 0;
 	}
 
+	/**
+	 * @brief Get an empty Pair object, identifies as invalid when lookup fails
+	 */
 	static const FlashStringIntPair empty()
 	{
 		return FlashStringIntPair({TKey(0), nullptr});
 	}
 
+	/**
+	 * @brief Accessor to get a copy of the key
+	 */
 	TKey key() const
 	{
 		// Ensure access is aligned for 1/2 byte keys
@@ -79,6 +98,9 @@ template <typename TKey> struct FlashStringIntPair {
 		return pair.key_;
 	}
 
+	/**
+	 * @brief Accessor to get a reference to the content
+	 */
 	const FlashString& content() const
 	{
 		if(content_ == nullptr) {
@@ -108,6 +130,10 @@ template <typename TKey> struct FlashStringIntPair {
 template <typename TKey> struct FlashStringIntMap {
 	using Pair = FlashStringIntPair<TKey>;
 
+	/**
+	 * @brief Get a map entry by index, if it exists
+	 * @note Result validity can be checked using if()
+	 */
 	const Pair valueAt(unsigned index) const
 	{
 		if(index >= mapLength) {
@@ -119,13 +145,25 @@ template <typename TKey> struct FlashStringIntMap {
 		return *p;
 	}
 
+	/**
+	 * @brief Lookup a key and return the index, if found
+	 * @retval int If key isn't found, return -1
+	 * @note Comparison is case-sensitive
+	 */
 	template <typename TKeyRef> int indexOf(const TKeyRef& key) const;
 
+	/**
+	 * @brief Lookup a key and return the entry, if found
+	 * @note Result validity can be checked using if()
+	 */
 	template <typename TKeyRef> const Pair operator[](const TKeyRef& key) const
 	{
 		return valueAt(indexOf(key));
 	}
 
+	/**
+	 * @brief Accessor to get the number of entries in the map
+	 */
 	unsigned length() const
 	{
 		return mapLength;

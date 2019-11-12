@@ -1,5 +1,5 @@
 /**
- * FlashString.h - Defines the FlashString class and associated macros for efficient flash memory string access.
+ * FlashStringTable.h - Defines the FlashStringTable class and associated macros
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -10,7 +10,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SHEM.
+ * You should have received a copy of the GNU General Public License along with FlashString.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  * @author: 2018 - Mikee47 <mike@sillyhouse.net>
@@ -27,6 +27,9 @@
  */
 #define DECLARE_FSTR_TABLE(name) extern const FlashStringTable& name;
 
+/**
+ * @brief Define a FlashString table and reference
+ */
 #define DEFINE_FSTR_TABLE(name, ...)                                                                                   \
 	DEFINE_FSTR_TABLE_DATA(FSTR_DATA_NAME(name), __VA_ARGS__);                                                         \
 	const FlashStringTable& name PROGMEM = FSTR_DATA_NAME(name).table;
@@ -35,9 +38,19 @@
 	DEFINE_FSTR_TABLE_DATA_LOCAL(FSTR_DATA_NAME(name), __VA_ARGS__);                                                   \
 	static const FlashStringTable& name PROGMEM = FSTR_DATA_NAME(name).table;
 
-#define DEFINE_FSTR_TABLE_REF(name, data_name) const FlashStringTable& name = *FSTR_TABLE_PTR(&data_name);
+/**
+ * @brief Cast a pointer to FlashStringTable*
+ */
 #define FSTR_TABLE_PTR(data_ptr) reinterpret_cast<const FlashStringTable*>(data_ptr)
 
+/**
+ * @brief Define a FlashStringTable& reference using a cast
+ */
+#define DEFINE_FSTR_TABLE_REF(name, data_name) const FlashStringTable& name = *FSTR_TABLE_PTR(&data_name);
+
+/**
+ * @brief Define a structure containing table data
+ */
 #define FSTR_TABLE_ARGSIZE(...) (sizeof((const void* []){__VA_ARGS__}) / sizeof(void*))
 #define DEFINE_FSTR_TABLE_DATA(name, ...)                                                                              \
 	const struct {                                                                                                     \
