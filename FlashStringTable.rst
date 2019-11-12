@@ -15,35 +15,59 @@ Here it is without the methods::
       // FlashString* entries[];
    };
 
-The FlashStrings must be defined separately, for example::
+The FlashStrings must be defined first::
 
-   DEFINE_FSTR_DATA(fstr1, "Test string #1");
-   DEFINE_FSTR_DATA(fstr2, "Test string #2");
-   IMPORT_FSTR_DATA(fstr3, PROJECT_DIR "/files/somedata.json");
+   DEFINE_FSTR_DATA(data1, "Test string #1");
+   DEFINE_FSTR_DATA(data2, "Test string #2");
+   IMPORT_FSTR(fstr3, PROJECT_DIR "/files/somedata.json");
 
-You can define a structure like this::
+.. attention::
+
+   Take care to use DEFINE_FSTR_DATA, not DEFINE_FSTR.
+
+   This is because we need the actual FlashString and not a reference to it.
+
+   IMPORT_FSTR is fine because it creates an actual FlashString object, not a reference.
+
+Then you can define the table structure::
 
    #include <FlashStringTable.h>
 
    const struct {
       FlashStringTable table;
       const FlashString* entries[3];
-   } flashTableData PROGMEM = { {3}, &fstr1, &fstr2, &fstr3 };
+   } flashTableData PROGMEM = { {3}, &data1.fstr, &data2.fstr, &fstr3 };
+
+.. attention::
+
+   If you try to use FlashString& references, the code will compile (and will work
+   on the Host Emulator), but will fail to start on a real device.
+
+   This is because startup constructor functions are created to copy the
+   references into the structure. It cannot do this because they are in PROGMEM.
+
 
 But of course it's easier using the macros::
 
-   DEFINE_FSTR_TABLE(table, &fstr1, &fstr2, &fstr3);
+   DEFINE_FSTR_TABLE(table, &data1.fstr, &data2.fstr, &fstr3 );
 
-And access the data using table methods::
+Now we can access the data using table methods::
 
    debugf("table.length() = %u", table.length());
    debugf("fstr1 = '%s'", String(table[0]).c_str());
    debugf("fstr2.length() = %u", table[1].length());
    debugf("fstr3.length() = %u", table[2].length());
 
+As with FlashString, you can share tables between translation units by declaring it in a header::
+
+   DECLARE_FSTR_TABLE(table);
+
 
 Additional Macros
 -----------------
+
+DEFINE_FSTR_TABLE_DATA(name, ...)
+   Define the table structure without an associated reference.
 
 FSTR_TABLE_PTR(data_ptr)
    Cast a custom structure to ``const FlashStringTable*``.

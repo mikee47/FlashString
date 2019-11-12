@@ -154,6 +154,8 @@ DEFINE_FSTR_DATA(name, str)
       DEFINE_FSTR_DATA(myData, "hello");
       Serial.println(myData.fstr);
 
+   You'll need this when creating :doc:`tables <FlashStringTable>`.
+
 DEFINE_FSTR_DATA_LOCAL(name, str)
    Use for local (static) definitions.
 

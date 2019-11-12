@@ -26,20 +26,20 @@ And here's how it's used::
 
    #include <FlashStringMap.h>
 
-   DEFINE_FSTR_LOCAL(key1, "index.html");
-   DEFINE_FSTR_LOCAL(key2, "favicon.ico");
+   DEFINE_FSTR_DATA_LOCAL(key1, "index.html");
+   DEFINE_FSTR_DATA_LOCAL(key2, "favicon.ico");
    IMPORT_FSTR(content1, PROJECT_DIR "/files/index.html");
    IMPORT_FSTR(content2, PROJECT_DIR "/files/favicon.html");
 
    const struct {
       FlashStringMap map;
       const FlashStringPair data[2];
-   } flashMapData PROGMEM = { {2}, { &key1, &content1}, { &key2, &content2 } };
+   } flashMapData PROGMEM = { {2}, { &key1.fstr, &content1}, { &key2.fstr, &content2 } };
    const auto& fileMap = flashMapData.map;
 
 Or, using a macro::
 
-   DEFINE_FSTR_MAP(fileMap, { &key1, &content1}, {&key2, &content2} );
+   DEFINE_FSTR_MAP(fileMap, { &key1.fstr, &content1}, {&key2.fstr, &content2} );
 
 We can now do this::
 
@@ -60,6 +60,9 @@ We can now do this::
 
 Additional Macros
 -----------------
+
+DEFINE_FSTR_MAP_DATA(name, ...)
+   Define the map structure without an associated reference.
 
 FSTR_MAP_PTR(data_ptr)
    Cast a custom structure to a ``const FlashStringMap*``.
