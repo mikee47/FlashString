@@ -23,11 +23,11 @@
 
 #define DEFINE_FSTR_MAP(name, ...)                                                                                     \
 	DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), __VA_ARGS__);                                                           \
-	const FlashStringMap& name = FSTR_DATA_NAME(name).map;
+	const FlashStringMap& name PROGMEM = FSTR_DATA_NAME(name).map;
 
 #define DEFINE_FSTR_MAP_LOCAL(name, ...)                                                                               \
 	DEFINE_FSTR_MAP_DATA_LOCAL(FSTR_DATA_NAME(name), __VA_ARGS__);                                                     \
-	static const FlashStringMap& name = FSTR_DATA_NAME(name).map;
+	static const FlashStringMap& name PROGMEM = FSTR_DATA_NAME(name).map;
 
 #define DEFINE_FSTR_MAP_REF(name, data_name) const FlashStringMap& name = *FSTR_MAP_PTR(&data_name);
 #define FSTR_MAP_PTR(data_ptr) reinterpret_cast<const FlashStringMap*>(data_ptr)

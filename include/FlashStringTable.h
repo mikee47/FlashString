@@ -22,11 +22,11 @@
 
 #define DEFINE_FSTR_TABLE(name, ...)                                                                                   \
 	DEFINE_FSTR_TABLE_DATA(FSTR_DATA_NAME(name), __VA_ARGS__);                                                         \
-	const FlashStringTable& name = FSTR_DATA_NAME(name).table;
+	const FlashStringTable& name PROGMEM = FSTR_DATA_NAME(name).table;
 
 #define DEFINE_FSTR_TABLE_LOCAL(name, ...)                                                                             \
 	DEFINE_FSTR_TABLE_DATA_LOCAL(FSTR_DATA_NAME(name), __VA_ARGS__);                                                   \
-	static const FlashStringTable& name = FSTR_DATA_NAME(name).table;
+	static const FlashStringTable& name PROGMEM = FSTR_DATA_NAME(name).table;
 
 #define DEFINE_FSTR_TABLE_REF(name, data_name) const FlashStringTable& name = *FSTR_TABLE_PTR(&data_name);
 #define FSTR_TABLE_PTR(data_ptr) reinterpret_cast<const FlashStringTable*>(data_ptr)

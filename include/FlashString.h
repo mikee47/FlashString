@@ -29,7 +29,7 @@
  */
 #define DEFINE_FSTR(name, str)                                                                                         \
 	static DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                \
-	const FlashString& name = FSTR_DATA_NAME(name).fstr;
+	const FlashString& name PROGMEM = FSTR_DATA_NAME(name).fstr;
 
 /** @brief Define a FlashString for local (static) use
  *  @param name variable to identify the string
@@ -37,7 +37,7 @@
  */
 #define DEFINE_FSTR_LOCAL(name, str)                                                                                   \
 	DEFINE_FSTR_DATA_LOCAL(FSTR_DATA_NAME(name), str);                                                                 \
-	static const FlashString& name = FSTR_DATA_NAME(name).fstr;
+	static const FlashString& name PROGMEM = FSTR_DATA_NAME(name).fstr;
 
 /**
  * @brief Cast a pointer to FlashString*
