@@ -144,10 +144,6 @@
  * @brief describes a counted string stored in flash memory
  */
 struct FlashString {
-	// Prevent instantiation or copying
-	FlashString() = delete;
-	FlashString(const FlashString&) = delete;
-
 	static const FlashString& empty()
 	{
 		return *FSTR_PTR(&zero);

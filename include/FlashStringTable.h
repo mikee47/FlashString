@@ -43,9 +43,6 @@
  * @brief Class to access a table of flash strings
  */
 struct FlashStringTable {
-	FlashStringTable() = delete;
-	FlashStringTable(const FlashStringTable&) = delete;
-
 	const FlashString& operator[](unsigned index) const
 	{
 		if(index < tableLength) {

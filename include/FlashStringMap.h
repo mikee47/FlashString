@@ -95,9 +95,6 @@ struct FlashStringPair {
  * @brief Class to access a flash string map
  */
 struct FlashStringMap {
-	FlashStringMap() = delete;
-	FlashStringMap(const FlashStringMap&) = delete;
-
 	const FlashStringPair& valueAt(unsigned index) const
 	{
 		if(index >= mapLength) {
