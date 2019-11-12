@@ -10,7 +10,8 @@
  *
  ****/
 
-#include "FlashString.h"
+#include "include/FlashString.h"
+#include "include/FlashStringMap.h"
 #include <esp_spi_flash.h>
 
 constexpr uint32_t FlashString::zero PROGMEM;
