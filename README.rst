@@ -6,6 +6,11 @@ FlashString Library
 Introduction
 ------------
 
+This is a C++ library to simplify the definition and use of data structures stored in
+program (flash) memory in an embedded microcontroller.
+It was developed for use with `Sming <https://github.com/SmingHub/Sming>`__ and the ESP8266
+but could be ported to other platforms relatively easily.
+
 Perhaps the most common use for PROGMEM data is passing strings around, usually as a
 pointer to a 'C' NUL-terminated char array. There are a couple of problems with this:
 
@@ -15,8 +20,8 @@ pointer to a 'C' NUL-terminated char array. There are a couple of problems with 
 
 Both of these are easily solved by passing the length along with the string, like this::
 
-   char myString[] = "hello, this is a string";
-   Serial.println(myString, sizeof(myString) - 1);
+   char myString[] PROGMEM = "hello, this is a string";
+   Serial.println(FPSTR(myString), sizeof(myString) - 1);
 
 Of course, passing two parameters instead of one gets tiresome and is not very C++, is it?
 
@@ -47,4 +52,4 @@ Here are the guides to using the library. For details of the class methods, see 
    FlashStringMap
    FlashStringIntMap
    technical
-   upgrading
+   changelog

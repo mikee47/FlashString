@@ -1,5 +1,5 @@
-FlashString Technobabble
-========================
+Technobabble
+============
 
 Why not just use a wrapper class?
 ---------------------------------
