@@ -58,6 +58,12 @@ struct FlashStringPair {
 		return key_ ? &FlashStringPair::IfHelper : 0;
 	}
 
+	static const FlashStringPair& empty()
+	{
+		static constexpr FlashStringPair nullPair PROGMEM = {nullptr, nullptr};
+		return nullPair;
+	}
+
 	const FlashString& key() const
 	{
 		if(key_ == nullptr) {
@@ -88,7 +94,6 @@ struct FlashStringPair {
 
 	const FlashString* key_;
 	const FlashString* content_;
-	static const FlashStringPair empty;
 };
 
 /**
@@ -98,7 +103,7 @@ struct FlashStringMap {
 	const FlashStringPair& valueAt(unsigned index) const
 	{
 		if(index >= mapLength) {
-			return FlashStringPair::empty;
+			return FlashStringPair::empty();
 		}
 
 		auto p = reinterpret_cast<const FlashStringPair*>(&mapLength + 1);

@@ -146,6 +146,7 @@
 struct FlashString {
 	static const FlashString& empty()
 	{
+		static const uint32_t PROGMEM zero = 0;
 		return *FSTR_PTR(&zero);
 	}
 
@@ -266,5 +267,4 @@ struct FlashString {
 
 	uint32_t flashLength; ///< Number of bytes/characters in data
 	// uint8_t data[]
-	static constexpr uint32_t zero = 0;
 };

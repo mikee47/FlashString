@@ -11,11 +11,7 @@
  ****/
 
 #include "include/FlashString.h"
-#include "include/FlashStringMap.h"
 #include <esp_spi_flash.h>
-
-constexpr uint32_t FlashString::zero PROGMEM;
-const FlashStringPair FlashStringPair::empty PROGMEM = {nullptr, nullptr};
 
 size_t FlashString::readFlash(size_t offset, void* buffer, size_t bytesToRead) const
 {
