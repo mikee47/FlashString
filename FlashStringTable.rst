@@ -36,7 +36,12 @@ Then you can define the table structure::
    const struct {
       FlashStringTable table;
       const FlashString* entries[3];
-   } flashTableData PROGMEM = { {3}, &data1.fstr, &data2.fstr, &fstr3 };
+   } flashTableData PROGMEM = {
+      {3},
+      &data1.fstr,
+      &data2.fstr,
+      &fstr3,
+   };
 
 .. attention::
 
@@ -47,7 +52,7 @@ Then you can define the table structure::
    references into the structure. It cannot do this because they are in PROGMEM.
 
 
-But of course it's easier using the macros::
+But of course it's easier using a macro::
 
    DEFINE_FSTR_TABLE(table, &data1.fstr, &data2.fstr, &fstr3 );
 

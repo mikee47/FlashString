@@ -34,12 +34,19 @@ And here's how it's used::
    const struct {
       FlashStringMap map;
       const FlashStringPair data[2];
-   } flashMapData PROGMEM = { {2}, { &key1.fstr, &content1}, { &key2.fstr, &content2 } };
+   } flashMapData PROGMEM = {
+      {2},
+      {&key1.fstr, &content1},
+      {&key2.fstr, &content2},
+   };
    const auto& fileMap = flashMapData.map;
 
 Or, using a macro::
 
-   DEFINE_FSTR_MAP(fileMap, { &key1.fstr, &content1}, {&key2.fstr, &content2} );
+   DEFINE_FSTR_MAP(fileMap,
+      {&key1.fstr, &content1},
+      {&key2.fstr, &content2},
+   );
 
 We can now do this::
 

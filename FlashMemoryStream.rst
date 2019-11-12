@@ -12,4 +12,4 @@ Because the data is read in sections, it's not limited by available RAM.
 
 Like a FileStream, you can also seek randomly within a *FlashMemoryStream*, so you can
 use it as the basis for an elementary read-only filesystem.
-See also :doc:`FlashStringMap` for an example.
+See :doc:`FlashStringMap` for a more useful example.

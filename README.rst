@@ -45,5 +45,6 @@ Here are the guides to using the library. For details of the class methods, see 
    FlashMemoryStream
    FlashStringTable
    FlashStringMap
+   FlashStringIntMap
    technical
    upgrading

@@ -25,7 +25,10 @@ To define the actual data, you can do this::
    const struct {
       FlashString fstr;
       char data[8];
-   } flashHelloData PROGMEM = { {6}, "hello" };
+   } flashHelloData PROGMEM = {
+      {6},
+      "hello"
+   };
 
 Remember you'll need to add *static* if defined inside a function.
 
