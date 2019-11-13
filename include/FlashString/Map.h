@@ -20,6 +20,7 @@
 #pragma once
 
 #include "String.h"
+#include "ObjectIterator.h"
 
 /**
  * @brief Declare a Map
@@ -180,6 +181,17 @@ template <class ContentType> struct MapPair<String*, ContentType> {
  */
 template <typename KeyType, class ContentType> struct Map {
 	using Pair = const MapPair<KeyType, ContentType>;
+	using Iterator = ObjectIterator<Pair>;
+
+	Iterator begin() const
+	{
+		return Iterator(head(), mapLength, 0);
+	}
+
+	Iterator end() const
+	{
+		return Iterator(head(), mapLength, mapLength);
+	}
 
 	static const Map& empty()
 	{
@@ -193,13 +205,7 @@ template <typename KeyType, class ContentType> struct Map {
 	 */
 	Pair valueAt(unsigned index) const
 	{
-		if(index >= mapLength) {
-			return Pair::empty();
-		}
-
-		auto p = reinterpret_cast<Pair*>(&mapLength + 1);
-		p += index;
-		return *p;
+		return (index < mapLength) ? head()[index] : Pair::empty();
 	}
 
 	/**
@@ -231,6 +237,11 @@ template <typename KeyType, class ContentType> struct Map {
 		return nullptr;
 	}
 
+	const Pair* head() const
+	{
+		return reinterpret_cast<Pair*>(&mapLength + 1);
+	}
+
 	const uint32_t mapLength;
 	// Pair values[];
 };
@@ -239,7 +250,7 @@ template <typename KeyType, class ContentType>
 template <typename TRefKey>
 int Map<KeyType, ContentType>::indexOf(const TRefKey& key) const
 {
-	auto p = reinterpret_cast<Pair*>(&mapLength + 1);
+	auto p = head();
 	for(unsigned i = 0; i < mapLength; ++i, ++p) {
 		if(IS_ALIGNED(sizeof(KeyType))) {
 			if(p->key_ == key) {
@@ -259,16 +270,21 @@ int Map<KeyType, ContentType>::indexOf(const TRefKey& key) const
 
 template <class ContentType> struct Map<String*, ContentType> {
 	using Pair = const MapPair<String*, ContentType>;
+	using Iterator = ObjectIterator<Pair>;
+
+	Iterator begin() const
+	{
+		return Iterator(head(), mapLength, 0);
+	}
+
+	Iterator end() const
+	{
+		return Iterator(head(), mapLength, mapLength);
+	}
 
 	Pair valueAt(unsigned index) const
 	{
-		if(index >= mapLength) {
-			return Pair::empty();
-		}
-
-		auto p = reinterpret_cast<Pair*>(&mapLength + 1);
-		p += index;
-		return *p;
+		return (index < mapLength) ? head()[index] : Pair::empty();
 	}
 
 	template <typename TRefKey> int indexOf(const TRefKey& key) const;
@@ -288,6 +304,11 @@ template <class ContentType> struct Map<String*, ContentType> {
 		return nullptr;
 	}
 
+	const Pair* head() const
+	{
+		return reinterpret_cast<Pair*>(&mapLength + 1);
+	}
+
 	const uint32_t mapLength;
 };
 
@@ -295,7 +316,7 @@ template <class ContentType>
 template <typename TRefKey>
 int Map<String*, ContentType>::indexOf(const TRefKey& key) const
 {
-	auto p = reinterpret_cast<Pair*>(&mapLength + 1);
+	auto p = head();
 	for(unsigned i = 0; i < mapLength; ++i, ++p) {
 		if(*p->key_ == key) {
 			return i;

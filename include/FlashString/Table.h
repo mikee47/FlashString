@@ -21,6 +21,7 @@
 
 #include <stringutil.h>
 #include "String.h"
+#include "ObjectIterator.h"
 
 /**
  * @brief Declare a global table of FlashStrings
@@ -67,10 +68,22 @@ namespace FSTR
  * @note Data is stored as array of pointers, objects accessed by reference
  */
 template <class ObjectType> struct Table {
+	using Iterator = ObjectIterator<ObjectType>;
+
+	Iterator begin() const
+	{
+		return Iterator(head(), tableLength, 0);
+	}
+
+	Iterator end() const
+	{
+		return Iterator(head(), tableLength, tableLength);
+	}
+
 	const ObjectType& operator[](unsigned index) const
 	{
 		if(index < tableLength) {
-			auto p = reinterpret_cast<const ObjectType* const*>(&tableLength + 1);
+			auto p = head();
 			p += index;
 			return **p;
 		} else {
@@ -94,8 +107,13 @@ template <class ObjectType> struct Table {
 		return nullptr;
 	}
 
+	const ObjectType* const* head() const
+	{
+		return reinterpret_cast<const ObjectType* const*>(&tableLength + 1);
+	}
+
 	const uint32_t tableLength;
-	// const FlashString* entries[];
+	// const ObjectType* entries[];
 };
 
 } // namespace FSTR
