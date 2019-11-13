@@ -121,6 +121,8 @@ public:
 		return content();
 	}
 
+	/* Arduino String support */
+
 	operator ::String() const
 	{
 		return ::String(content());
@@ -172,6 +174,8 @@ public:
 	{
 		return content();
 	}
+
+	/* Arduino String support */
 
 	operator ::String() const
 	{
@@ -240,11 +244,6 @@ public:
 		return mapLength;
 	}
 
-	operator ::String() const
-	{
-		return nullptr;
-	}
-
 	const Pair* head() const
 	{
 		return reinterpret_cast<Pair*>(&mapLength + 1);
@@ -307,11 +306,6 @@ public:
 	unsigned length() const
 	{
 		return mapLength;
-	}
-
-	operator ::String() const
-	{
-		return nullptr;
 	}
 
 	const Pair* head() const

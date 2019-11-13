@@ -21,8 +21,13 @@
 
 #pragma once
 
-#include <WString.h>
 #include <FakePgmSpace.h>
+#include "StringPrinter.h"
+
+// Arduino String
+class String;
+class __FlashStringHelper;
+typedef const __FlashStringHelper* flash_string_t;
 
 /**
  * @brief Declare a global String instance
@@ -70,7 +75,7 @@
 
 /** @brief Define a string in a String-compatible structure
  *  @param name Name to use for data structure
- *  @param str ::String to store
+ *  @param str String to store
  */
 #define DEFINE_FSTR_DATA(name, str)                                                                                    \
 	constexpr struct {                                                                                                 \
@@ -228,54 +233,50 @@ public:
 	 *  @retval bool true if strings are identical
 	 *  @note loads string into a stack buffer for the comparison, no heap required
 	 */
-	bool isEqual(const char* cstr, size_t len = 0) const;
+	bool equals(const char* cstr, size_t len = 0) const;
 
 	/** @brief Check for equality with another String
 	 *  @param str
 	 *  @retval bool true if strings are identical
-	 *  @{
 	 */
-	bool isEqual(const String& str) const;
-
-	bool isEqual(const ::String& str) const
-	{
-		return str.equals(*this);
-	}
-	/** @} */
-
-	operator ::String() const
-	{
-		return ::String(data(), length());
-	}
+	bool equals(const String& str) const;
 
 	bool operator==(const char* str) const
 	{
-		return isEqual(str);
+		return equals(str);
 	}
 
 	bool operator==(const String& str) const
 	{
-		return isEqual(str);
-	}
-
-	bool operator==(const ::String& str) const
-	{
-		return isEqual(str);
+		return equals(str);
 	}
 
 	bool operator!=(const char* str) const
 	{
-		return !isEqual(str);
+		return !equals(str);
 	}
 
 	bool operator!=(const String& str) const
 	{
-		return !isEqual(str);
+		return !equals(str);
+	}
+
+	/* Arduino String support */
+
+	operator ::String() const;
+
+	bool equals(const ::String& str) const;
+
+	bool equalsIgnoreCase(const ::String& str) const;
+
+	bool operator==(const ::String& str) const
+	{
+		return equals(str);
 	}
 
 	bool operator!=(const ::String& str) const
 	{
-		return !isEqual(str);
+		return !equals(str);
 	}
 
 	uint32_t flashLength; ///< Number of bytes/characters in data

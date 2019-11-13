@@ -1,5 +1,5 @@
 /**
- * String.cpp - non-inline code
+ * String.cpp
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -17,8 +17,9 @@
  *
  ****/
 
-#include <esp_spi_flash.h>
 #include "include/FlashString/String.h"
+#include <WString.h>
+#include <esp_spi_flash.h>
 
 namespace FSTR
 {
@@ -33,7 +34,7 @@ size_t String::readFlash(size_t offset, void* buffer, size_t bytesToRead) const
 	return flashmem_read(buffer, addr, count);
 }
 
-bool String::isEqual(const char* cstr, size_t len) const
+bool String::equals(const char* cstr, size_t len) const
 {
 	// Unlikely we'd want an empty flash string, but check anyway
 	if(cstr == nullptr) {
@@ -50,7 +51,7 @@ bool String::isEqual(const char* cstr, size_t len) const
 	return memcmp(buf, cstr, len) == 0;
 }
 
-bool String::isEqual(const String& str) const
+bool String::equals(const String& str) const
 {
 	if(data() == str.data()) {
 		return true;
@@ -59,6 +60,33 @@ bool String::isEqual(const String& str) const
 		return false;
 	}
 	return memcmp_aligned(data(), str.data(), flashLength) == 0;
+}
+
+/* Arduino String support */
+
+String::operator ::String() const
+{
+	return ::String(data(), length());
+}
+
+bool String::equals(const ::String& str) const
+{
+	auto len = str.length();
+	if(len != length())
+		return false;
+	// @todo optimise memcmp_P then we won't need to load entire String into RAM first
+	LOAD_FSTR(buf, *this);
+	return memcmp(buf, str.c_str(), len) == 0;
+}
+
+bool String::equalsIgnoreCase(const ::String& str) const
+{
+	auto len = str.length();
+	if(len != length()) {
+		return false;
+	}
+	LOAD_FSTR(buf, *this);
+	return memicmp(buf, str.c_str(), len) == 0;
 }
 
 } // namespace FSTR

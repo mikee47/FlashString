@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include <stringutil.h>
 #include "String.h"
 #include "ObjectIterator.h"
 
@@ -104,11 +103,6 @@ public:
 	unsigned length() const
 	{
 		return tableLength;
-	}
-
-	operator ::String() const
-	{
-		return nullptr;
 	}
 
 	const ObjectType* const* head() const
