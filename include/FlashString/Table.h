@@ -1,5 +1,5 @@
 /**
- * FlashStringTable.h - Defines the FlashStringTable class and associated macros
+ * Table.h - Defines the Table class template and associated macros
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -19,35 +19,35 @@
 
 #pragma once
 
-#include "FlashString.h"
 #include <stringutil.h>
+#include "String.h"
 
 /**
  * @brief Declare a global table of FlashStrings
  */
-#define DECLARE_FSTR_TABLE(name, ObjectType) extern const FlashStringTable<ObjectType>& name;
+#define DECLARE_FSTR_TABLE(name, ObjectType) extern const FSTR::Table<ObjectType>& name;
 
 /**
  * @brief Define a FlashString table and reference
  */
 #define DEFINE_FSTR_TABLE(name, ObjectType, ...)                                                                       \
 	DEFINE_FSTR_TABLE_DATA(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                             \
-	const FlashStringTable<ObjectType>& name PROGMEM = FSTR_DATA_NAME(name).table;
+	const FSTR::Table<ObjectType>& name PROGMEM = FSTR_DATA_NAME(name).table;
 
 #define DEFINE_FSTR_TABLE_LOCAL(name, ObjectType, ...)                                                                 \
 	DEFINE_FSTR_TABLE_DATA_LOCAL(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                       \
-	static const FlashStringTable<ObjectType>& name PROGMEM = FSTR_DATA_NAME(name).table;
+	static const FSTR::Table<ObjectType>& name PROGMEM = FSTR_DATA_NAME(name).table;
 
 /**
- * @brief Cast a pointer to FlashStringTable*
+ * @brief Cast a pointer to FSTR::Table*
  */
-#define FSTR_TABLE_PTR(ObjectType, data_ptr) reinterpret_cast<const FlashStringTable<ObjectType>*>(data_ptr)
+#define FSTR_TABLE_PTR(ObjectType, data_ptr) reinterpret_cast<const FSTR::Table<ObjectType>*>(data_ptr)
 
 /**
- * @brief Define a FlashStringTable& reference using a cast
+ * @brief Define a FSTR::Table& reference using a cast
  */
 #define DEFINE_FSTR_TABLE_REF(name, ObjectType, data_name)                                                             \
-	const FlashStringTable<ObjectType>& name = *FSTR_TABLE_PTR(ObjectType, &data_name);
+	const FSTR::Table<ObjectType>& name = *FSTR_TABLE_PTR(ObjectType, &data_name);
 
 /**
  * @brief Define a structure containing table data
@@ -55,15 +55,18 @@
 #define FSTR_TABLE_ARGSIZE(ObjectType, ...) (sizeof((const ObjectType* []){__VA_ARGS__}) / sizeof(void*))
 #define DEFINE_FSTR_TABLE_DATA(name, ObjectType, ...)                                                                  \
 	constexpr struct {                                                                                                 \
-		FlashStringTable<ObjectType> table;                                                                            \
+		FSTR::Table<ObjectType> table;                                                                                 \
 		const ObjectType* data[FSTR_TABLE_ARGSIZE(ObjectType, __VA_ARGS__)];                                           \
 	} name PROGMEM = {{FSTR_TABLE_ARGSIZE(ObjectType, __VA_ARGS__)}, {__VA_ARGS__}};
 #define DEFINE_FSTR_TABLE_DATA_LOCAL(name, ObjectType, ...) static DEFINE_FSTR_TABLE_DATA(name, ObjectType, __VA_ARGS__)
 
+namespace FSTR
+{
 /**
- * @brief Class to access a table of flash strings
+ * @brief Class to access a table of objects stored in flash
+ * @note Data is stored as array of pointers, objects accessed by reference
  */
-template <class ObjectType> struct FlashStringTable {
+template <class ObjectType> struct Table {
 	const ObjectType& operator[](unsigned index) const
 	{
 		if(index < tableLength) {
@@ -75,9 +78,9 @@ template <class ObjectType> struct FlashStringTable {
 		}
 	}
 
-	static const FlashStringTable& empty()
+	static const Table& empty()
 	{
-		static const FlashStringTable empty_{0};
+		static const Table empty_{0};
 		return empty_;
 	}
 
@@ -86,7 +89,7 @@ template <class ObjectType> struct FlashStringTable {
 		return tableLength;
 	}
 
-	operator String() const
+	operator ::String() const
 	{
 		return nullptr;
 	}
@@ -94,3 +97,5 @@ template <class ObjectType> struct FlashStringTable {
 	const uint32_t tableLength;
 	// const FlashString* entries[];
 };
+
+} // namespace FSTR

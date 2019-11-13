@@ -1,5 +1,5 @@
 /**
- * FlashString.cpp - non-inline code
+ * String.cpp - non-inline code
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -10,15 +10,17 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with FlashString.
+ * You should have received a copy of the GNU General Public License along with String.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
 
-#include "include/FlashString.h"
 #include <esp_spi_flash.h>
+#include "include/FlashString/String.h"
 
-size_t FlashString::readFlash(size_t offset, void* buffer, size_t bytesToRead) const
+namespace FSTR
+{
+size_t String::readFlash(size_t offset, void* buffer, size_t bytesToRead) const
 {
 	if(offset >= flashLength) {
 		return 0;
@@ -29,7 +31,7 @@ size_t FlashString::readFlash(size_t offset, void* buffer, size_t bytesToRead) c
 	return flashmem_read(buffer, addr, count);
 }
 
-bool FlashString::isEqual(const char* cstr, size_t len) const
+bool String::isEqual(const char* cstr, size_t len) const
 {
 	// Unlikely we'd want an empty flash string, but check anyway
 	if(cstr == nullptr) {
@@ -46,7 +48,7 @@ bool FlashString::isEqual(const char* cstr, size_t len) const
 	return memcmp(buf, cstr, len) == 0;
 }
 
-bool FlashString::isEqual(const FlashString& str) const
+bool String::isEqual(const String& str) const
 {
 	if(data() == str.data()) {
 		return true;
@@ -56,3 +58,5 @@ bool FlashString::isEqual(const FlashString& str) const
 	}
 	return memcmp_aligned(data(), str.data(), flashLength) == 0;
 }
+
+} // namespace FSTR
