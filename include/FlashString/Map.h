@@ -56,11 +56,11 @@
  * @param name name of the map structure
  */
 #define FSTR_MAP_ARGSIZE(KeyType, ContentType, ...)                                                                    \
-	(sizeof((const FSTR::Pair<KeyType, ContentType>[]){__VA_ARGS__}) / sizeof(FSTR::Pair<KeyType, ContentType>))
+	(sizeof((const FSTR::MapPair<KeyType, ContentType>[]){__VA_ARGS__}) / sizeof(FSTR::MapPair<KeyType, ContentType>))
 #define DEFINE_FSTR_MAP_DATA(name, KeyType, ContentType, ...)                                                          \
 	constexpr struct {                                                                                                 \
 		FSTR::Map<KeyType, ContentType> map;                                                                           \
-		FSTR::Pair<KeyType, ContentType> data[FSTR_MAP_ARGSIZE(KeyType, ContentType, __VA_ARGS__)];                    \
+		FSTR::MapPair<KeyType, ContentType> data[FSTR_MAP_ARGSIZE(KeyType, ContentType, __VA_ARGS__)];                 \
 	} name PROGMEM = {{FSTR_MAP_ARGSIZE(KeyType, ContentType, __VA_ARGS__)}, {__VA_ARGS__}};
 #define DEFINE_FSTR_MAP_DATA_LOCAL(name, KeyType, ContentType, ...)                                                    \
 	static DEFINE_FSTR_MAP_DATA(name, KeyType, ContentType, __VA_ARGS__)
@@ -70,8 +70,8 @@ namespace FSTR
 /**
  * @brief describes a pair mapping key => data for a specified key type
  */
-template <typename KeyType, class ContentType> struct Pair {
-	typedef void (Pair::*IfHelperType)() const;
+template <typename KeyType, class ContentType> struct MapPair {
+	typedef void (MapPair::*IfHelperType)() const;
 	void IfHelper() const
 	{
 	}
@@ -81,15 +81,15 @@ template <typename KeyType, class ContentType> struct Pair {
 	 */
 	operator IfHelperType() const
 	{
-		return content_ ? &Pair::IfHelper : 0;
+		return content_ ? &MapPair::IfHelper : 0;
 	}
 
 	/**
 	 * @brief Get an empty Pair object, identifies as invalid when lookup fails
 	 */
-	static const Pair empty()
+	static const MapPair empty()
 	{
-		return Pair{static_cast<const KeyType>(0), static_cast<const ContentType*>(0)};
+		return MapPair{static_cast<const KeyType>(0), static_cast<const ContentType*>(0)};
 	}
 
 	KeyType key() const
@@ -125,20 +125,20 @@ template <typename KeyType, class ContentType> struct Pair {
 	const ContentType* content_;
 };
 
-template <class ContentType> struct Pair<String*, ContentType> {
-	typedef void (Pair::*IfHelperType)() const;
+template <class ContentType> struct MapPair<String*, ContentType> {
+	typedef void (MapPair::*IfHelperType)() const;
 	void IfHelper() const
 	{
 	}
 
 	operator IfHelperType() const
 	{
-		return content_ ? &Pair::IfHelper : 0;
+		return content_ ? &MapPair::IfHelper : 0;
 	}
 
-	static const Pair& empty()
+	static const MapPair& empty()
 	{
-		static Pair empty_{nullptr, static_cast<const ContentType*>(0)};
+		static MapPair empty_{nullptr, static_cast<const ContentType*>(0)};
 		return empty_;
 	}
 
@@ -179,7 +179,7 @@ template <class ContentType> struct Pair<String*, ContentType> {
  * @brief Class to access a flash string map
  */
 template <typename KeyType, class ContentType> struct Map {
-	using Pair = const Pair<KeyType, ContentType>;
+	using Pair = const MapPair<KeyType, ContentType>;
 
 	static const Map& empty()
 	{
@@ -258,7 +258,7 @@ int Map<KeyType, ContentType>::indexOf(const TRefKey& key) const
 }
 
 template <class ContentType> struct Map<String*, ContentType> {
-	using Pair = const Pair<String*, ContentType>;
+	using Pair = const MapPair<String*, ContentType>;
 
 	Pair valueAt(unsigned index) const
 	{
