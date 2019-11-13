@@ -1,5 +1,5 @@
 /**
- * ObjectIterator.h - STL iterator to handle array of object pointers (String, Table, Map or custom)
+ * MapPairIterator.h - STL iterator to handle array of MapPair objects
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -25,19 +25,17 @@
 
 namespace FSTR
 {
-template <typename ObjectType>
-class ObjectIterator : public std::iterator<std::random_access_iterator_tag, const ObjectType>
+template <class Pair> class MapPairIterator : public std::iterator<std::random_access_iterator_tag, Pair>
 {
 public:
-	ObjectIterator() = default;
-	ObjectIterator(const ObjectIterator&) = default;
+	MapPairIterator() = default;
+	MapPairIterator(const MapPairIterator&) = default;
 
-	ObjectIterator(const ObjectType* const* head, unsigned count, unsigned index)
-		: head(head), count(count), index(index)
+	MapPairIterator(Pair* head, unsigned count, unsigned index) : head(head), count(count), index(index)
 	{
 	}
 
-	ObjectIterator& operator++()
+	MapPairIterator& operator++()
 	{
 		if(index < count) {
 			++index;
@@ -45,41 +43,41 @@ public:
 		return *this;
 	}
 
-	ObjectIterator operator++(int)
+	MapPairIterator operator++(int)
 	{
-		ObjectIterator tmp(*this);
+		MapPairIterator tmp(*this);
 		if(index < count) {
 			++index;
 		}
 		return tmp;
 	}
 
-	ObjectIterator operator+=(size_t distanc)
+	MapPairIterator operator+=(size_t distanc)
 	{
-		ObjectIterator tmp(*this);
+		MapPairIterator tmp(*this);
 		if(index < count) {
 			++index;
 		}
 		return tmp;
 	}
 
-	bool operator==(const ObjectIterator& rhs) const
+	bool operator==(const MapPairIterator& rhs) const
 	{
 		return index == rhs.index;
 	}
 
-	bool operator!=(const ObjectIterator& rhs) const
+	bool operator!=(const MapPairIterator& rhs) const
 	{
 		return index != rhs.index;
 	}
 
-	const ObjectType& operator*() const
+	Pair& operator*() const
 	{
-		return (index < count) ? *head[index] : ObjectType::empty();
+		return (index < count) ? head[index] : Pair::empty();
 	}
 
 private:
-	const ObjectType* const* head = nullptr;
+	Pair* head = nullptr;
 	unsigned count = 0;
 	unsigned index = 0;
 };

@@ -22,7 +22,8 @@
 #pragma once
 
 #include "String.h"
-#include "ObjectIterator.h"
+#include "MapPairIterator.h"
+
 
 /**
  * @brief Declare a Map
@@ -183,7 +184,7 @@ template <class ContentType> struct MapPair<String*, ContentType> {
  */
 template <typename KeyType, class ContentType> struct Map {
 	using Pair = const MapPair<KeyType, ContentType>;
-	using Iterator = ObjectIterator<Pair>;
+	using Iterator = MapPairIterator<Pair>;
 
 	Iterator begin() const
 	{
@@ -245,7 +246,7 @@ template <typename KeyType, class ContentType> struct Map {
 	}
 
 	const uint32_t mapLength;
-	// Pair values[];
+	// const Pair values[];
 };
 
 template <typename KeyType, class ContentType>
@@ -272,7 +273,7 @@ int Map<KeyType, ContentType>::indexOf(const TRefKey& key) const
 
 template <class ContentType> struct Map<String*, ContentType> {
 	using Pair = const MapPair<String*, ContentType>;
-	using Iterator = ObjectIterator<Pair>;
+	using Iterator = MapPairIterator<Pair>;
 
 	Iterator begin() const
 	{
@@ -312,6 +313,7 @@ template <class ContentType> struct Map<String*, ContentType> {
 	}
 
 	const uint32_t mapLength;
+	// const Pair values[];
 };
 
 template <class ContentType>
