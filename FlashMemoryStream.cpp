@@ -24,9 +24,9 @@
 uint16_t FlashMemoryStream::readMemoryBlock(char* data, int bufSize)
 {
 	if(flashread) {
-		return flashString.readFlash(readPos, data, bufSize);
+		return string.readFlash(readPos, data, bufSize);
 	} else {
-		return flashString.read(readPos, data, bufSize);
+		return string.read(readPos, data, bufSize);
 	}
 }
 
@@ -41,13 +41,13 @@ int FlashMemoryStream::seekFrom(int offset, unsigned origin)
 		newPos = readPos + offset;
 		break;
 	case SEEK_END:
-		newPos = flashString.length() + offset;
+		newPos = string.length() + offset;
 		break;
 	default:
 		return -1;
 	}
 
-	if(newPos > flashString.length()) {
+	if(newPos > string.length()) {
 		return -1;
 	}
 

@@ -1,5 +1,5 @@
 /**
- * FlashString.h
+ * TemplateStream.h
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -21,6 +21,29 @@
 
 #pragma once
 
-#include "FlashString/String.h"
+#include "Stream.h"
+#include <Data/Stream/TemplateStream.h>
 
-using FlashString = FSTR::String;
+namespace FSTR
+{
+/**
+  * @brief      Template Flash memory stream class
+  * @ingroup    stream data
+  *
+  *  @{
+ */
+
+class TemplateStream : public ::TemplateStream
+{
+public:
+	/** @brief Create a template stream on top of a flash memory stream
+     *  @param  flashString Source data for the stream
+     */
+	TemplateStream(const String& string) : ::TemplateStream(new FSTR::Stream(string))
+	{
+	}
+};
+
+/** @} */
+
+} // namespace FSTR
