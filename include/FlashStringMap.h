@@ -1,5 +1,5 @@
 /**
- * FlashStringMap.h - Defines the FlashStringMap class and associated macros
+ * FlashStringMap.h - Associative map of integral type => FlashString
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -23,49 +23,55 @@
 
 /**
  * @brief Declare a FlashStringMap
+ * @tparam KeyType Integral type to use for key
  * @param name name of the map
  * @note Use `DEFINE_FSTR_MAP` to instantiate the global object
  */
-#define DECLARE_FSTR_MAP(name) extern const FlashStringMap& name;
+#define DECLARE_FSTR_MAP(name, KeyType, ContentType) extern const FlashStringMap<KeyType, ContentType>& name;
 
 /**
  * @brief Define a FlashString Map with reference
  */
-#define DEFINE_FSTR_MAP(name, ...)                                                                                     \
-	DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), __VA_ARGS__);                                                           \
-	const FlashStringMap& name PROGMEM = FSTR_DATA_NAME(name).map;
+#define DEFINE_FSTR_MAP(name, KeyType, ContentType, ...)                                                               \
+	DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                                     \
+	const FlashStringMap<KeyType, ContentType>& name PROGMEM = FSTR_DATA_NAME(name).map;
 
-#define DEFINE_FSTR_MAP_LOCAL(name, ...)                                                                               \
-	DEFINE_FSTR_MAP_DATA_LOCAL(FSTR_DATA_NAME(name), __VA_ARGS__);                                                     \
-	static const FlashStringMap& name PROGMEM = FSTR_DATA_NAME(name).map;
+#define DEFINE_FSTR_MAP_LOCAL(name, KeyType, ContentType, ...)                                                         \
+	DEFINE_FSTR_MAP_DATA_LOCAL(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                               \
+	static const FlashStringMap<KeyType, ContentType>& name PROGMEM = FSTR_DATA_NAME(name).map;
 
 /**
  * @brief Cast a pointer to FlashStringMap*
  */
-#define FSTR_MAP_PTR(data_ptr) reinterpret_cast<const FlashStringMap*>(data_ptr)
+#define FSTR_MAP_PTR(data_ptr, KeyType, ContentType)                                                                   \
+	reinterpret_cast<const FlashStringMap<KeyType, ContentType>*>(data_ptr)
 
 /**
  * @brief Define a FlashStringMap& reference using a cast
  */
-#define DEFINE_FSTR_MAP_REF(name, data_name) const FlashStringMap& name = *FSTR_MAP_PTR(&data_name);
+#define DEFINE_FSTR_MAP_REF(name, KeyType, ContentType, data_name)                                                     \
+	const FlashStringMap<KeyType, ContentType>& name = *FSTR_MAP_PTR(&data_name);
 
 /**
  * @brief Define a structure containing map data
  * @param name name of the map structure
  */
-#define FSTR_MAP_ARGSIZE(...) (sizeof((const FlashStringPair[]){__VA_ARGS__}) / sizeof(FlashStringPair))
-#define DEFINE_FSTR_MAP_DATA(name, ...)                                                                                \
-	const struct {                                                                                                     \
-		FlashStringMap map;                                                                                            \
-		const FlashStringPair data[FSTR_MAP_ARGSIZE(__VA_ARGS__)];                                                     \
-	} name PROGMEM = {{FSTR_MAP_ARGSIZE(__VA_ARGS__)}, {__VA_ARGS__}};
-#define DEFINE_FSTR_MAP_DATA_LOCAL(name, ...) static DEFINE_FSTR_MAP_DATA(name, __VA_ARGS__)
+#define FSTR_MAP_ARGSIZE(KeyType, ContentType, ...)                                                                    \
+	(sizeof((const FlashStringIntPair<KeyType, ContentType>[]){__VA_ARGS__}) /                                         \
+	 sizeof(FlashStringIntPair<KeyType, ContentType>))
+#define DEFINE_FSTR_MAP_DATA(name, KeyType, ContentType, ...)                                                          \
+	constexpr struct {                                                                                                 \
+		FlashStringMap<KeyType, ContentType> map;                                                                      \
+		FlashStringIntPair<KeyType, ContentType> data[FSTR_MAP_ARGSIZE(KeyType, ContentType, __VA_ARGS__)];            \
+	} name PROGMEM = {{FSTR_MAP_ARGSIZE(KeyType, ContentType, __VA_ARGS__)}, {__VA_ARGS__}};
+#define DEFINE_FSTR_MAP_DATA_LOCAL(name, KeyType, ContentType, ...)                                                    \
+	static DEFINE_FSTR_MAP_DATA(name, KeyType, ContentType, __VA_ARGS__)
 
 /**
- * @brief describes a FlashString mapping key => data
+ * @brief describes a FlashString mapping key => data for a specified key type
  */
-struct FlashStringPair {
-	typedef void (FlashStringPair::*IfHelperType)() const;
+template <typename KeyType, class ContentType> struct FlashStringIntPair {
+	typedef void (FlashStringIntPair::*IfHelperType)() const;
 	void IfHelper() const
 	{
 	}
@@ -75,76 +81,123 @@ struct FlashStringPair {
 	 */
 	operator IfHelperType() const
 	{
-		return key_ ? &FlashStringPair::IfHelper : 0;
+		return content_ ? &FlashStringIntPair::IfHelper : 0;
 	}
 
 	/**
 	 * @brief Get an empty Pair object, identifies as invalid when lookup fails
 	 */
-	static const FlashStringPair empty()
+	static const FlashStringIntPair empty()
 	{
-		return FlashStringPair({nullptr, nullptr});
+		return FlashStringIntPair{static_cast<const KeyType>(0), static_cast<const ContentType*>(0)};
 	}
 
-	/**
-	 * @brief Accessor to get a reference to the key
-	 */
-	const FlashString& key() const
+	KeyType key() const
 	{
-		if(key_ == nullptr) {
-			return FlashString::empty();
-		} else {
-			return *key_;
-		}
+		// Ensure access is aligned for 1/2 byte keys
+		volatile auto pair = *this;
+		return pair.key_;
 	}
 
 	/**
 	 * @brief Accessor to get a reference to the content
 	 */
-	const FlashString& content() const
+	const ContentType& content() const
 	{
 		if(content_ == nullptr) {
-			return FlashString::empty();
+			return ContentType::empty();
 		} else {
 			return *content_;
 		}
 	}
 
-	/**
-	 * @brief Implicit FlashString cast for this object gets a reference to the content
-	 */
-	operator const FlashString&() const
+	operator const ContentType&() const
 	{
 		return content();
 	}
 
-	/**
-	 * @brief Implicit cast to load content into a String object
-	 */
 	operator String() const
 	{
+		return String(content());
+	}
+
+	const KeyType key_;
+	const ContentType* content_;
+};
+
+template <class ContentType> struct FlashStringIntPair<FlashString*, ContentType> {
+	typedef void (FlashStringIntPair::*IfHelperType)() const;
+	void IfHelper() const
+	{
+	}
+
+	operator IfHelperType() const
+	{
+		return content_ ? &FlashStringIntPair::IfHelper : 0;
+	}
+
+	static const FlashStringIntPair& empty()
+	{
+		static FlashStringIntPair empty_{nullptr, static_cast<const ContentType*>(0)};
+		return empty_;
+	}
+
+	const FlashString& key() const
+	{
+		auto k = key_;
+		if(k == nullptr) {
+			return FlashString::empty();
+		} else {
+			return *k;
+		}
+	}
+
+	const ContentType& content() const
+	{
+		if(content_ == nullptr) {
+			return ContentType::empty();
+		} else {
+			return *content_;
+		}
+	}
+
+	operator const ContentType&() const
+	{
 		return content();
+	}
+
+	operator String() const
+	{
+		return String(content());
 	}
 
 	const FlashString* key_;
-	const FlashString* content_;
+	const ContentType* content_;
 };
 
 /**
  * @brief Class to access a flash string map
  */
-struct FlashStringMap {
+template <typename KeyType, class ContentType> struct FlashStringMap {
+	using Pair = const FlashStringIntPair<KeyType, ContentType>;
+
+	static const FlashStringMap& empty()
+	{
+		static FlashStringMap empty_{0};
+		return empty_;
+	}
+
 	/**
 	 * @brief Get a map entry by index, if it exists
 	 * @note Result validity can be checked using if()
 	 */
-	const FlashStringPair valueAt(unsigned index) const
+	Pair valueAt(unsigned index) const
 	{
 		if(index >= mapLength) {
-			return FlashStringPair::empty();
+			return Pair::empty();
 		}
 
-		auto p = reinterpret_cast<const FlashStringPair*>(&mapLength + 1);
+		auto p = reinterpret_cast<Pair*>(&mapLength + 1);
 		p += index;
 		return *p;
 	}
@@ -154,13 +207,13 @@ struct FlashStringMap {
 	 * @retval int If key isn't found, return -1
 	 * @note Comparison is case-sensitive
 	 */
-	template <typename TKey> int indexOf(const TKey& key) const;
+	template <typename TRefKey> int indexOf(const TRefKey& key) const;
 
 	/**
 	 * @brief Lookup a key and return the entry, if found
 	 * @note Result validity can be checked using if()
 	 */
-	template <typename TKey> const FlashStringPair operator[](const TKey& key) const
+	template <typename TRefKey> Pair operator[](const TRefKey& key) const
 	{
 		return valueAt(indexOf(key));
 	}
@@ -173,13 +226,71 @@ struct FlashStringMap {
 		return mapLength;
 	}
 
+	operator String() const
+	{
+		return nullptr;
+	}
+
 	const uint32_t mapLength;
-	// const FlashStringPair values[];
+	// Pair values[];
 };
 
-template <typename TKey> int FlashStringMap::indexOf(const TKey& key) const
+template <typename KeyType, class ContentType>
+template <typename TRefKey>
+int FlashStringMap<KeyType, ContentType>::indexOf(const TRefKey& key) const
 {
-	auto p = reinterpret_cast<const FlashStringPair*>(&mapLength + 1);
+	auto p = reinterpret_cast<Pair*>(&mapLength + 1);
+	for(unsigned i = 0; i < mapLength; ++i, ++p) {
+		if(IS_ALIGNED(sizeof(KeyType))) {
+			if(p->key_ == key) {
+				return i;
+			}
+		} else {
+			// Ensure access is aligned for 1/2 byte keys
+			volatile auto pair = *p;
+			if(pair.key_ == key) {
+				return i;
+			}
+		}
+	}
+
+	return -1;
+}
+
+template <class ContentType> struct FlashStringMap<FlashString*, ContentType> {
+	using Pair = const FlashStringIntPair<FlashString*, ContentType>;
+
+	Pair valueAt(unsigned index) const
+	{
+		if(index >= mapLength) {
+			return Pair::empty();
+		}
+
+		auto p = reinterpret_cast<Pair*>(&mapLength + 1);
+		p += index;
+		return *p;
+	}
+
+	template <typename TRefKey> int indexOf(const TRefKey& key) const;
+
+	template <typename TRefKey> Pair operator[](const TRefKey& key) const
+	{
+		return valueAt(indexOf(key));
+	}
+
+	unsigned length() const
+	{
+		return mapLength;
+	}
+
+	const uint32_t mapLength;
+};
+
+template <class ContentType>
+template <typename TRefKey>
+int FlashStringMap<FlashString*, ContentType>::indexOf(const TRefKey& key) const
+{
+	auto p = reinterpret_cast<Pair*>(&mapLength + 1);
 	for(unsigned i = 0; i < mapLength; ++i, ++p) {
 		if(*p->key_ == key) {
 			return i;

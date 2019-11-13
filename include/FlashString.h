@@ -71,7 +71,7 @@
  *  @param str String to store
  */
 #define DEFINE_FSTR_DATA(name, str)                                                                                    \
-	const struct {                                                                                                     \
+	constexpr struct {                                                                                                 \
 		FlashString fstr;                                                                                              \
 		char data[ALIGNUP(sizeof(str))];                                                                               \
 	} name PROGMEM = {{sizeof(str) - 1}, str};
@@ -153,8 +153,8 @@
 struct FlashString {
 	static const FlashString& empty()
 	{
-		static const uint32_t PROGMEM zero = 0;
-		return *FSTR_PTR(&zero);
+		static const FlashString empty_{0};
+		return empty_;
 	}
 
 	/**

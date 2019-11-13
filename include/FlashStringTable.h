@@ -25,58 +25,70 @@
 /**
  * @brief Declare a global table of FlashStrings
  */
-#define DECLARE_FSTR_TABLE(name) extern const FlashStringTable& name;
+#define DECLARE_FSTR_TABLE(name, ObjectType) extern const FlashStringTable<ObjectType>& name;
 
 /**
  * @brief Define a FlashString table and reference
  */
-#define DEFINE_FSTR_TABLE(name, ...)                                                                                   \
-	DEFINE_FSTR_TABLE_DATA(FSTR_DATA_NAME(name), __VA_ARGS__);                                                         \
-	const FlashStringTable& name PROGMEM = FSTR_DATA_NAME(name).table;
+#define DEFINE_FSTR_TABLE(name, ObjectType, ...)                                                                       \
+	DEFINE_FSTR_TABLE_DATA(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                             \
+	const FlashStringTable<ObjectType>& name PROGMEM = FSTR_DATA_NAME(name).table;
 
-#define DEFINE_FSTR_TABLE_LOCAL(name, ...)                                                                             \
-	DEFINE_FSTR_TABLE_DATA_LOCAL(FSTR_DATA_NAME(name), __VA_ARGS__);                                                   \
-	static const FlashStringTable& name PROGMEM = FSTR_DATA_NAME(name).table;
+#define DEFINE_FSTR_TABLE_LOCAL(name, ObjectType, ...)                                                                 \
+	DEFINE_FSTR_TABLE_DATA_LOCAL(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                       \
+	static const FlashStringTable<ObjectType>& name PROGMEM = FSTR_DATA_NAME(name).table;
 
 /**
  * @brief Cast a pointer to FlashStringTable*
  */
-#define FSTR_TABLE_PTR(data_ptr) reinterpret_cast<const FlashStringTable*>(data_ptr)
+#define FSTR_TABLE_PTR(ObjectType, data_ptr) reinterpret_cast<const FlashStringTable<ObjectType>*>(data_ptr)
 
 /**
  * @brief Define a FlashStringTable& reference using a cast
  */
-#define DEFINE_FSTR_TABLE_REF(name, data_name) const FlashStringTable& name = *FSTR_TABLE_PTR(&data_name);
+#define DEFINE_FSTR_TABLE_REF(name, ObjectType, data_name)                                                             \
+	const FlashStringTable<ObjectType>& name = *FSTR_TABLE_PTR(ObjectType, &data_name);
 
 /**
  * @brief Define a structure containing table data
  */
-#define FSTR_TABLE_ARGSIZE(...) (sizeof((const void* []){__VA_ARGS__}) / sizeof(void*))
-#define DEFINE_FSTR_TABLE_DATA(name, ...)                                                                              \
-	const struct {                                                                                                     \
-		FlashStringTable table;                                                                                        \
-		const FlashString* data[FSTR_TABLE_ARGSIZE(__VA_ARGS__)];                                                      \
-	} name PROGMEM = {{FSTR_TABLE_ARGSIZE(__VA_ARGS__)}, {__VA_ARGS__}};
-#define DEFINE_FSTR_TABLE_DATA_LOCAL(name, ...) static DEFINE_FSTR_TABLE_DATA(name, __VA_ARGS__)
+#define FSTR_TABLE_ARGSIZE(ObjectType, ...) (sizeof((const ObjectType* []){__VA_ARGS__}) / sizeof(void*))
+#define DEFINE_FSTR_TABLE_DATA(name, ObjectType, ...)                                                                  \
+	constexpr struct {                                                                                                 \
+		FlashStringTable<ObjectType> table;                                                                            \
+		const ObjectType* data[FSTR_TABLE_ARGSIZE(ObjectType, __VA_ARGS__)];                                           \
+	} name PROGMEM = {{FSTR_TABLE_ARGSIZE(ObjectType, __VA_ARGS__)}, {__VA_ARGS__}};
+#define DEFINE_FSTR_TABLE_DATA_LOCAL(name, ObjectType, ...) static DEFINE_FSTR_TABLE_DATA(name, ObjectType, __VA_ARGS__)
 
 /**
  * @brief Class to access a table of flash strings
  */
-struct FlashStringTable {
-	const FlashString& operator[](unsigned index) const
+template <class ObjectType> struct FlashStringTable {
+	const ObjectType& operator[](unsigned index) const
 	{
 		if(index < tableLength) {
-			auto p = reinterpret_cast<const FlashString* const*>(&tableLength + 1);
+			auto p = reinterpret_cast<const ObjectType* const*>(&tableLength + 1);
 			p += index;
 			return **p;
 		} else {
-			return FlashString::empty();
+			return ObjectType::empty();
 		}
+	}
+
+	static const FlashStringTable& empty()
+	{
+		static const FlashStringTable empty_{0};
+		return empty_;
 	}
 
 	unsigned length() const
 	{
 		return tableLength;
+	}
+
+	operator String() const
+	{
+		return nullptr;
 	}
 
 	const uint32_t tableLength;
