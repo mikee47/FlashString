@@ -24,7 +24,6 @@
 #include "String.h"
 #include "MapPairIterator.h"
 
-
 /**
  * @brief Declare a Map
  * @tparam KeyType Integral type to use for key
@@ -74,7 +73,9 @@ namespace FSTR
 /**
  * @brief describes a pair mapping key => data for a specified key type
  */
-template <typename KeyType, class ContentType> struct MapPair {
+template <typename KeyType, class ContentType> class MapPair
+{
+public:
 	typedef void (MapPair::*IfHelperType)() const;
 	void IfHelper() const
 	{
@@ -129,12 +130,14 @@ template <typename KeyType, class ContentType> struct MapPair {
 	const ContentType* content_;
 };
 
-template <class ContentType> struct MapPair<String*, ContentType> {
+template <class ContentType> class MapPair<String*, ContentType>
+{
 	typedef void (MapPair::*IfHelperType)() const;
 	void IfHelper() const
 	{
 	}
 
+public:
 	operator IfHelperType() const
 	{
 		return content_ ? &MapPair::IfHelper : 0;
@@ -182,7 +185,9 @@ template <class ContentType> struct MapPair<String*, ContentType> {
 /**
  * @brief Class to access a flash string map
  */
-template <typename KeyType, class ContentType> struct Map {
+template <typename KeyType, class ContentType> class Map
+{
+public:
 	using Pair = const MapPair<KeyType, ContentType>;
 	using Iterator = MapPairIterator<Pair>;
 
@@ -271,7 +276,9 @@ int Map<KeyType, ContentType>::indexOf(const TRefKey& key) const
 	return -1;
 }
 
-template <class ContentType> struct Map<String*, ContentType> {
+template <class ContentType> class Map<String*, ContentType>
+{
+public:
 	using Pair = const MapPair<String*, ContentType>;
 	using Iterator = MapPairIterator<Pair>;
 

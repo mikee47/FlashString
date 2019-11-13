@@ -154,7 +154,9 @@ namespace FSTR
 /**
  * @brief describes a counted string stored in flash memory
  */
-struct String {
+class String
+{
+public:
 	static const String& empty()
 	{
 		static const String empty_{0};

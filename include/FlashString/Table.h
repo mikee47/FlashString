@@ -69,7 +69,9 @@ namespace FSTR
  * @brief Class to access a table of objects stored in flash
  * @note Data is stored as array of pointers, objects accessed by reference
  */
-template <class ObjectType> struct Table {
+template <class ObjectType> class Table
+{
+public:
 	using Iterator = ObjectIterator<ObjectType>;
 
 	Iterator begin() const
