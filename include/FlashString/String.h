@@ -292,6 +292,23 @@ public:
 		return !equals(str);
 	}
 
+	/* Arduino Print support */
+
+	/**
+	 * @brief Supports printing of large String objects
+	 * @note Avoids implicit String() cast when working with large FlashStrings:
+	 *
+	 *		IMPORT_FSTR(largeString, PROJECT_DIR "/files/large-text.txt");
+	 * 		Serial.println(largeString.printable());
+	 *
+	 */
+	StringPrinter printable() const
+	{
+		return StringPrinter(*this);
+	}
+
+	/* Private member data */
+
 	uint32_t flashLength; ///< Number of bytes/characters in data
 						  // const uint8_t data[]
 };
