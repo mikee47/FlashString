@@ -114,11 +114,47 @@ public:
 	}
 
 	/**
-	 * @brief Lookup a key and return the index, if found
+	 * @brief Lookup an integral key and return the index, if found
+	 * @retval int If key isn't found, return -1
+	 */
+	template <typename TRefKey, typename T = KeyType>
+	typename std::enable_if<!std::is_class<T>::value, int>::type indexOf(const TRefKey& key) const
+	{
+		auto p = head();
+		for(unsigned i = 0; i < mapLength; ++i, ++p) {
+			if(IS_ALIGNED(sizeof(KeyType))) {
+				if(p->key_ == key) {
+					return i;
+				}
+			} else {
+				// Ensure access is aligned for 1/2 byte keys
+				volatile auto pair = *p;
+				if(pair.key_ == key) {
+					return i;
+				}
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * @brief Lookup a String key and return the index, if found
 	 * @retval int If key isn't found, return -1
 	 * @note Comparison is case-sensitive
 	 */
-	template <typename TRefKey> int indexOf(const TRefKey& key) const;
+	template <typename TRefKey, typename T = KeyType>
+	typename std::enable_if<std::is_same<T, String>::value, int>::type indexOf(const TRefKey& key) const
+	{
+		auto p = head();
+		for(unsigned i = 0; i < mapLength; ++i, ++p) {
+			if(*p->key_ == key) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
 
 	/**
 	 * @brief Lookup a key and return the entry, if found
@@ -145,86 +181,5 @@ public:
 	const uint32_t mapLength;
 	// const Pair values[];
 };
-
-template <typename KeyType, class ContentType>
-template <typename TRefKey>
-int Map<KeyType, ContentType>::indexOf(const TRefKey& key) const
-{
-	auto p = head();
-	for(unsigned i = 0; i < mapLength; ++i, ++p) {
-		if(IS_ALIGNED(sizeof(KeyType))) {
-			if(p->key_ == key) {
-				return i;
-			}
-		} else {
-			// Ensure access is aligned for 1/2 byte keys
-			volatile auto pair = *p;
-			if(pair.key_ == key) {
-				return i;
-			}
-		}
-	}
-
-	return -1;
-}
-
-/**
- * @brief Specialization for Map with String key
- */
-template <class ContentType> class Map<String, ContentType>
-{
-public:
-	using Pair = const MapPair<String, ContentType>;
-	using Iterator = MapPairIterator<Pair>;
-
-	Iterator begin() const
-	{
-		return Iterator(head(), mapLength, 0);
-	}
-
-	Iterator end() const
-	{
-		return Iterator(head(), mapLength, mapLength);
-	}
-
-	Pair valueAt(unsigned index) const
-	{
-		return (index < mapLength) ? head()[index] : Pair::empty();
-	}
-
-	template <typename TRefKey> int indexOf(const TRefKey& key) const;
-
-	template <typename TRefKey> Pair operator[](const TRefKey& key) const
-	{
-		return valueAt(indexOf(key));
-	}
-
-	unsigned length() const
-	{
-		return mapLength;
-	}
-
-	const Pair* head() const
-	{
-		return reinterpret_cast<Pair*>(&mapLength + 1);
-	}
-
-	/* Private member data */
-
-	const uint32_t mapLength;
-	// const Pair values[];
-};
-
-template <class ContentType> template <typename TRefKey> int Map<String, ContentType>::indexOf(const TRefKey& key) const
-{
-	auto p = head();
-	for(unsigned i = 0; i < mapLength; ++i, ++p) {
-		if(*p->key_ == key) {
-			return i;
-		}
-	}
-
-	return -1;
-}
 
 } // namespace FSTR

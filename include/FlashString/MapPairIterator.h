@@ -71,7 +71,7 @@ public:
 		return index != rhs.index;
 	}
 
-	Pair& operator*() const
+	Pair operator*() const
 	{
 		return (index < count) ? head[index] : Pair::empty();
 	}

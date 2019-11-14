@@ -23,6 +23,7 @@
 
 #include "String.h"
 #include <WString.h>
+#include <type_traits>
 
 namespace FSTR
 {
@@ -31,6 +32,8 @@ namespace FSTR
  */
 template <typename KeyType, class ContentType> class MapPair
 {
+	typedef typename std::conditional<std::is_class<KeyType>::value, const KeyType*, KeyType>::type KeyStoreType;
+
 public:
 	typedef void (MapPair::*IfHelperType)() const;
 	void IfHelper() const
@@ -50,14 +53,31 @@ public:
 	 */
 	static const MapPair empty()
 	{
-		return MapPair{static_cast<const KeyType>(0), static_cast<const ContentType*>(0)};
+		return MapPair{KeyStoreType(0), nullptr};
 	}
 
-	KeyType key() const
+	/**
+	 * @brief Get the key (non-class key types)
+	 */
+	template <typename T = KeyType, typename std::enable_if<!std::is_class<T>::value>::type* = nullptr> T key() const
 	{
 		// Ensure access is aligned for 1/2 byte keys
 		volatile auto pair = *this;
 		return pair.key_;
+	}
+
+	/**
+	 * @brief Get the key (String key type)
+	 */
+	template <typename T = KeyType, typename std::enable_if<std::is_same<T, String>::value>::type* = nullptr>
+	const KeyType& key() const
+	{
+		auto k = key_;
+		if(k == nullptr) {
+			return KeyType::empty();
+		} else {
+			return *k;
+		}
 	}
 
 	/**
@@ -86,63 +106,7 @@ public:
 
 	/* Private member data */
 
-	const KeyType key_;
-	const ContentType* content_;
-};
-
-template <class ContentType> class MapPair<String, ContentType>
-{
-	typedef void (MapPair::*IfHelperType)() const;
-	void IfHelper() const
-	{
-	}
-
-public:
-	operator IfHelperType() const
-	{
-		return content_ ? &MapPair::IfHelper : 0;
-	}
-
-	static const MapPair& empty()
-	{
-		static const MapPair PROGMEM empty_{nullptr, static_cast<const ContentType*>(0)};
-		return empty_;
-	}
-
-	const String& key() const
-	{
-		auto k = key_;
-		if(k == nullptr) {
-			return String::empty();
-		} else {
-			return *k;
-		}
-	}
-
-	const ContentType& content() const
-	{
-		if(content_ == nullptr) {
-			return ContentType::empty();
-		} else {
-			return *content_;
-		}
-	}
-
-	operator const ContentType&() const
-	{
-		return content();
-	}
-
-	/* Arduino String support */
-
-	operator WString() const
-	{
-		return WString(content());
-	}
-
-	/* Private member data */
-
-	const String* key_;
+	const KeyStoreType key_;
 	const ContentType* content_;
 };
 
