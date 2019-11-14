@@ -110,6 +110,8 @@ public:
 		return reinterpret_cast<const ObjectType* const*>(&tableLength + 1);
 	}
 
+	/* Private member data */
+
 	const uint32_t tableLength;
 	// const ObjectType* entries[];
 };

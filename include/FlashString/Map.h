@@ -201,6 +201,8 @@ public:
 		return reinterpret_cast<Pair*>(&mapLength + 1);
 	}
 
+	/* Private member data */
+
 	const uint32_t mapLength;
 	// const Pair values[];
 };

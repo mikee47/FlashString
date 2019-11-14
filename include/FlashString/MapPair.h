@@ -84,6 +84,8 @@ public:
 		return ::String(content());
 	}
 
+	/* Private member data */
+
 	const KeyType key_;
 	const ContentType* content_;
 };
@@ -137,6 +139,8 @@ public:
 	{
 		return ::String(content());
 	}
+
+	/* Private member data */
 
 	const String* key_;
 	const ContentType* content_;
