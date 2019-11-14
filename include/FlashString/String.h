@@ -30,6 +30,19 @@ class __FlashStringHelper;
 typedef const __FlashStringHelper* flash_string_t;
 
 /**
+ * @brief Define an inline FlashString
+ * @note This returns a pointer, not a reference
+ */
+#define FS(str)                                                                                                        \
+	(__extension__({                                                                                                   \
+		static constexpr struct {                                                                                      \
+			FSTR::String fstr;                                                                                         \
+			char data[ALIGNUP(sizeof(str))];                                                                           \
+		} struc PROGMEM = {{sizeof(str) - 1}, str};                                                                    \
+		&struc.fstr;                                                                                                   \
+	}))
+
+/**
  * @brief Declare a global String instance
  */
 #define DECLARE_FSTR(name) extern const FSTR::String& name;
