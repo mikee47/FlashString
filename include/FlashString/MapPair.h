@@ -90,7 +90,7 @@ public:
 	const ContentType* content_;
 };
 
-template <class ContentType> class MapPair<String*, ContentType>
+template <class ContentType> class MapPair<String, ContentType>
 {
 	typedef void (MapPair::*IfHelperType)() const;
 	void IfHelper() const

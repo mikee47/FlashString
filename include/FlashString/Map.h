@@ -163,10 +163,10 @@ int Map<KeyType, ContentType>::indexOf(const TRefKey& key) const
 /**
  * @brief Specialization for Map with String key
  */
-template <class ContentType> class Map<String*, ContentType>
+template <class ContentType> class Map<String, ContentType>
 {
 public:
-	using Pair = const MapPair<String*, ContentType>;
+	using Pair = const MapPair<String, ContentType>;
 	using Iterator = MapPairIterator<Pair>;
 
 	Iterator begin() const
@@ -209,7 +209,7 @@ public:
 
 template <class ContentType>
 template <typename TRefKey>
-int Map<String*, ContentType>::indexOf(const TRefKey& key) const
+int Map<String, ContentType>::indexOf(const TRefKey& key) const
 {
 	auto p = head();
 	for(unsigned i = 0; i < mapLength; ++i, ++p) {
