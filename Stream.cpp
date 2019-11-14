@@ -1,5 +1,5 @@
 /**
- * FlashMemoryStream.cpp
+ * Stream.cpp
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -19,9 +19,11 @@
  *
  ****/
 
-#include "include/FlashMemoryStream.h"
+#include "include/FlashString/Stream.h"
 
-uint16_t FlashMemoryStream::readMemoryBlock(char* data, int bufSize)
+namespace FSTR
+{
+uint16_t Stream::readMemoryBlock(char* data, int bufSize)
 {
 	if(flashread) {
 		return string.readFlash(readPos, data, bufSize);
@@ -30,7 +32,7 @@ uint16_t FlashMemoryStream::readMemoryBlock(char* data, int bufSize)
 	}
 }
 
-int FlashMemoryStream::seekFrom(int offset, unsigned origin)
+int Stream::seekFrom(int offset, unsigned origin)
 {
 	size_t newPos;
 	switch(origin) {
@@ -54,3 +56,5 @@ int FlashMemoryStream::seekFrom(int offset, unsigned origin)
 	readPos = newPos;
 	return readPos;
 }
+
+} // namespace FSTR
