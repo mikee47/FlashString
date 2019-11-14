@@ -34,33 +34,40 @@
  */
 #define DEFINE_FSTR_TABLE(name, ObjectType, ...)                                                                       \
 	DEFINE_FSTR_TABLE_DATA(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                             \
-	const FSTR::Table<ObjectType>& name PROGMEM = FSTR_DATA_NAME(name).table;
+	DEFINE_FSTR_REF(name);
 
 #define DEFINE_FSTR_TABLE_LOCAL(name, ObjectType, ...)                                                                 \
 	DEFINE_FSTR_TABLE_DATA_LOCAL(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                       \
-	static const FSTR::Table<ObjectType>& name PROGMEM = FSTR_DATA_NAME(name).table;
+	DEFINE_FSTR_REF_LOCAL(name);
+
+#define DEFINE_FSTR_TABLE_SIZED(name, ObjectType, size, ...)                                                           \
+	DEFINE_FSTR_TABLE_DATA_SIZED(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                                 \
+	DEFINE_FSTR_REF(name);
+
+#define DEFINE_FSTR_TABLE_SIZED_LOCAL(name, ObjectType, size, ...)                                                     \
+	DEFINE_FSTR_TABLE_DATA_SIZED_LOCAL(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                           \
+	DEFINE_FSTR_REF_LOCAL(name);
 
 /**
- * @brief Cast a pointer to FSTR::Table*
- */
-#define FSTR_TABLE_PTR(ObjectType, data_ptr) reinterpret_cast<const FSTR::Table<ObjectType>*>(data_ptr)
-
-/**
- * @brief Define a FSTR::Table& reference using a cast
- */
-#define DEFINE_FSTR_TABLE_REF(name, ObjectType, data_name)                                                             \
-	const FSTR::Table<ObjectType>& name = *FSTR_TABLE_PTR(ObjectType, &data_name);
-
-/**
- * @brief Define a structure containing table data
+ * @brief Define a structure containing ` data
  */
 #define FSTR_TABLE_ARGSIZE(ObjectType, ...) (sizeof((const ObjectType* []){__VA_ARGS__}) / sizeof(void*))
 #define DEFINE_FSTR_TABLE_DATA(name, ObjectType, ...)                                                                  \
-	constexpr struct {                                                                                                 \
-		FSTR::Table<ObjectType> table;                                                                                 \
-		const ObjectType* data[FSTR_TABLE_ARGSIZE(ObjectType, __VA_ARGS__)];                                           \
-	} name PROGMEM = {{FSTR_TABLE_ARGSIZE(ObjectType, __VA_ARGS__)}, {__VA_ARGS__}};
-#define DEFINE_FSTR_TABLE_DATA_LOCAL(name, ObjectType, ...) static DEFINE_FSTR_TABLE_DATA(name, ObjectType, __VA_ARGS__)
+	DEFINE_FSTR_TABLE_DATA_SIZED(name, ObjectType, FSTR_TABLE_ARGSIZE(ObjectType, __VA_ARGS__), __VA_ARGS__)
+#define DEFINE_FSTR_TABLE_DATA_LOCAL(name, ObjectType, ...)                                                            \
+	DEFINE_FSTR_TABLE_DATA_SIZED_LOCAL(name, ObjectType, FSTR_TABLE_ARGSIZE(ObjectType, __VA_ARGS__), __VA_ARGS__)
+
+/**
+ * @brief Use in situations where the array size cannot be automatically calculated,
+ * such as when combined with inline Strings via FS()
+ */
+#define DEFINE_FSTR_TABLE_DATA_SIZED(name, ObjectType, size, ...)                                                      \
+	constexpr const struct {                                                                                           \
+		FSTR::Table<ObjectType> object;                                                                                \
+		const ObjectType* data[size];                                                                                  \
+	} name PROGMEM = {{size}, __VA_ARGS__};
+#define DEFINE_FSTR_TABLE_DATA_SIZED_LOCAL(name, ObjectType, size, ...)                                                \
+	static DEFINE_FSTR_TABLE_DATA_SIZED(name, ObjectType, size, __VA_ARGS__)
 
 namespace FSTR
 {

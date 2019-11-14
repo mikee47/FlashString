@@ -36,10 +36,10 @@ typedef const __FlashStringHelper* flash_string_t;
 #define FS(str)                                                                                                        \
 	(__extension__({                                                                                                   \
 		static constexpr struct {                                                                                      \
-			FSTR::String fstr;                                                                                         \
+			FSTR::String object;                                                                                       \
 			char data[ALIGNUP(sizeof(str))];                                                                           \
 		} struc PROGMEM = {{sizeof(str) - 1}, str};                                                                    \
-		&struc.fstr;                                                                                                   \
+		&struc.object;                                                                                                 \
 	}))
 
 /**
@@ -56,7 +56,7 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define DEFINE_FSTR(name, str)                                                                                         \
 	static DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                \
-	const FSTR::String& name PROGMEM = FSTR_DATA_NAME(name).fstr;
+	DEFINE_FSTR_REF(name);
 
 /** @brief Define a String for local (static) use
  *  @param name variable to identify the string
@@ -64,22 +64,15 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define DEFINE_FSTR_LOCAL(name, str)                                                                                   \
 	DEFINE_FSTR_DATA_LOCAL(FSTR_DATA_NAME(name), str);                                                                 \
-	static const FSTR::String& name PROGMEM = FSTR_DATA_NAME(name).fstr;
+	DEFINE_FSTR_REF_LOCAL(name);
 
 /**
- * @brief Cast a pointer to String*
- * @param data_ptr Pointer to aligned structure with first word as length
- * @note Use if necessary for custom structures
+ * @brief Define a reference to an object
+ * @note Used for other objects, not just String
  */
-#define FSTR_PTR(data_ptr) reinterpret_cast<const FSTR::String*>(data_ptr)
-
-/**
- * @brief Define a String& reference to a structure using a cast
- * @param name Name of the reference variable
- * @param data_name Name of structure to be referenced, in PROGMEM and word-aligned. First element MUST be the length.
- * @note Use to cast custom data structures into String format.
- */
-#define DEFINE_FSTR_REF(name, data) const FSTR::String& name = *FSTR_PTR(&data);
+#define DEFINE_FSTR_REF(name)                                                                                          \
+	constexpr const decltype(FSTR_DATA_NAME(name).object)& name PROGMEM = FSTR_DATA_NAME(name).object;
+#define DEFINE_FSTR_REF_LOCAL(name) static DEFINE_FSTR_REF(name)
 
 /**
  * @brief Provide internal name for generated flash string structures
@@ -91,8 +84,8 @@ typedef const __FlashStringHelper* flash_string_t;
  *  @param str String to store
  */
 #define DEFINE_FSTR_DATA(name, str)                                                                                    \
-	constexpr struct {                                                                                                 \
-		FSTR::String fstr;                                                                                             \
+	constexpr const struct {                                                                                           \
+		FSTR::String object;                                                                                           \
 		char data[ALIGNUP(sizeof(str))];                                                                               \
 	} name PROGMEM = {{sizeof(str) - 1}, str};
 
@@ -118,7 +111,7 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define FSTR_ARRAY(name, str)                                                                                          \
 	DEFINE_FSTR_DATA_LOCAL(FSTR_DATA_NAME(name), str);                                                                 \
-	LOAD_FSTR(name, FSTR_DATA_NAME(name).fstr)
+	LOAD_FSTR(name, FSTR_DATA_NAME(name).object)
 
 /** @brief Define a String containing data from an external file
  *  @param name Name for the String object

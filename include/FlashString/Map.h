@@ -38,22 +38,19 @@
  */
 #define DEFINE_FSTR_MAP(name, KeyType, ContentType, ...)                                                               \
 	DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                                     \
-	const FSTR::Map<KeyType, ContentType>& name PROGMEM = FSTR_DATA_NAME(name).map;
+	DEFINE_FSTR_REF(name);
 
 #define DEFINE_FSTR_MAP_LOCAL(name, KeyType, ContentType, ...)                                                         \
 	DEFINE_FSTR_MAP_DATA_LOCAL(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                               \
-	static const FSTR::Map<KeyType, ContentType>& name PROGMEM = FSTR_DATA_NAME(name).map;
+	DEFINE_FSTR_REF_LOCAL(name);
 
-/**
- * @brief Cast a pointer to Map*
- */
-#define FSTR_MAP_PTR(data_ptr, KeyType, ContentType) reinterpret_cast<const FSTR::Map<KeyType, ContentType>*>(data_ptr)
+#define DEFINE_FSTR_MAP_SIZED(name, KeyType, ContentType, size, ...)                                                   \
+	DEFINE_FSTR_MAP_DATA_SIZED(FSTR_DATA_NAME(name), KeyType, ContentType, size, __VA_ARGS__);                         \
+	DEFINE_FSTR_REF(name);
 
-/**
- * @brief Define a Map& reference using a cast
- */
-#define DEFINE_FSTR_MAP_REF(name, KeyType, ContentType, data_name)                                                     \
-	const FSTR::Map<KeyType, ContentType>& name = *FSTR_MAP_PTR(&data_name);
+#define DEFINE_FSTR_MAP_SIZED_LOCAL(name, KeyType, ContentType, size, ...)                                             \
+	DEFINE_FSTR_MAP_DATA_SIZED_LOCAL(FSTR_DATA_NAME(name), KeyType, ContentType, size, __VA_ARGS__);                   \
+	DEFINE_FSTR_REF_LOCAL(name);
 
 /**
  * @brief Define a structure containing map data
@@ -62,12 +59,23 @@
 #define FSTR_MAP_ARGSIZE(KeyType, ContentType, ...)                                                                    \
 	(sizeof((const FSTR::MapPair<KeyType, ContentType>[]){__VA_ARGS__}) / sizeof(FSTR::MapPair<KeyType, ContentType>))
 #define DEFINE_FSTR_MAP_DATA(name, KeyType, ContentType, ...)                                                          \
-	constexpr struct {                                                                                                 \
-		FSTR::Map<KeyType, ContentType> map;                                                                           \
-		FSTR::MapPair<KeyType, ContentType> data[FSTR_MAP_ARGSIZE(KeyType, ContentType, __VA_ARGS__)];                 \
-	} name PROGMEM = {{FSTR_MAP_ARGSIZE(KeyType, ContentType, __VA_ARGS__)}, {__VA_ARGS__}};
+	DEFINE_FSTR_MAP_DATA_SIZED(name, KeyType, ContentType, FSTR_MAP_ARGSIZE(KeyType, ContentType, __VA_ARGS__),        \
+							   __VA_ARGS__)
 #define DEFINE_FSTR_MAP_DATA_LOCAL(name, KeyType, ContentType, ...)                                                    \
-	static DEFINE_FSTR_MAP_DATA(name, KeyType, ContentType, __VA_ARGS__)
+	DEFINE_FSTR_MAP_DATA_SIZED_LOCAL(name, KeyType, ContentType, FSTR_MAP_ARGSIZE(KeyType, ContentType, __VA_ARGS__),  \
+									 __VA_ARGS__)
+
+/**
+ * @brief Use in situations where the array size cannot be automatically calculated,
+ * such as when combined with inline Strings via FS()
+ */
+#define DEFINE_FSTR_MAP_DATA_SIZED(name, KeyType, ContentType, size, ...)                                              \
+	constexpr const struct {                                                                                           \
+		FSTR::Map<KeyType, ContentType> object;                                                                        \
+		FSTR::MapPair<KeyType, ContentType> data[size];                                                                \
+	} name PROGMEM = {{size}, {__VA_ARGS__}};
+#define DEFINE_FSTR_MAP_DATA_SIZED_LOCAL(name, KeyType, ContentType, size, ...)                                        \
+	static DEFINE_FSTR_MAP_DATA_SIZED(name, KeyType, ContentType, size, __VA_ARGS__)
 
 namespace FSTR
 {
@@ -207,9 +215,7 @@ public:
 	// const Pair values[];
 };
 
-template <class ContentType>
-template <typename TRefKey>
-int Map<String, ContentType>::indexOf(const TRefKey& key) const
+template <class ContentType> template <typename TRefKey> int Map<String, ContentType>::indexOf(const TRefKey& key) const
 {
 	auto p = head();
 	for(unsigned i = 0; i < mapLength; ++i, ++p) {
