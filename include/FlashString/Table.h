@@ -97,7 +97,7 @@ public:
 
 	static const Table& empty()
 	{
-		static const Table empty_{0};
+		static const Table PROGMEM empty_{0};
 		return empty_;
 	}
 

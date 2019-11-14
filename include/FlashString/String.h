@@ -159,7 +159,7 @@ class String
 public:
 	static const String& empty()
 	{
-		static const String empty_{0};
+		static const String PROGMEM empty_{0};
 		return empty_;
 	}
 

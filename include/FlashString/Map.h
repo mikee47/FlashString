@@ -145,7 +145,7 @@ public:
 
 	static const MapPair& empty()
 	{
-		static MapPair empty_{nullptr, static_cast<const ContentType*>(0)};
+		static const MapPair PROGMEM empty_{nullptr, static_cast<const ContentType*>(0)};
 		return empty_;
 	}
 
@@ -203,7 +203,7 @@ public:
 
 	static const Map& empty()
 	{
-		static Map empty_{0};
+		static const Map PROGMEM empty_{0};
 		return empty_;
 	}
 
