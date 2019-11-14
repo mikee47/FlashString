@@ -22,6 +22,7 @@
 #pragma once
 
 #include "String.h"
+#include "MapPair.h"
 #include "MapPairIterator.h"
 
 /**
@@ -71,123 +72,7 @@
 namespace FSTR
 {
 /**
- * @brief describes a pair mapping key => data for a specified key type
- */
-template <typename KeyType, class ContentType> class MapPair
-{
-public:
-	typedef void (MapPair::*IfHelperType)() const;
-	void IfHelper() const
-	{
-	}
-
-	/**
-	 * @brief Provides bool() operator to determine if Pair is valid
-	 */
-	operator IfHelperType() const
-	{
-		return content_ ? &MapPair::IfHelper : 0;
-	}
-
-	/**
-	 * @brief Get an empty Pair object, identifies as invalid when lookup fails
-	 */
-	static const MapPair empty()
-	{
-		return MapPair{static_cast<const KeyType>(0), static_cast<const ContentType*>(0)};
-	}
-
-	KeyType key() const
-	{
-		// Ensure access is aligned for 1/2 byte keys
-		volatile auto pair = *this;
-		return pair.key_;
-	}
-
-	/**
-	 * @brief Accessor to get a reference to the content
-	 */
-	const ContentType& content() const
-	{
-		if(content_ == nullptr) {
-			return ContentType::empty();
-		} else {
-			return *content_;
-		}
-	}
-
-	operator const ContentType&() const
-	{
-		return content();
-	}
-
-	/* Arduino String support */
-
-	operator ::String() const
-	{
-		return ::String(content());
-	}
-
-	const KeyType key_;
-	const ContentType* content_;
-};
-
-template <class ContentType> class MapPair<String*, ContentType>
-{
-	typedef void (MapPair::*IfHelperType)() const;
-	void IfHelper() const
-	{
-	}
-
-public:
-	operator IfHelperType() const
-	{
-		return content_ ? &MapPair::IfHelper : 0;
-	}
-
-	static const MapPair& empty()
-	{
-		static const MapPair PROGMEM empty_{nullptr, static_cast<const ContentType*>(0)};
-		return empty_;
-	}
-
-	const String& key() const
-	{
-		auto k = key_;
-		if(k == nullptr) {
-			return String::empty();
-		} else {
-			return *k;
-		}
-	}
-
-	const ContentType& content() const
-	{
-		if(content_ == nullptr) {
-			return ContentType::empty();
-		} else {
-			return *content_;
-		}
-	}
-
-	operator const ContentType&() const
-	{
-		return content();
-	}
-
-	/* Arduino String support */
-
-	operator ::String() const
-	{
-		return ::String(content());
-	}
-
-	const String* key_;
-	const ContentType* content_;
-};
-
-/**
- * @brief Class to access a flash string map
+ * @brief Class template to access an associative map
  */
 template <typename KeyType, class ContentType> class Map
 {
@@ -275,6 +160,9 @@ int Map<KeyType, ContentType>::indexOf(const TRefKey& key) const
 	return -1;
 }
 
+/**
+ * @brief Specialization for Map with String key
+ */
 template <class ContentType> class Map<String*, ContentType>
 {
 public:
