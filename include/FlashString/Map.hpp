@@ -72,7 +72,7 @@
 	constexpr const struct {                                                                                           \
 		FSTR::Map<KeyType, ContentType> object;                                                                        \
 		FSTR::MapPair<KeyType, ContentType> data[size];                                                                \
-	} name PROGMEM = {{size}, {__VA_ARGS__}};
+	} name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};
 #define DEFINE_FSTR_MAP_DATA_SIZED_LOCAL(name, KeyType, ContentType, size, ...)                                        \
 	static DEFINE_FSTR_MAP_DATA_SIZED(name, KeyType, ContentType, size, __VA_ARGS__)
 
@@ -168,6 +168,15 @@ public:
 	 * @brief Accessor to get the number of entries in the map
 	 */
 	unsigned length() const
+	{
+		return flashLength / sizeof(Pair);
+	}
+
+	/**
+	 * @brief Get the number of bytes used to store the map
+	 * @note Always an integer multiple of 4 bytes
+	 */
+	uint32_t size() const
 	{
 		return flashLength;
 	}

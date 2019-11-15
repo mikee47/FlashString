@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <FakePgmSpace.h>
+#include "config.hpp"
 
 /**
  * @brief Define a reference to an object

@@ -22,6 +22,7 @@
 #pragma once
 
 #include "Object.hpp"
+#include "ArrayIterator.hpp"
 #include "ArrayPrinter.hpp"
 
 /**
@@ -36,7 +37,7 @@
  *  @note Unlike String, array is not nul-terminated
  */
 #define DEFINE_FSTR_ARRAY(name, ElementType, ...)                                                                      \
-	static DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, {__VA_ARGS__});                                   \
+	DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                            \
 	DEFINE_FSTR_REF(name);
 
 /** @brief Define an array for local (static) use
@@ -45,7 +46,7 @@
  *  @param elements
  */
 #define DEFINE_FSTR_ARRAY_LOCAL(name, ElementType, ...)                                                                \
-	DEFINE_FSTR_ARRAY_DATA_LOCAL(FSTR_DATA_NAME(name), ElementType, {__VA_ARGS__});                                    \
+	DEFINE_FSTR_ARRAY_DATA_LOCAL(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                      \
 	DEFINE_FSTR_REF_LOCAL(name);
 
 /** @brief Define an array structure
@@ -53,12 +54,12 @@
  *  @param ElementType
  *  @param elements
  */
-#define FSTR_ARRAY_ARGSIZE(ElementType, ...) (sizeof((const ElementType[])__VA_ARGS__) / sizeof(ElementType))
 #define DEFINE_FSTR_ARRAY_DATA(name, ElementType, ...)                                                                 \
 	constexpr const struct {                                                                                           \
 		FSTR::Array<ElementType> object;                                                                               \
-		ElementType data[FSTR_ARRAY_ARGSIZE(ElementType, __VA_ARGS__)];                                                \
-	} name PROGMEM = {{FSTR_ARRAY_ARGSIZE(ElementType, __VA_ARGS__)}, __VA_ARGS__};
+		ElementType data[sizeof((const ElementType[]){__VA_ARGS__}) / sizeof(ElementType)];                            \
+	} ATTR_PACKED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                      \
+	static_assert(int(name.data) - int(&name) == 4, "Alignment error");
 #define DEFINE_FSTR_ARRAY_DATA_LOCAL(name, ElementType, ...)                                                           \
 	static DEFINE_FSTR_ARRAY_DATA(name, ElementType, __VA_ARGS__)
 
@@ -122,7 +123,7 @@ public:
 	 */
 	uint32_t length() const
 	{
-		return flashLength;
+		return flashLength / sizeof(ElementType);
 	}
 
 	/**
@@ -131,22 +132,23 @@ public:
 	 */
 	uint32_t size() const
 	{
-		return ALIGNUP(flashLength * sizeof(ElementType));
+		return ALIGNUP(flashLength);
 	}
 
 	ElementType valueAt(unsigned index) const
 	{
-		if(index >= flashLength) {
+		if(index >= length()) {
 			return ElementType{0};
 		}
 
 		union {
 			uint8_t u8;
 			uint16_t u16;
+			uint32_t u32[2];
 			ElementType elem;
 		} buf;
 
-		auto p = reinterpret_cast<const ElementType*>(data()) + index;
+		auto p = data() + index;
 		switch(sizeof(ElementType)) {
 		case 1:
 			buf.u8 = pgm_read_byte(p);
@@ -156,6 +158,10 @@ public:
 			break;
 		case 4:
 			buf.elem = *p;
+			break;
+		case 8:
+			buf.u32[0] = reinterpret_cast<const uint32_t*>(p)[0];
+			buf.u32[1] = reinterpret_cast<const uint32_t*>(p)[1];
 			break;
 		default:
 			memcpy_P(&buf, p, sizeof(ElementType));
@@ -173,11 +179,7 @@ public:
 	 */
 	const ElementType* data() const
 	{
-		struct Struct {
-			uint32_t length;
-			ElementType data[1];
-		};
-		return &reinterpret_cast<const Struct*>(&flashLength)->data[0];
+		return reinterpret_cast<const ElementType*>(&flashLength + 1);
 	}
 
 	/**
@@ -189,11 +191,12 @@ public:
 	 */
 	size_t read(size_t index, ElementType* buffer, size_t count) const
 	{
-		if(index >= flashLength) {
+		auto len = length();
+		if(index >= len) {
 			return 0;
 		}
 
-		count = std::min(flashLength - index, count);
+		count = std::min(len - index, count);
 		memcpy_P(buffer, data() + index, count * sizeof(ElementType));
 		return count;
 	}
@@ -207,11 +210,12 @@ public:
 	 */
 	size_t readFlash(size_t index, ElementType* buffer, size_t count) const
 	{
-		if(index >= flashLength) {
+		auto len = length();
+		if(index >= len) {
 			return 0;
 		}
 
-		count = std::min(flashLength - index, count);
+		count = std::min(len - index, count);
 		return readFlashData(buffer, data() + index, count * sizeof(ElementType));
 	}
 
@@ -230,6 +234,6 @@ public:
 
 	uint32_t flashLength;
 	// const ElementType data[]
-};
+} ATTR_PACKED;
 
 } // namespace FSTR

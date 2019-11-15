@@ -65,7 +65,7 @@
 	constexpr const struct {                                                                                           \
 		FSTR::Table<ObjectType> object;                                                                                \
 		const ObjectType* data[size];                                                                                  \
-	} name PROGMEM = {{size}, __VA_ARGS__};
+	} name PROGMEM = {{sizeof(name.data)}, __VA_ARGS__};
 #define DEFINE_FSTR_TABLE_DATA_SIZED_LOCAL(name, ObjectType, size, ...)                                                \
 	static DEFINE_FSTR_TABLE_DATA_SIZED(name, ObjectType, size, __VA_ARGS__)
 
@@ -108,6 +108,11 @@ public:
 	}
 
 	unsigned length() const
+	{
+		return flashLength / sizeof(ObjectType*);
+	}
+
+	unsigned size() const
 	{
 		return flashLength;
 	}

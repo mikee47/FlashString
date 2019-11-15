@@ -158,12 +158,17 @@ public:
 
 	char valueAt(unsigned index) const
 	{
-		if(index >= flashLength) {
+		if(index >= length()) {
 			return '\0';
 		}
 
 		auto c = pgm_read_byte(reinterpret_cast<const uint8_t*>(data()) + index);
 		return static_cast<char>(c);
+	}
+
+	template <class ObjectType> const ObjectType& as() const
+	{
+		return *reinterpret_cast<const ObjectType*>(this);
 	}
 
 	/**
