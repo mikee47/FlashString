@@ -144,6 +144,19 @@ public:
 	}
 
 	/**
+	 * @brief Array operator[]
+	 */
+	char operator[](unsigned index) const
+	{
+		if(index >= flashLength) {
+			return '\0';
+		}
+
+		auto c = pgm_read_byte(reinterpret_cast<const uint8_t*>(data()) + index);
+		return static_cast<char>(c);
+	}
+
+	/**
 	 * @brief Get a pointer to the flash data
 	 */
 	flash_string_t data() const
