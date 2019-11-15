@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "String.hpp"
+#include "Object.hpp"
 #include "ObjectIterator.hpp"
 
 /**

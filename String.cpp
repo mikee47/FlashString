@@ -23,17 +23,6 @@
 
 namespace FSTR
 {
-size_t String::readFlash(size_t offset, void* buffer, size_t bytesToRead) const
-{
-	if(offset >= flashLength) {
-		return 0;
-	}
-
-	auto count = std::min(flashLength - offset, bytesToRead);
-	auto addr = flashmem_get_address(reinterpret_cast<const uint8_t*>(data()) + offset);
-	return flashmem_read(buffer, addr, count);
-}
-
 bool String::equals(const char* cstr, size_t len) const
 {
 	// Unlikely we'd want an empty flash string, but check anyway
