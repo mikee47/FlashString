@@ -90,12 +90,12 @@ public:
 
 	Iterator begin() const
 	{
-		return Iterator(head(), mapLength, 0);
+		return Iterator(data(), length(), 0);
 	}
 
 	Iterator end() const
 	{
-		return Iterator(head(), mapLength, mapLength);
+		return Iterator(data(), length(), length());
 	}
 
 	static const Map& empty()
@@ -110,7 +110,7 @@ public:
 	 */
 	Pair valueAt(unsigned index) const
 	{
-		return (index < mapLength) ? head()[index] : Pair::empty();
+		return (index < length()) ? data()[index] : Pair::empty();
 	}
 
 	/**
@@ -120,8 +120,8 @@ public:
 	template <typename TRefKey, typename T = KeyType>
 	typename std::enable_if<!std::is_class<T>::value, int>::type indexOf(const TRefKey& key) const
 	{
-		auto p = head();
-		for(unsigned i = 0; i < mapLength; ++i, ++p) {
+		auto p = data();
+		for(unsigned i = 0; i < length(); ++i, ++p) {
 			if(IS_ALIGNED(sizeof(KeyType))) {
 				if(p->key_ == key) {
 					return i;
@@ -146,8 +146,8 @@ public:
 	template <typename TRefKey, typename T = KeyType>
 	typename std::enable_if<std::is_same<T, String>::value, int>::type indexOf(const TRefKey& key) const
 	{
-		auto p = head();
-		for(unsigned i = 0; i < mapLength; ++i, ++p) {
+		auto p = data();
+		for(unsigned i = 0; i < length(); ++i, ++p) {
 			if(*p->key_ == key) {
 				return i;
 			}
@@ -170,15 +170,15 @@ public:
 	 */
 	unsigned length() const
 	{
-		return mapLength;
+		return flashLength;
 	}
 
-	const Pair* head() const
+	const Pair* data() const
 	{
-		return reinterpret_cast<Pair*>(&mapLength + 1);
+		return reinterpret_cast<Pair*>(&flashLength + 1);
 	}
 
-	const uint32_t mapLength;
+	const uint32_t flashLength;
 	// const Pair values[];
 };
 

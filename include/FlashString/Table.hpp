@@ -82,18 +82,18 @@ public:
 
 	Iterator begin() const
 	{
-		return Iterator(head(), tableLength, 0);
+		return Iterator(data(), length(), 0);
 	}
 
 	Iterator end() const
 	{
-		return Iterator(head(), tableLength, tableLength);
+		return Iterator(data(), length(), length());
 	}
 
 	const ObjectType& operator[](unsigned index) const
 	{
-		if(index < tableLength) {
-			auto p = head();
+		if(index < length()) {
+			auto p = data();
 			p += index;
 			return **p;
 		} else {
@@ -109,17 +109,17 @@ public:
 
 	unsigned length() const
 	{
-		return tableLength;
+		return flashLength;
 	}
 
-	const ObjectType* const* head() const
+	const ObjectType* const* data() const
 	{
-		return reinterpret_cast<const ObjectType* const*>(&tableLength + 1);
+		return reinterpret_cast<const ObjectType* const*>(&flashLength + 1);
 	}
 
 	/* Private member data */
 
-	const uint32_t tableLength;
+	const uint32_t flashLength;
 	// const ObjectType* entries[];
 };
 

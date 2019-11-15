@@ -274,8 +274,8 @@ public:
 
 	/* Private member data */
 
-	uint32_t flashLength; ///< Number of bytes/characters in data
-						  // const uint8_t data[]
+	uint32_t flashLength;
+	// const uint8_t data[]
 };
 
 } // namespace FSTR
