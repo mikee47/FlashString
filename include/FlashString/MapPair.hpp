@@ -22,6 +22,7 @@
 #pragma once
 
 #include "String.hpp"
+#include <WString.h>
 
 namespace FSTR
 {
@@ -98,7 +99,10 @@ public:
 
 	/* WString support */
 
-	explicit operator WString() const;
+	explicit operator WString() const
+	{
+		return WString(content());
+	}
 
 	/* Private member data */
 

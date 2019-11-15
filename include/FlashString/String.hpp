@@ -25,7 +25,7 @@
 #include "ArrayIterator.hpp"
 #include "StringPrinter.hpp"
 
-// Arduino String
+// Arduino String - cannot include WString.h here because of recursion
 class String;
 class __FlashStringHelper;
 typedef const __FlashStringHelper* flash_string_t;
