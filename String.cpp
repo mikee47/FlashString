@@ -17,7 +17,7 @@
  *
  ****/
 
-#include "include/FlashString/String.h"
+#include "include/FlashString/String.hpp"
 #include <WString.h>
 #include <esp_spi_flash.h>
 

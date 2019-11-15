@@ -1,5 +1,5 @@
 /**
- * Map.h - Defines the Map class template and associated macros
+ * Map.hpp - Defines the Map class template and associated macros
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -21,9 +21,9 @@
 
 #pragma once
 
-#include "String.h"
-#include "MapPair.h"
-#include "MapPairIterator.h"
+#include "String.hpp"
+#include "MapPair.hpp"
+#include "MapPairIterator.hpp"
 
 /**
  * @brief Declare a Map
@@ -160,9 +160,9 @@ public:
 	 * @brief Lookup a key and return the entry, if found
 	 * @note Result validity can be checked using if()
 	 */
-	template <typename TRefKey> Pair operator[](const TRefKey& key) const
+	template <typename TRefKey> const ContentType& operator[](const TRefKey& key) const
 	{
-		return valueAt(indexOf(key));
+		return valueAt(indexOf(key)).content();
 	}
 
 	/**

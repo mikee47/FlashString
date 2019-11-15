@@ -1,5 +1,5 @@
 /**
- * TemplateStream.h
+ * TemplateStream.hpp
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "Stream.h"
+#include "Stream.hpp"
 #include <Data/Stream/TemplateStream.h>
 
 namespace FSTR

@@ -21,6 +21,6 @@
 
 #pragma once
 
-#include "FlashString/TemplateStream.h"
+#include "FlashString/TemplateStream.hpp"
 
 using TemplateFlashMemoryStream = FSTR::TemplateStream;

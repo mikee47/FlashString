@@ -1,5 +1,5 @@
 /**
- * ObjectIterator.h - STL iterator to handle array of object pointers (String, Table, Map or custom)
+ * ObjectIterator.hpp - STL iterator to handle array of object pointers (String, Table, Map or custom)
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *

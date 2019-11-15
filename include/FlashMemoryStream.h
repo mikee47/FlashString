@@ -21,6 +21,6 @@
 
 #pragma once
 
-#include "FlashString/Stream.h"
+#include "FlashString/Stream.hpp"
 
 using FlashMemoryStream = FSTR::Stream;

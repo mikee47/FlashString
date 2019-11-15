@@ -1,5 +1,5 @@
 /**
- * Table.h - Defines the Table class template and associated macros
+ * Table.hpp - Defines the Table class template and associated macros
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -21,8 +21,8 @@
 
 #pragma once
 
-#include "String.h"
-#include "ObjectIterator.h"
+#include "String.hpp"
+#include "ObjectIterator.hpp"
 
 /**
  * @brief Declare a global table of FlashStrings

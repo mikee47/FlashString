@@ -1,5 +1,5 @@
 /**
- * Stream.h
+ * Stream.hpp
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -22,7 +22,7 @@
 #pragma once
 
 #include <Data/Stream/DataSourceStream.h>
-#include "String.h"
+#include "String.hpp"
 
 namespace FSTR
 {

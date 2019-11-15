@@ -1,5 +1,5 @@
 /**
- * MapPairIterator.h - STL iterator to handle array of MapPair objects
+ * MapPairIterator.hpp - STL iterator to handle array of MapPair objects
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *

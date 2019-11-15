@@ -1,5 +1,5 @@
 /**
- * String.h - Defines the String class and associated macros for efficient flash memory string access.
+ * String.hpp - Defines the String class and associated macros for efficient flash memory string access.
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -22,7 +22,7 @@
 #pragma once
 
 #include <FakePgmSpace.h>
-#include "StringPrinter.h"
+#include "StringPrinter.hpp"
 
 // Arduino String
 class String;

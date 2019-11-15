@@ -19,7 +19,7 @@
  *
  ****/
 
-#include "include/FlashString/Stream.h"
+#include "include/FlashString/Stream.hpp"
 
 namespace FSTR
 {

@@ -21,4 +21,6 @@
 
 #pragma once
 
-#include "FlashString/String.h"
+#include "FlashString/String.hpp"
+#include "FlashString/Table.hpp"
+#include "FlashString/Map.hpp"

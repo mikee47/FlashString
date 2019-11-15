@@ -1,5 +1,5 @@
 /**
- * MapPair.h - Defines the MapPair class template
+ * MapPair.hpp - Defines the MapPair class template
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -21,9 +21,7 @@
 
 #pragma once
 
-#include "String.h"
-#include <WString.h>
-#include <type_traits>
+#include "String.hpp"
 
 namespace FSTR
 {
@@ -95,13 +93,6 @@ public:
 	operator const ContentType&() const
 	{
 		return content();
-	}
-
-	/* Arduino String support */
-
-	operator WString() const
-	{
-		return WString(content());
 	}
 
 	/* Private member data */
