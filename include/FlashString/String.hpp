@@ -22,6 +22,7 @@
 #pragma once
 
 #include "Object.hpp"
+#include "ArrayIterator.hpp"
 #include "StringPrinter.hpp"
 
 // Arduino String
@@ -120,6 +121,18 @@ using WString = ::String;
 class String
 {
 public:
+	using Iterator = ArrayIterator<String, char>;
+
+	Iterator begin() const
+	{
+		return Iterator(*this, 0);
+	}
+
+	Iterator end() const
+	{
+		return Iterator(*this, length());
+	}
+
 	static const String& empty()
 	{
 		static const String PROGMEM empty_{0};
@@ -143,10 +156,7 @@ public:
 		return ALIGNUP(flashLength + 1);
 	}
 
-	/**
-	 * @brief Array operator[]
-	 */
-	char operator[](unsigned index) const
+	char valueAt(unsigned index) const
 	{
 		if(index >= flashLength) {
 			return '\0';
@@ -154,6 +164,14 @@ public:
 
 		auto c = pgm_read_byte(reinterpret_cast<const uint8_t*>(data()) + index);
 		return static_cast<char>(c);
+	}
+
+	/**
+	 * @brief Array operator[]
+	 */
+	char operator[](unsigned index) const
+	{
+		return valueAt(index);
 	}
 
 	/**

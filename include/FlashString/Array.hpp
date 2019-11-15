@@ -98,6 +98,18 @@ namespace FSTR
 template <typename ElementType> class Array
 {
 public:
+	using Iterator = ArrayIterator<Array, ElementType>;
+
+	Iterator begin() const
+	{
+		return Iterator(*this, 0);
+	}
+
+	Iterator end() const
+	{
+		return Iterator(*this, length());
+	}
+
 	static const Array& empty()
 	{
 		static const Array PROGMEM empty_{0};
@@ -121,13 +133,10 @@ public:
 		return ALIGNUP(flashLength * sizeof(ElementType));
 	}
 
-	/**
-	 * @brief Array operator[]
-	 */
-	ElementType operator[](unsigned index) const
+	ElementType valueAt(unsigned index) const
 	{
 		if(index >= flashLength) {
-			return 0;
+			return ElementType{0};
 		}
 
 		union {
@@ -151,6 +160,11 @@ public:
 			memcpy_P(&buf, p, sizeof(ElementType));
 		}
 		return buf.elem;
+	}
+
+	ElementType operator[](unsigned index) const
+	{
+		return valueAt(index);
 	}
 
 	/**

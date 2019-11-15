@@ -1,5 +1,5 @@
 /**
- * MapPairIterator.hpp - STL iterator to handle array of MapPair objects
+ * ArrayIterator.hpp - STL iterator to handle array of integral elements or structs
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -25,60 +25,54 @@
 
 namespace FSTR
 {
-template <class Pair> class MapPairIterator : public std::iterator<std::random_access_iterator_tag, Pair>
+template <class ArrayType, typename ElementType>
+class ArrayIterator : public std::iterator<std::random_access_iterator_tag, ElementType>
 {
 public:
-	MapPairIterator() = default;
-	MapPairIterator(const MapPairIterator&) = default;
+	ArrayIterator() = default;
+	ArrayIterator(const ArrayIterator&) = default;
 
-	MapPairIterator(Pair* head, unsigned count, unsigned index) : head(head), count(count), index(index)
+	ArrayIterator(const ArrayType& array, unsigned index) : array(array), index(index)
 	{
 	}
 
-	MapPairIterator& operator++()
+	ArrayIterator& operator++()
 	{
-		if(index < count) {
-			++index;
-		}
+		++index;
 		return *this;
 	}
 
-	MapPairIterator operator++(int)
+	ArrayIterator operator++(int)
 	{
-		MapPairIterator tmp(*this);
-		if(index < count) {
-			++index;
-		}
+		ArrayIterator tmp(*this);
+		++index;
 		return tmp;
 	}
 
-	MapPairIterator operator+=(size_t distanc)
+	ArrayIterator operator+=(size_t distance)
 	{
-		MapPairIterator tmp(*this);
-		if(index < count) {
-			++index;
-		}
+		ArrayIterator tmp(*this);
+		index += distance;
 		return tmp;
 	}
 
-	bool operator==(const MapPairIterator& rhs) const
+	bool operator==(const ArrayIterator& rhs) const
 	{
 		return index == rhs.index;
 	}
 
-	bool operator!=(const MapPairIterator& rhs) const
+	bool operator!=(const ArrayIterator& rhs) const
 	{
 		return index != rhs.index;
 	}
 
-	Pair operator*() const
+	const ElementType operator*() const
 	{
-		return (index < count) ? head[index] : Pair::empty();
+		return array.valueAt(index);
 	}
 
 private:
-	Pair* head = nullptr;
-	unsigned count = 0;
+	const ArrayType& array;
 	unsigned index = 0;
 };
 

@@ -21,9 +21,8 @@
 
 #pragma once
 
-#include "String.hpp"
 #include "MapPair.hpp"
-#include "MapPairIterator.hpp"
+#include "ArrayIterator.hpp"
 
 /**
  * @brief Declare a Map
@@ -85,17 +84,17 @@ namespace FSTR
 template <typename KeyType, class ContentType> class Map
 {
 public:
-	using Pair = const MapPair<KeyType, ContentType>;
-	using Iterator = MapPairIterator<Pair>;
+	using Pair = MapPair<KeyType, ContentType>;
+	using Iterator = ArrayIterator<Map, Pair>;
 
 	Iterator begin() const
 	{
-		return Iterator(data(), length(), 0);
+		return Iterator(*this, 0);
 	}
 
 	Iterator end() const
 	{
-		return Iterator(data(), length(), length());
+		return Iterator(*this, length());
 	}
 
 	static const Map& empty()
@@ -108,7 +107,7 @@ public:
 	 * @brief Get a map entry by index, if it exists
 	 * @note Result validity can be checked using if()
 	 */
-	Pair valueAt(unsigned index) const
+	const Pair valueAt(unsigned index) const
 	{
 		return (index < length()) ? data()[index] : Pair::empty();
 	}
@@ -160,9 +159,9 @@ public:
 	 * @brief Lookup a key and return the entry, if found
 	 * @note Result validity can be checked using if()
 	 */
-	template <typename TRefKey> const ContentType& operator[](const TRefKey& key) const
+	template <typename TRefKey> const Pair operator[](const TRefKey& key) const
 	{
-		return valueAt(indexOf(key)).content();
+		return valueAt(indexOf(key));
 	}
 
 	/**
@@ -175,7 +174,7 @@ public:
 
 	const Pair* data() const
 	{
-		return reinterpret_cast<Pair*>(&flashLength + 1);
+		return reinterpret_cast<const Pair*>(&flashLength + 1);
 	}
 
 	const uint32_t flashLength;

@@ -30,7 +30,8 @@ namespace FSTR
  */
 template <typename KeyType, class ContentType> class MapPair
 {
-	typedef typename std::conditional<std::is_class<KeyType>::value, const KeyType*, KeyType>::type KeyStoreType;
+	typedef typename std::conditional<std::is_same<KeyType, String>::value, const KeyType*, const KeyType>::type
+		KeyStoreType;
 
 public:
 	typedef void (MapPair::*IfHelperType)() const;
@@ -57,7 +58,7 @@ public:
 	/**
 	 * @brief Get the key (non-class key types)
 	 */
-	template <typename T = KeyType, typename std::enable_if<!std::is_class<T>::value>::type* = nullptr> T key() const
+	template <typename T = KeyType> typename std::enable_if<!std::is_class<T>::value, KeyType>::type key() const
 	{
 		// Ensure access is aligned for 1/2 byte keys
 		volatile auto pair = *this;
@@ -67,8 +68,8 @@ public:
 	/**
 	 * @brief Get the key (String key type)
 	 */
-	template <typename T = KeyType, typename std::enable_if<std::is_same<T, String>::value>::type* = nullptr>
-	const KeyType& key() const
+	template <typename T = KeyType>
+	typename std::enable_if<std::is_same<T, String>::value, const KeyType&>::type key() const
 	{
 		auto k = key_;
 		if(k == nullptr) {
@@ -95,9 +96,13 @@ public:
 		return content();
 	}
 
+	/* WString support */
+
+	explicit operator WString() const;
+
 	/* Private member data */
 
-	const KeyStoreType key_;
+	KeyStoreType key_;
 	const ContentType* content_;
 };
 
