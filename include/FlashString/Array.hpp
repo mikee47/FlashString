@@ -230,6 +230,11 @@ public:
 		return ArrayPrinter<Array>(*this, separator);
 	}
 
+	size_t printTo(Print& p) const
+	{
+		return printer().printTo(p);
+	}
+
 	/* Private member data */
 
 	uint32_t flashLength;

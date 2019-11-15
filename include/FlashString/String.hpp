@@ -295,6 +295,11 @@ public:
 		return StringPrinter(*this);
 	}
 
+	size_t printTo(Print& p) const
+	{
+		return printer().printTo(p);
+	}
+
 	/* Private member data */
 
 	uint32_t flashLength;

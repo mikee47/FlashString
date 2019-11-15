@@ -1,5 +1,5 @@
 /**
- * ArrayPrinter.cpp - Print support for arrays
+ * MapPrinter.cpp - Print support for maps
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -23,10 +23,10 @@
 
 namespace FSTR
 {
-template <class ArrayType> class ArrayPrinter : public Printable
+template <class MapType> class MapPrinter : public Printable
 {
 public:
-	ArrayPrinter(const ArrayType& array, const WString& separator) : array(array), separator(separator)
+	MapPrinter(const MapType& map) : map(map)
 	{
 	}
 
@@ -34,21 +34,19 @@ public:
 	{
 		size_t count = 0;
 
-		count += p.print("[");
-		for(unsigned i = 0; i < array.length(); ++i) {
-			if(i > 0) {
-				count += p.print(separator);
-			}
-			count += print(p, array[i]);
+		count += p.println("{");
+		for(unsigned i = 0; i < map.length(); ++i) {
+			count += p.print("  ");
+			count += map.valueAt(i).printTo(p);
+			count += p.println();
 		}
-		count += p.print("]");
+		count += p.print("}");
 
 		return count;
 	}
 
 private:
-	const ArrayType& array;
-	WString separator;
+	const MapType& map;
 };
 
 } // namespace FSTR

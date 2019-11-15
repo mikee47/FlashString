@@ -22,6 +22,7 @@
 #pragma once
 
 #include "String.hpp"
+#include "Print.hpp"
 #include <WString.h>
 
 namespace FSTR
@@ -102,6 +103,23 @@ public:
 	explicit operator WString() const
 	{
 		return WString(content());
+	}
+
+	/* Print support */
+
+	size_t printTo(Print& p) const
+	{
+		size_t count = 0;
+
+		if(*this) {
+			count += print(p, key());
+			count += p.print(" => ");
+			count += print(p, content());
+		} else {
+			count += p.print("(invalid)");
+		}
+
+		return count;
 	}
 
 	/* Private member data */

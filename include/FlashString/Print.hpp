@@ -1,5 +1,5 @@
 /**
- * ArrayPrinter.cpp - Print support for arrays
+ * Print.cpp - Print support
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -19,36 +19,27 @@
 
 #pragma once
 
-#include "Print.hpp"
+#include <Print.h>
+#include <WString.h>
 
 namespace FSTR
 {
-template <class ArrayType> class ArrayPrinter : public Printable
+template <class ObjectType>
+typename std::enable_if<std::is_class<ObjectType>::value, size_t>::type print(Print& p, const ObjectType& object)
 {
-public:
-	ArrayPrinter(const ArrayType& array, const WString& separator) : array(array), separator(separator)
-	{
-	}
+	return object.printTo(p);
+}
 
-	size_t printTo(Print& p) const override
-	{
-		size_t count = 0;
+template <typename T> typename std::enable_if<!std::is_class<T>::value, size_t>::type print(Print& p, T value)
+{
+	return p.print(value);
+}
 
-		count += p.print("[");
-		for(unsigned i = 0; i < array.length(); ++i) {
-			if(i > 0) {
-				count += p.print(separator);
-			}
-			count += print(p, array[i]);
-		}
-		count += p.print("]");
-
-		return count;
-	}
-
-private:
-	const ArrayType& array;
-	WString separator;
-};
+template <typename T> size_t println(Print& p, T value)
+{
+	size_t size = print(p, value);
+	size += p.println();
+	return size;
+}
 
 } // namespace FSTR

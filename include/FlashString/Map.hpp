@@ -22,6 +22,7 @@
 #pragma once
 
 #include "MapPair.hpp"
+#include "MapPrinter.hpp"
 #include "ArrayIterator.hpp"
 
 /**
@@ -184,6 +185,22 @@ public:
 	const Pair* data() const
 	{
 		return reinterpret_cast<const Pair*>(&flashLength + 1);
+	}
+
+	/* Arduino Print support */
+
+	/**
+	 * @brief Returns a printer object for this array
+	 * @note ElementType must be supported by Print
+	 */
+	MapPrinter<Map> printer() const
+	{
+		return MapPrinter<Map>(*this);
+	}
+
+	size_t printTo(Print& p) const
+	{
+		return printer().printTo(p);
 	}
 
 	const uint32_t flashLength;
