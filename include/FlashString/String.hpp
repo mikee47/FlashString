@@ -282,10 +282,10 @@ public:
 	 * @note Avoids implicit String() cast when working with large FlashStrings:
 	 *
 	 *		IMPORT_FSTR(largeString, PROJECT_DIR "/files/large-text.txt");
-	 * 		Serial.println(largeString.printable());
+	 * 		Serial.println(largeString.printer());
 	 *
 	 */
-	StringPrinter printable() const
+	StringPrinter printer() const
 	{
 		return StringPrinter(*this);
 	}

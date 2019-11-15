@@ -22,6 +22,7 @@
 #pragma once
 
 #include "Object.hpp"
+#include "ArrayPrinter.hpp"
 
 /**
  * @brief Declare a global Array instance
@@ -214,10 +215,21 @@ public:
 		return readFlashData(buffer, data() + index, count * sizeof(ElementType));
 	}
 
+	/* Arduino Print support */
+
+	/**
+	 * @brief Returns a printer object for this array
+	 * @note ElementType must be supported by Print
+	 */
+	ArrayPrinter<Array> printer(const WString& separator = ", ") const
+	{
+		return ArrayPrinter<Array>(*this, separator);
+	}
+
 	/* Private member data */
 
 	uint32_t flashLength;
-	// const uint8_t data[]
+	// const ElementType data[]
 };
 
 } // namespace FSTR
