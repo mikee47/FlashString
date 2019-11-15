@@ -24,8 +24,38 @@
 #include "config.hpp"
 
 /**
+ * @brief Wrap a type declaration so it can be passed with commas or angle-brackets
+ * @note Example:
+ *
+ *	template <typename ElementType, size_t Columns>
+ *	struct MultiRow
+ *	{
+ *		ElementType values[Columns];
+ *	}
+ *
+ * These fail:
+ *
+ * 	DECLARE_FSTR_ARRAY(myArray, MultiRow<double, 3>);
+ * 	DECLARE_FSTR_ARRAY(myArray, (MultiRow<double, 3>));
+ *
+ * Use DECL like this:
+ *
+ * 	DECLARE_FSTR_ARRAY(myArray, DECL((MultiRow<double, 3>)) );
+ *
+ * Although for this example we should probably do this:
+ *
+ * 	using MultiRow_double_3 = MultiRow<double, 3>;
+ * 	DECLARE_FSTR_ARRAY(myArray, MultiRow_double_3);
+ *
+ */
+#define DECL(t) argument_type<void(t)>::type
+template <typename T> struct argument_type;
+template <typename T, typename U> struct argument_type<T(U)> {
+	typedef U type;
+};
+
+/**
  * @brief Define a reference to an object
- * @note Used for other objects, not just String
  */
 #define DEFINE_FSTR_REF(name)                                                                                          \
 	constexpr const decltype(FSTR_DATA_NAME(name).object)& name PROGMEM = FSTR_DATA_NAME(name).object;
