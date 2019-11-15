@@ -27,7 +27,7 @@ namespace FSTR
 size_t StringPrinter::printTo(Print& p) const
 {
 	if(string.length() < 256) {
-		return p.print(::String(string));
+		return p.print(WString(string));
 	}
 
 	// Print in chunks

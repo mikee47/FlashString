@@ -79,9 +79,9 @@ public:
 
 	/* Arduino String support */
 
-	operator ::String() const
+	operator WString() const
 	{
-		return ::String(content());
+		return WString(content());
 	}
 
 	/* Private member data */
@@ -135,9 +135,9 @@ public:
 
 	/* Arduino String support */
 
-	operator ::String() const
+	operator WString() const
 	{
-		return ::String(content());
+		return WString(content());
 	}
 
 	/* Private member data */

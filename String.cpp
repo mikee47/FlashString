@@ -64,12 +64,12 @@ bool String::equals(const String& str) const
 
 /* Arduino String support */
 
-String::operator ::String() const
+String::operator WString() const
 {
-	return ::String(data(), length());
+	return WString(data(), length());
 }
 
-bool String::equals(const ::String& str) const
+bool String::equals(const WString& str) const
 {
 	auto len = str.length();
 	if(len != length())
@@ -79,7 +79,7 @@ bool String::equals(const ::String& str) const
 	return memcmp(buf, str.c_str(), len) == 0;
 }
 
-bool String::equalsIgnoreCase(const ::String& str) const
+bool String::equalsIgnoreCase(const WString& str) const
 {
 	auto len = str.length();
 	if(len != length()) {

@@ -29,6 +29,8 @@ class String;
 class __FlashStringHelper;
 typedef const __FlashStringHelper* flash_string_t;
 
+using FlashString = FSTR::String;
+
 /**
  * @brief Define an inline FlashString
  * @note This returns a pointer, not a reference
@@ -36,7 +38,7 @@ typedef const __FlashStringHelper* flash_string_t;
 #define FS(str)                                                                                                        \
 	(__extension__({                                                                                                   \
 		static constexpr struct {                                                                                      \
-			FSTR::String object;                                                                                       \
+			FlashString object;                                                                                        \
 			char data[ALIGNUP(sizeof(str))];                                                                           \
 		} struc PROGMEM = {{sizeof(str) - 1}, str};                                                                    \
 		&struc.object;                                                                                                 \
@@ -45,7 +47,7 @@ typedef const __FlashStringHelper* flash_string_t;
 /**
  * @brief Declare a global String instance
  */
-#define DECLARE_FSTR(name) extern const FSTR::String& name;
+#define DECLARE_FSTR(name) extern const FlashString& name;
 
 /** @brief Define a String
  *  @param name variable to identify the string
@@ -85,7 +87,7 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define DEFINE_FSTR_DATA(name, str)                                                                                    \
 	constexpr const struct {                                                                                           \
-		FSTR::String object;                                                                                           \
+		FlashString object;                                                                                            \
 		char data[ALIGNUP(sizeof(str))];                                                                               \
 	} name PROGMEM = {{sizeof(str) - 1}, str};
 
@@ -125,7 +127,7 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define IMPORT_FSTR(name, file)                                                                                        \
 	IMPORT_FSTR_DATA(name, file)                                                                                       \
-	extern "C" const FSTR::String name;
+	extern "C" const FlashString name;
 
 /**
  * @brief Link the contents of a file and define a global symbol
@@ -162,6 +164,8 @@ typedef const __FlashStringHelper* flash_string_t;
 
 namespace FSTR
 {
+using WString = ::String;
+
 /**
  * @brief describes a counted string stored in flash memory
  */
@@ -267,20 +271,20 @@ public:
 		return !equals(str);
 	}
 
-	/* Arduino String support */
+	/* WString support */
 
-	operator ::String() const;
+	operator WString() const;
 
-	bool equals(const ::String& str) const;
+	bool equals(const WString& str) const;
 
-	bool equalsIgnoreCase(const ::String& str) const;
+	bool equalsIgnoreCase(const WString& str) const;
 
-	bool operator==(const ::String& str) const
+	bool operator==(const WString& str) const
 	{
 		return equals(str);
 	}
 
-	bool operator!=(const ::String& str) const
+	bool operator!=(const WString& str) const
 	{
 		return !equals(str);
 	}
