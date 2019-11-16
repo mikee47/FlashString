@@ -20,7 +20,6 @@
 #pragma once
 
 #include <Print.h>
-#include <WString.h>
 
 namespace FSTR
 {

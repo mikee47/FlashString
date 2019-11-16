@@ -22,7 +22,6 @@
 #pragma once
 
 #include "Object.hpp"
-#include "ObjectIterator.hpp"
 #include "ArrayPrinter.hpp"
 
 /**
@@ -38,7 +37,7 @@
  */
 #define DEFINE_FSTR_ARRAY(name, ElementType, ...)                                                                      \
 	DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                            \
-	DEFINE_FSTR_REF(name);
+	DEFINE_FSTR_REF_NAMED(name, FSTR::Array<ElementType>);
 
 /** @brief Define an array for local (static) use
  *  @param name variable to identify the array
@@ -47,7 +46,7 @@
  */
 #define DEFINE_FSTR_ARRAY_LOCAL(name, ElementType, ...)                                                                \
 	DEFINE_FSTR_ARRAY_DATA_LOCAL(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                      \
-	DEFINE_FSTR_REF_LOCAL(name);
+	static DEFINE_FSTR_REF_NAMED(name, FSTR::Array<ElementType>);
 
 /** @brief Define an array structure
  *  @param name Name to use for data structure
@@ -56,9 +55,9 @@
  */
 #define DEFINE_FSTR_ARRAY_DATA(name, ElementType, ...)                                                                 \
 	constexpr const struct {                                                                                           \
-		FSTR::Array<ElementType> object;                                                                               \
+		FSTR::ObjectBase object;                                                                                       \
 		ElementType data[sizeof((const ElementType[]){__VA_ARGS__}) / sizeof(ElementType)];                            \
-	} ATTR_PACKED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                      \
+	} ATTR_PACKED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                                 \
 	FSTR_CHECK_STRUCT(name);
 
 #define DEFINE_FSTR_ARRAY_DATA_LOCAL(name, ElementType, ...)                                                           \
@@ -98,7 +97,7 @@ namespace FSTR
 /**
  * @brief describes an array of integral values stored in flash memory
  */
-template <typename ElementType> class Array
+template <typename ElementType> class Array : public Object<Array<ElementType>, ElementType>
 {
 public:
 	using Iterator = ObjectIterator<Array, ElementType>;
@@ -110,35 +109,12 @@ public:
 
 	Iterator end() const
 	{
-		return Iterator(*this, length());
-	}
-
-	static const Array& empty()
-	{
-		static const Array PROGMEM empty_{0};
-		return empty_;
-	}
-
-	/**
-	 * @brief Get the length of the array in elements
-	 */
-	uint32_t length() const
-	{
-		return flashLength / sizeof(ElementType);
-	}
-
-	/**
-	 * @brief Get the number of bytes used to store the Array
-	 * @note Always an integer multiple of 4 bytes
-	 */
-	uint32_t size() const
-	{
-		return ALIGNUP(flashLength);
+		return Iterator(*this, this->length());
 	}
 
 	ElementType valueAt(unsigned index) const
 	{
-		if(index >= length()) {
+		if(index >= this->length()) {
 			return ElementType{0};
 		}
 
@@ -149,7 +125,7 @@ public:
 			ElementType elem;
 		} buf;
 
-		auto p = data() + index;
+		auto p = this->data() + index;
 		switch(sizeof(ElementType)) {
 		case 1:
 			buf.u8 = pgm_read_byte(p);
@@ -175,51 +151,6 @@ public:
 		return valueAt(index);
 	}
 
-	/**
-	 * @brief Get a pointer to the flash data
-	 */
-	const ElementType* data() const
-	{
-		return reinterpret_cast<const ElementType*>(&flashLength + 1);
-	}
-
-	/**
-	 * @brief Read contents of an Array into RAM
-	 * @param index First element to read
-	 * @param buffer Where to store data
-	 * @param count How many elements to read
-	 * @retval size_t Number of elements actually read
-	 */
-	size_t read(size_t index, ElementType* buffer, size_t count) const
-	{
-		auto len = length();
-		if(index >= len) {
-			return 0;
-		}
-
-		count = std::min(len - index, count);
-		memcpy_P(buffer, data() + index, count * sizeof(ElementType));
-		return count;
-	}
-
-	/**
-	 * @brief Read contents of an Array into RAM, using flashread()
-	 * @param index First element to read
-	 * @param buffer Where to store data
-	 * @param count How many elements to read
-	 * @retval size_t Number of elements actually read
-	 */
-	size_t readFlash(size_t index, ElementType* buffer, size_t count) const
-	{
-		auto len = length();
-		if(index >= len) {
-			return 0;
-		}
-
-		count = std::min(len - index, count);
-		return readFlashData(buffer, data() + index, count * sizeof(ElementType));
-	}
-
 	/* Arduino Print support */
 
 	/**
@@ -235,11 +166,6 @@ public:
 	{
 		return printer().printTo(p);
 	}
-
-	/* Private member data */
-
-	uint32_t flashLength;
-	// const ElementType data[]
 } ATTR_PACKED;
 
 } // namespace FSTR

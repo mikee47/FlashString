@@ -22,9 +22,10 @@
 #pragma once
 
 #include "config.hpp"
+#include "ObjectIterator.hpp"
 
 /**
- * @brief Wrap a type declaration so it can be passed with commas or angle-brackets
+ * @brief Wrap a type declaration so it can be passed with commas in it
  * @note Example:
  *
  *	template <typename ElementType, size_t Columns>
@@ -56,10 +57,14 @@ template <typename T, typename U> struct argument_type<T(U)> {
 
 /**
  * @brief Define a reference to an object
+ * @param name Name for reference
+ * @param ObjectType Fully qualified typename of object required, e.g. FSTR::String, FlashString, FSTR::Vector<int>, etc.
+ * @param object FSTR::Object instance to cast
  */
-#define DEFINE_FSTR_REF(name)                                                                                          \
-	constexpr const decltype(FSTR_DATA_NAME(name).object)& name PROGMEM = FSTR_DATA_NAME(name).object;
-#define DEFINE_FSTR_REF_LOCAL(name) static DEFINE_FSTR_REF(name)
+#define DEFINE_FSTR_REF(name, ObjectType, object) constexpr const ObjectType& name PROGMEM = object.as<ObjectType>();
+#define DEFINE_FSTR_REF_LOCAL(name, ObjectType, object) static DEFINE_FSTR_REF(name, ObjectType, object)
+
+#define DEFINE_FSTR_REF_NAMED(name, ObjectType) DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name).object);
 
 /**
  * @brief Provide internal name for generated flash string structures
@@ -116,5 +121,142 @@ template <typename T, typename U> struct argument_type<T(U)> {
 
 namespace FSTR
 {
-size_t readFlashData(void* dst, const void* src, size_t count);
+class ObjectBase
+{
+public:
+	/**
+	 * @brief Get the object data size in bytes
+	 * @note Always an integer multiple of 4 bytes
+	 */
+	uint32_t size() const
+	{
+		return ALIGNUP(flashLength + 1);
+	}
+
+	uint8_t valueAt(unsigned index) const
+	{
+		return (index < size()) ? pgm_read_byte(data() + index) : 0;
+	}
+
+	template <class ObjectType> constexpr const ObjectType& as() const
+	{
+		return *reinterpret_cast<const ObjectType*>(this);
+	}
+
+	/**
+	 * @brief Array operator[]
+	 */
+	uint8_t operator[](unsigned index) const
+	{
+		return valueAt(index);
+	}
+
+	/**
+	 * @brief Get a pointer to the flash data
+	 */
+	const uint8_t* data() const
+	{
+		return reinterpret_cast<const uint8_t*>(&flashLength + 1);
+	}
+
+	/**
+	 * @brief Read contents of a String into RAM
+	 * @param offset Zero-based offset from start of flash data to start reading
+	 * @param buffer Where to store data
+	 * @param count How many bytes to read
+	 * @retval size_t Number of bytes actually read
+	 */
+	size_t read(size_t offset, void* buffer, size_t count) const
+	{
+		if(offset >= flashLength) {
+			return 0;
+		}
+
+		count = std::min(flashLength - offset, count);
+		memcpy_P(buffer, data() + offset, count);
+		return count;
+	}
+
+	/**
+	 * @brief Read contents of a String into RAM, using flashread()
+	 * @param offset Zero-based offset from start of flash data to start reading
+	 * @param buffer Where to store data
+	 * @param count How many bytes to read
+	 * @retval size_t Number of bytes actually read
+	 * @note PROGMEM data is accessed via the CPU data cache, so to avoid degrading performance
+	 * you can use this method to read data directly from flash memory.
+	 * This is appropriate for infrequently accessed data, especially if it is large.
+	 * For example, if storing content using `IMPORT_FSTR` instead of SPIFFS then it
+	 * is generally better to avoid contaminating the cache.
+	 * @see See also `FlashMemoryStream` class.
+	 */
+	size_t readFlash(size_t offset, void* buffer, size_t count) const;
+
+	/* Private member data */
+
+	uint32_t flashLength;
+	// const uint8_t data[]
+
+protected:
+	static const ObjectBase empty_;
 };
+
+template <class ObjectType, typename ElementType> class Object : public ObjectBase
+{
+public:
+	static const ObjectType& empty()
+	{
+		return empty_.as<ObjectType>();
+	}
+
+	/**
+	 * @brief Get the length of the array in elements
+	 */
+	uint32_t length() const
+	{
+		return flashLength / sizeof(ElementType);
+	}
+
+	/**
+	 * @brief Array operator[]
+	 */
+	char operator[](unsigned index) const
+	{
+		return this->valueAt(index);
+	}
+
+	const ElementType* data() const
+	{
+		return reinterpret_cast<const ElementType*>(ObjectBase::data());
+	}
+
+	/**
+	 * @brief Read contents of an Array into RAM
+	 * @param index First element to read
+	 * @param buffer Where to store data
+	 * @param count How many elements to read
+	 * @retval size_t Number of elements actually read
+	 */
+	size_t read(size_t index, ElementType* buffer, size_t count) const
+	{
+		auto offset = index * sizeof(ElementType);
+		count *= sizeof(ElementType);
+		return ObjectBase::read(offset, buffer, count) / sizeof(ElementType);
+	}
+
+	/**
+	 * @brief Read contents of an Array into RAM, using flashread()
+	 * @param index First element to read
+	 * @param buffer Where to store data
+	 * @param count How many elements to read
+	 * @retval size_t Number of elements actually read
+	 */
+	size_t readFlash(size_t index, ElementType* buffer, size_t count) const
+	{
+		auto offset = index * sizeof(ElementType);
+		count *= sizeof(ElementType);
+		return ObjectBase::readFlash(offset, buffer, count) / sizeof(ElementType);
+	}
+};
+
+}; // namespace FSTR

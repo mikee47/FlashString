@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include "Object.hpp"
 #include "MapPair.hpp"
 #include "MapPrinter.hpp"
 #include "ObjectIterator.hpp"
@@ -38,19 +39,19 @@
  */
 #define DEFINE_FSTR_MAP(name, KeyType, ContentType, ...)                                                               \
 	DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                                     \
-	DEFINE_FSTR_REF(name);
+	DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
 #define DEFINE_FSTR_MAP_LOCAL(name, KeyType, ContentType, ...)                                                         \
 	DEFINE_FSTR_MAP_DATA_LOCAL(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                               \
-	DEFINE_FSTR_REF_LOCAL(name);
+	static DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
 #define DEFINE_FSTR_MAP_SIZED(name, KeyType, ContentType, size, ...)                                                   \
 	DEFINE_FSTR_MAP_DATA_SIZED(FSTR_DATA_NAME(name), KeyType, ContentType, size, __VA_ARGS__);                         \
-	DEFINE_FSTR_REF(name);
+	DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
 #define DEFINE_FSTR_MAP_SIZED_LOCAL(name, KeyType, ContentType, size, ...)                                             \
 	DEFINE_FSTR_MAP_DATA_SIZED_LOCAL(FSTR_DATA_NAME(name), KeyType, ContentType, size, __VA_ARGS__);                   \
-	DEFINE_FSTR_REF_LOCAL(name);
+	static DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
 /**
  * @brief Define a structure containing map data
@@ -71,7 +72,7 @@
  */
 #define DEFINE_FSTR_MAP_DATA_SIZED(name, KeyType, ContentType, size, ...)                                              \
 	constexpr const struct {                                                                                           \
-		FSTR::Map<KeyType, ContentType> object;                                                                        \
+		FSTR::ObjectBase object;                                                                                       \
 		FSTR::MapPair<KeyType, ContentType> data[size];                                                                \
 	} name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                                             \
 	FSTR_CHECK_STRUCT(name);
@@ -84,7 +85,7 @@ namespace FSTR
 /**
  * @brief Class template to access an associative map
  */
-template <typename KeyType, class ContentType> class Map
+template <typename KeyType, class ContentType> class Map : public Array<MapPair<KeyType, ContentType>>
 {
 public:
 	using Pair = MapPair<KeyType, ContentType>;
@@ -97,13 +98,7 @@ public:
 
 	Iterator end() const
 	{
-		return Iterator(*this, length());
-	}
-
-	static const Map& empty()
-	{
-		static const Map PROGMEM empty_{0};
-		return empty_;
+		return Iterator(*this, this->length());
 	}
 
 	/**
@@ -112,7 +107,7 @@ public:
 	 */
 	const Pair valueAt(unsigned index) const
 	{
-		return (index < length()) ? data()[index] : Pair::empty();
+		return (index < this->length()) ? this->data()[index] : Pair::empty();
 	}
 
 	/**
@@ -122,8 +117,9 @@ public:
 	template <typename TRefKey, typename T = KeyType>
 	typename std::enable_if<!std::is_class<T>::value, int>::type indexOf(const TRefKey& key) const
 	{
-		auto p = data();
-		for(unsigned i = 0; i < length(); ++i, ++p) {
+		auto p = this->data();
+		auto len = this->length();
+		for(unsigned i = 0; i < len; ++i, ++p) {
 			if(IS_ALIGNED(sizeof(KeyType))) {
 				if(p->key_ == key) {
 					return i;
@@ -148,8 +144,9 @@ public:
 	template <typename TRefKey, typename T = KeyType>
 	typename std::enable_if<std::is_same<T, String>::value, int>::type indexOf(const TRefKey& key) const
 	{
-		auto p = data();
-		for(unsigned i = 0; i < length(); ++i, ++p) {
+		auto p = this->data();
+		auto len = this->length();
+		for(unsigned i = 0; i < len; ++i, ++p) {
 			if(*p->key_ == key) {
 				return i;
 			}
@@ -167,28 +164,6 @@ public:
 		return valueAt(indexOf(key));
 	}
 
-	/**
-	 * @brief Accessor to get the number of entries in the map
-	 */
-	unsigned length() const
-	{
-		return flashLength / sizeof(Pair);
-	}
-
-	/**
-	 * @brief Get the number of bytes used to store the map
-	 * @note Always an integer multiple of 4 bytes
-	 */
-	uint32_t size() const
-	{
-		return flashLength;
-	}
-
-	const Pair* data() const
-	{
-		return reinterpret_cast<const Pair*>(&flashLength + 1);
-	}
-
 	/* Arduino Print support */
 
 	/**
@@ -204,9 +179,6 @@ public:
 	{
 		return printer().printTo(p);
 	}
-
-	const uint32_t flashLength;
-	// const Pair values[];
 };
 
 } // namespace FSTR

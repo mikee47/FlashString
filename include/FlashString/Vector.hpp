@@ -22,7 +22,6 @@
 #pragma once
 
 #include "Object.hpp"
-#include "ObjectIterator.hpp"
 
 /**
  * @brief Declare a global Vector
@@ -34,28 +33,28 @@
  */
 #define DEFINE_FSTR_VECTOR(name, ObjectType, ...)                                                                      \
 	DEFINE_FSTR_VECTOR_DATA(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                            \
-	DEFINE_FSTR_REF(name);
+	DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
  * @brief Define a Vector (size calculated) with local reference
  */
 #define DEFINE_FSTR_VECTOR_LOCAL(name, ObjectType, ...)                                                                \
 	DEFINE_FSTR_VECTOR_DATA_LOCAL(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                      \
-	DEFINE_FSTR_REF_LOCAL(name);
+	static DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
  * @brief Define a Vector (size provided) with global reference
  */
 #define DEFINE_FSTR_VECTOR_SIZED(name, ObjectType, size, ...)                                                          \
 	DEFINE_FSTR_VECTOR_DATA_SIZED(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                                \
-	DEFINE_FSTR_REF(name);
+	DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
  * @brief Define a Vector (size provided) with local reference
  */
 #define DEFINE_FSTR_VECTOR_SIZED_LOCAL(name, ObjectType, size, ...)                                                    \
 	DEFINE_FSTR_VECTOR_DATA_SIZED_LOCAL(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                          \
-	DEFINE_FSTR_REF_LOCAL(name);
+	static DEFINE_FSTR_REF_NAMED(name, Vector<ObjectType>);
 
 /**
  * @brief Define a Vector data structure, global (non-static)
@@ -76,7 +75,7 @@
  */
 #define DEFINE_FSTR_VECTOR_DATA_SIZED(name, ObjectType, size, ...)                                                     \
 	constexpr const struct {                                                                                           \
-		FSTR::Vector<ObjectType> object;                                                                               \
+		FSTR::ObjectBase object;                                                                                       \
 		const ObjectType* data[size];                                                                                  \
 	} name PROGMEM = {{sizeof(name.data)}, __VA_ARGS__};                                                               \
 	FSTR_CHECK_STRUCT(name);
@@ -92,7 +91,7 @@ namespace FSTR
 /**
  * @brief Class to access a Vector of objects stored in flash
  */
-template <class ObjectType> class Vector
+template <class ObjectType> class Vector : public Object<Vector<ObjectType>, ObjectType*>
 {
 public:
 	using Iterator = ObjectIterator<Vector, ObjectType, true>;
@@ -104,13 +103,13 @@ public:
 
 	Iterator end() const
 	{
-		return Iterator(*this, length());
+		return Iterator(*this, this->length());
 	}
 
 	const ObjectType& valueAt(unsigned index) const
 	{
-		if(index < length()) {
-			auto p = data();
+		if(index < this->length()) {
+			auto p = this->data();
 			p += index;
 			return **p;
 		} else {
@@ -122,32 +121,6 @@ public:
 	{
 		return valueAt(index);
 	}
-
-	static const Vector& empty()
-	{
-		static const Vector PROGMEM empty_{0};
-		return empty_;
-	}
-
-	unsigned length() const
-	{
-		return flashLength / sizeof(ObjectType*);
-	}
-
-	unsigned size() const
-	{
-		return flashLength;
-	}
-
-	const ObjectType* const* data() const
-	{
-		return reinterpret_cast<const ObjectType* const*>(&flashLength + 1);
-	}
-
-	/* Private member data */
-
-	const uint32_t flashLength;
-	// const ObjectType* entries[];
 };
 
 } // namespace FSTR

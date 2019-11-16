@@ -22,10 +22,17 @@
 
 namespace FSTR
 {
-size_t readFlashData(void* dst, const void* src, size_t count)
+const ObjectBase ObjectBase::empty_{0};
+
+size_t ObjectBase::readFlash(size_t offset, void* buffer, size_t count) const
 {
-	auto addr = flashmem_get_address(src);
-	return flashmem_read(dst, addr, count);
+	if(offset >= flashLength) {
+		return 0;
+	}
+
+	count = std::min(flashLength - offset, count);
+	auto addr = flashmem_get_address(data() + offset);
+	return flashmem_read(buffer, addr, count);
 }
 
 } // namespace FSTR
