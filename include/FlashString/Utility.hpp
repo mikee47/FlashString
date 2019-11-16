@@ -1,5 +1,5 @@
 /**
- * config.hpp - System-specific configuration
+ * Utility.hpp - Definitions, common macros and utility functions
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -15,13 +15,29 @@
  * You should have received a copy of the GNU General Public License along with FlashString.
  * If not, see <https://www.gnu.org/licenses/>.
  *
- * @author: 2018 - Mikee47 <mike@sillyhouse.net>
+ * @author: Nov 2019 - Mikee47 <mike@sillyhouse.net>
  *
  ****/
 
 #pragma once
 
-#include <FakePgmSpace.h>
+#include "config.hpp"
 
-#define FORCE_INLINE __attribute__((always_inline)) inline
-#define ATTR_PACKED __attribute__((packed)) __attribute__((aligned(4)))
+namespace FSTR
+{
+template <typename T> FORCE_INLINE typename std::enable_if<sizeof(T) == 1, T>::type readValue(const T* ptr)
+{
+	return static_cast<T>(pgm_read_byte(ptr));
+}
+
+template <typename T> FORCE_INLINE typename std::enable_if<sizeof(T) == 2, T>::type readValue(const T* ptr)
+{
+	return static_cast<T>(pgm_read_word(ptr));
+}
+
+template <typename T> FORCE_INLINE typename std::enable_if<IS_ALIGNED(sizeof(T)), T>::type readValue(const T* ptr)
+{
+	return *static_cast<const T*>(ptr);
+}
+
+} // namespace FSTR

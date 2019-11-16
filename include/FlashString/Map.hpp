@@ -74,7 +74,7 @@
 	constexpr const struct {                                                                                           \
 		FSTR::ObjectBase object;                                                                                       \
 		FSTR::MapPair<KeyType, ContentType> data[size];                                                                \
-	} name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                                             \
+	} ATTR_PACKED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                                 \
 	FSTR_CHECK_STRUCT(name);
 
 #define DEFINE_FSTR_MAP_DATA_SIZED_LOCAL(name, KeyType, ContentType, size, ...)                                        \
@@ -100,22 +100,14 @@ public:
 			return Pair::empty();
 		}
 
-		if(IS_ALIGNED(sizeof(KeyType))) {
-			return this->data()[index];
-		}
+		static_assert(offsetof(Pair, content_) == sizeof(uint32_t), "Misaligned MapPair");
 
-		// Compiler insists on mucking about accesssing short key field
-		union X {
-			uint64_t u64;
-			Pair pair;
-		};
-		uint64_t tmp;
-		memcpy(&tmp, this->data() + index, sizeof(tmp));
-		return reinterpret_cast<X*>(&tmp)->pair;
+		auto ptr = this->data() + index;
+		return Pair{readValue(&ptr->key_), readValue(&ptr->content_)};
 	}
 
 	/**
-	 * @brief Lookup an integral key and return the index, if found
+	 * @brief Lookup an integral key and return the index
 	 * @retval int If key isn't found, return -1
 	 */
 	template <typename TRefKey, typename T = KeyType>
@@ -141,7 +133,7 @@ public:
 	}
 
 	/**
-	 * @brief Lookup a String key and return the index, if found
+	 * @brief Lookup a String key and return the index
 	 * @retval int If key isn't found, return -1
 	 * @note Comparison is case-sensitive
 	 */

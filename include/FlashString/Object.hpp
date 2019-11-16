@@ -22,6 +22,7 @@
 #pragma once
 
 #include "config.hpp"
+#include "Utility.hpp"
 #include "ObjectIterator.hpp"
 
 /**
@@ -127,7 +128,7 @@ public:
 	/**
 	 * @brief Get the length of the object in elements
 	 */
-	uint32_t length() const
+	FORCE_INLINE uint32_t length() const
 	{
 		return objectPtr()->flashLength;
 	}
@@ -136,33 +137,20 @@ public:
 	 * @brief Get the object data size in bytes
 	 * @note Always an integer multiple of 4 bytes
 	 */
-	uint32_t size() const
+	FORCE_INLINE uint32_t size() const
 	{
 		return ALIGNUP(objectPtr()->flashLength);
 	}
 
-	uint8_t valueAt(unsigned index) const
-	{
-		return (index < length()) ? pgm_read_byte(data() + index) : 0;
-	}
-
-	template <class ObjectType> constexpr const ObjectType& as() const
+	template <class ObjectType> FORCE_INLINE constexpr const ObjectType& as() const
 	{
 		return *static_cast<const ObjectType*>(this);
 	}
 
 	/**
-	 * @brief Array operator[]
-	 */
-	uint8_t operator[](unsigned index) const
-	{
-		return valueAt(index);
-	}
-
-	/**
 	 * @brief Get a pointer to the flash data
 	 */
-	const uint8_t* data() const
+	FORCE_INLINE const uint8_t* data() const
 	{
 		return reinterpret_cast<const uint8_t*>(&objectPtr()->flashLength + 1);
 	}
@@ -200,7 +188,7 @@ public:
 	 */
 	size_t readFlash(size_t offset, void* buffer, size_t count) const;
 
-	bool isCopy() const
+	FORCE_INLINE bool isCopy() const
 	{
 		return flashLength & copyBit;
 	}
@@ -230,11 +218,6 @@ template <class ObjectType, typename ElementType> class Object : public ObjectBa
 public:
 	using Iterator = ObjectIterator<ObjectType, ElementType>;
 
-//	Object()
-//	{
-//		flashLength = 0;
-//	}
-
 	/*
 	 * @brief Copy constructor
 	 * @note FlashStrings are usually passed around by reference or as a pointer,
@@ -258,12 +241,12 @@ public:
 
 	Iterator begin() const
 	{
-		return Iterator(as<ObjectType>(), 0);
+		return Iterator(this->as<ObjectType>(), 0);
 	}
 
 	Iterator end() const
 	{
-		return Iterator(as<ObjectType>(), length());
+		return Iterator(this->as<ObjectType>(), this->length());
 	}
 
 	static const ObjectType& empty()
@@ -274,25 +257,34 @@ public:
 	/**
 	 * @brief Get the length of the array in elements
 	 */
-	uint32_t length() const
+	FORCE_INLINE uint32_t length() const
 	{
 		return ObjectBase::length() / sizeof(ElementType);
+	}
+
+	FORCE_INLINE ElementType valueAt(unsigned index) const
+	{
+		if(index < this->length()) {
+			return readValue(this->data() + index);
+		} else {
+			return ElementType{0};
+		}
 	}
 
 	/**
 	 * @brief Array operator[]
 	 */
-	char operator[](unsigned index) const
+	FORCE_INLINE ElementType operator[](unsigned index) const
 	{
 		return this->valueAt(index);
 	}
 
-	size_t elementSize() const
+	FORCE_INLINE size_t elementSize() const
 	{
 		return sizeof(ElementType);
 	}
 
-	const ElementType* data() const
+	FORCE_INLINE const ElementType* data() const
 	{
 		return reinterpret_cast<const ElementType*>(ObjectBase::data());
 	}

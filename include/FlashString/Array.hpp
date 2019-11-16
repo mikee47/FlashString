@@ -100,42 +100,6 @@ namespace FSTR
 template <typename ElementType> class Array : public Object<Array<ElementType>, ElementType>
 {
 public:
-	ElementType valueAt(unsigned index) const
-	{
-		if(index >= this->length()) {
-			return ElementType{0};
-		}
-
-		union {
-			uint8_t u8;
-			uint16_t u16;
-			ElementType elem;
-		} buf;
-
-		auto p = this->data() + index;
-
-		switch(sizeof(ElementType)) {
-		case 1:
-			buf.u8 = pgm_read_byte(p);
-			break;
-		case 2:
-			buf.u16 = pgm_read_word(p);
-			break;
-		case 4:
-		case 8:
-			buf.elem = *p;
-			break;
-		default:
-			memcpy_P(&buf, p, sizeof(ElementType));
-		}
-		return buf.elem;
-	}
-
-	ElementType operator[](unsigned index) const
-	{
-		return valueAt(index);
-	}
-
 	/* Arduino Print support */
 
 	/**
@@ -151,6 +115,6 @@ public:
 	{
 		return printer().printTo(p);
 	}
-} ATTR_PACKED;
+};
 
 } // namespace FSTR

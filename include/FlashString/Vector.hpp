@@ -97,9 +97,7 @@ public:
 	const ObjectType& valueAt(unsigned index) const
 	{
 		if(index < this->length()) {
-			auto p = this->data();
-			p += index;
-			return **p;
+			return *this->data()[index];
 		} else {
 			return ObjectType::empty();
 		}
