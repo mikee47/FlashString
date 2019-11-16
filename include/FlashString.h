@@ -23,5 +23,5 @@
 
 #include "FlashString/String.hpp"
 #include "FlashString/Array.hpp"
-#include "FlashString/Table.hpp"
+#include "FlashString/Vector.hpp"
 #include "FlashString/Map.hpp"
