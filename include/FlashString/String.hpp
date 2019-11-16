@@ -121,18 +121,6 @@ using WString = ::String;
 class String : public Object<String, char>
 {
 public:
-	using Iterator = ObjectIterator<String, char>;
-
-	Iterator begin() const
-	{
-		return Iterator(*this, 0);
-	}
-
-	Iterator end() const
-	{
-		return Iterator(*this, length());
-	}
-
 	/**
 	 * @brief Get a WString-compatible pointer to the flash data
 	 */

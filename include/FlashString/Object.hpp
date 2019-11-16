@@ -204,6 +204,18 @@ protected:
 template <class ObjectType, typename ElementType> class Object : public ObjectBase
 {
 public:
+	using Iterator = ObjectIterator<ObjectType, ElementType>;
+
+	Iterator begin() const
+	{
+		return Iterator(as<ObjectType>(), 0);
+	}
+
+	Iterator end() const
+	{
+		return Iterator(as<ObjectType>(), length());
+	}
+
 	static const ObjectType& empty()
 	{
 		return empty_.as<ObjectType>();

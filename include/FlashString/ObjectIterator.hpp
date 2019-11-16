@@ -25,7 +25,7 @@
 
 namespace FSTR
 {
-template <class ObjectType, typename ElementType, bool useElementRef = false>
+template <class ObjectType, typename ElementType>
 class ObjectIterator : public std::iterator<std::random_access_iterator_tag, ElementType>
 {
 public:
@@ -66,12 +66,21 @@ public:
 		return index != rhs.index;
 	}
 
-	template <bool isRef = useElementRef> typename std::enable_if<!isRef, const ElementType>::type operator*() const
+	/**
+	 * @brief Accessor returns a copy for non-pointer-type elements
+	 */
+	template <typename T = ElementType>
+	typename std::enable_if<!std::is_pointer<T>::value, const ElementType>::type operator*() const
 	{
 		return object.valueAt(index);
 	}
 
-	template <bool isRef = useElementRef> typename std::enable_if<isRef, const ElementType&>::type operator*() const
+	/**
+	 * @brief Accessor returns a reference for pointer-type elements
+	 */
+	template <typename T = ElementType>
+	typename std::enable_if<std::is_pointer<T>::value, const typename std::remove_pointer<ElementType>::type&>::type
+	operator*() const
 	{
 		return object.valueAt(index);
 	}

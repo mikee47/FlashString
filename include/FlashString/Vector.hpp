@@ -94,18 +94,6 @@ namespace FSTR
 template <class ObjectType> class Vector : public Object<Vector<ObjectType>, ObjectType*>
 {
 public:
-	using Iterator = ObjectIterator<Vector, ObjectType, true>;
-
-	Iterator begin() const
-	{
-		return Iterator(*this, 0);
-	}
-
-	Iterator end() const
-	{
-		return Iterator(*this, this->length());
-	}
-
 	const ObjectType& valueAt(unsigned index) const
 	{
 		if(index < this->length()) {

@@ -89,17 +89,6 @@ template <typename KeyType, class ContentType> class Map : public Array<MapPair<
 {
 public:
 	using Pair = MapPair<KeyType, ContentType>;
-	using Iterator = ObjectIterator<Map, Pair>;
-
-	Iterator begin() const
-	{
-		return Iterator(*this, 0);
-	}
-
-	Iterator end() const
-	{
-		return Iterator(*this, this->length());
-	}
 
 	/**
 	 * @brief Get a map entry by index, if it exists

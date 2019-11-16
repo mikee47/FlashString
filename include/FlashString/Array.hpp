@@ -100,18 +100,6 @@ namespace FSTR
 template <typename ElementType> class Array : public Object<Array<ElementType>, ElementType>
 {
 public:
-	using Iterator = ObjectIterator<Array, ElementType>;
-
-	Iterator begin() const
-	{
-		return Iterator(*this, 0);
-	}
-
-	Iterator end() const
-	{
-		return Iterator(*this, this->length());
-	}
-
 	ElementType valueAt(unsigned index) const
 	{
 		if(index >= this->length()) {
