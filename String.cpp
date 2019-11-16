@@ -27,13 +27,13 @@ bool String::equals(const char* cstr, size_t len) const
 {
 	// Unlikely we'd want an empty flash string, but check anyway
 	if(cstr == nullptr) {
-		return flashLength == 0;
+		return length() == 0;
 	}
 	// Don't use strcmp as our data may contain nuls
 	if(len == 0) {
 		len = strlen(cstr);
 	}
-	if(len != flashLength) {
+	if(len != length()) {
 		return false;
 	}
 	LOAD_FSTR(buf, *this);
@@ -45,10 +45,10 @@ bool String::equals(const String& str) const
 	if(data() == str.data()) {
 		return true;
 	}
-	if(flashLength != str.flashLength) {
+	if(length() != str.length()) {
 		return false;
 	}
-	return memcmp_aligned(data(), str.data(), flashLength) == 0;
+	return memcmp_aligned(data(), str.data(), length()) == 0;
 }
 
 /* Arduino String support */

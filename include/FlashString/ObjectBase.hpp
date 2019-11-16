@@ -33,7 +33,7 @@ public:
 	 */
 	FORCE_INLINE uint32_t length() const
 	{
-		return objectPtr()->flashLength;
+		return objectPtr()->flashLength_;
 	}
 
 	/**
@@ -42,7 +42,7 @@ public:
 	 */
 	FORCE_INLINE uint32_t size() const
 	{
-		return ALIGNUP(objectPtr()->flashLength);
+		return ALIGNUP(objectPtr()->flashLength_);
 	}
 
 	template <class ObjectType> FORCE_INLINE constexpr const ObjectType& as() const
@@ -55,7 +55,7 @@ public:
 	 */
 	FORCE_INLINE const uint8_t* data() const
 	{
-		return reinterpret_cast<const uint8_t*>(&objectPtr()->flashLength + 1);
+		return reinterpret_cast<const uint8_t*>(&objectPtr()->flashLength_ + 1);
 	}
 
 	/**
@@ -94,23 +94,38 @@ public:
 
 	FORCE_INLINE bool isCopy() const
 	{
-		return flashLength & copyBit;
+		return flashLength_ & copyBit;
 	}
 
-	/* Private member data */
+	/* Member data must be public for initialisation to work but DO NOT ACCESS DIRECTLY !! */
 
-	uint32_t flashLength;
+	uint32_t flashLength_;
 	// const uint8_t data[]
 
 protected:
 	static const ObjectBase empty_;
-	static constexpr uint32_t copyBit = 0x80000000U;
+
+	/*
+	 * @brief Make a 'copy' of this object
+	 */
+	void copy(const ObjectBase& obj)
+	{
+		if(obj.isCopy()) {
+			// Copy of a copy
+			flashLength_ = obj.flashLength_;
+		} else {
+			// Copy of a real Object
+			flashLength_ = reinterpret_cast<uint32_t>(&obj) | copyBit;
+		}
+	}
 
 private:
+	static constexpr uint32_t copyBit = 0x80000000U;
+
 	FORCE_INLINE const ObjectBase* objectPtr() const
 	{
 		if(isCopy()) {
-			return reinterpret_cast<const ObjectBase*>(flashLength & ~copyBit);
+			return reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit);
 		} else {
 			return this;
 		}

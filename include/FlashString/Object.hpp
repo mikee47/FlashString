@@ -35,23 +35,12 @@ public:
 
 	/*
 	 * @brief Copy constructor
-	 * @note FlashStrings are usually passed around by reference or as a pointer,
-	 * but for better compatibility with other string types (e.g. String) we
-	 * need a working copy constructor.
-	 *
-	 * As far as the compiler is concerned, a FlashString is only 4 bytes containing
-	 * flashLength. The copy constructor stores a pointer to the real FlashString
-	 * object here and sets the top bit.
+	 * @note Objects are usually passed around by reference or as a pointer,
+	 * but for ease of use we need a working copy constructor.
 	 */
 	Object(const Object& obj)
 	{
-		if(obj.isCopy()) {
-			// Copy of a copy
-			flashLength = obj.flashLength;
-		} else {
-			// Copy of a real Object
-			flashLength = reinterpret_cast<uint32_t>(&obj) | copyBit;
-		}
+		copy(obj);
 	}
 
 	Iterator begin() const
