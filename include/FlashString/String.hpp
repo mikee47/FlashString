@@ -22,7 +22,7 @@
 #pragma once
 
 #include "Object.hpp"
-#include "ArrayIterator.hpp"
+#include "ObjectIterator.hpp"
 #include "StringPrinter.hpp"
 
 // Arduino String - cannot include WString.h here because of recursion
@@ -122,7 +122,7 @@ using WString = ::String;
 class String
 {
 public:
-	using Iterator = ArrayIterator<String, char>;
+	using Iterator = ObjectIterator<String, char>;
 
 	Iterator begin() const
 	{

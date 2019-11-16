@@ -80,19 +80,19 @@ namespace FSTR
 template <class ObjectType> class Table
 {
 public:
-	using Iterator = ObjectIterator<ObjectType>;
+	using Iterator = ObjectIterator<Table, ObjectType, true>;
 
 	Iterator begin() const
 	{
-		return Iterator(data(), length(), 0);
+		return Iterator(*this, 0);
 	}
 
 	Iterator end() const
 	{
-		return Iterator(data(), length(), length());
+		return Iterator(*this, length());
 	}
 
-	const ObjectType& operator[](unsigned index) const
+	const ObjectType& valueAt(unsigned index) const
 	{
 		if(index < length()) {
 			auto p = data();
@@ -101,6 +101,11 @@ public:
 		} else {
 			return ObjectType::empty();
 		}
+	}
+
+	const ObjectType& operator[](unsigned index) const
+	{
+		return valueAt(index);
 	}
 
 	static const Table& empty()

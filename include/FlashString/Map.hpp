@@ -23,7 +23,7 @@
 
 #include "MapPair.hpp"
 #include "MapPrinter.hpp"
-#include "ArrayIterator.hpp"
+#include "ObjectIterator.hpp"
 
 /**
  * @brief Declare a Map
@@ -88,7 +88,7 @@ template <typename KeyType, class ContentType> class Map
 {
 public:
 	using Pair = MapPair<KeyType, ContentType>;
-	using Iterator = ArrayIterator<Map, Pair>;
+	using Iterator = ObjectIterator<Map, Pair>;
 
 	Iterator begin() const
 	{

@@ -1,5 +1,5 @@
 /**
- * ObjectIterator.hpp - STL iterator to handle array of object pointers (String, Table, Map or custom)
+ * ObjectIterator.hpp - STL iterator support
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License along with FlashString.
  * If not, see <https://www.gnu.org/licenses/>.
  *
- * @author: 2018 - Mikee47 <mike@sillyhouse.net>
+ * @author: Nov 2019 - Mikee47 <mike@sillyhouse.net>
  *
  ****/
 
@@ -25,41 +25,34 @@
 
 namespace FSTR
 {
-template <typename ObjectType>
-class ObjectIterator : public std::iterator<std::random_access_iterator_tag, const ObjectType>
+template <class ObjectType, typename ElementType, bool useElementRef = false>
+class ObjectIterator : public std::iterator<std::random_access_iterator_tag, ElementType>
 {
 public:
 	ObjectIterator() = default;
 	ObjectIterator(const ObjectIterator&) = default;
 
-	ObjectIterator(const ObjectType* const* head, unsigned count, unsigned index)
-		: head(head), count(count), index(index)
+	ObjectIterator(const ObjectType& object, unsigned index) : object(object), index(index)
 	{
 	}
 
 	ObjectIterator& operator++()
 	{
-		if(index < count) {
-			++index;
-		}
+		++index;
 		return *this;
 	}
 
 	ObjectIterator operator++(int)
 	{
 		ObjectIterator tmp(*this);
-		if(index < count) {
-			++index;
-		}
+		++index;
 		return tmp;
 	}
 
-	ObjectIterator operator+=(size_t distanc)
+	ObjectIterator operator+=(size_t distance)
 	{
 		ObjectIterator tmp(*this);
-		if(index < count) {
-			++index;
-		}
+		index += distance;
 		return tmp;
 	}
 
@@ -73,14 +66,18 @@ public:
 		return index != rhs.index;
 	}
 
-	const ObjectType& operator*() const
+	template <bool isRef = useElementRef> typename std::enable_if<!isRef, const ElementType>::type operator*() const
 	{
-		return (index < count) ? *head[index] : ObjectType::empty();
+		return object.valueAt(index);
+	}
+
+	template <bool isRef = useElementRef> typename std::enable_if<isRef, const ElementType&>::type operator*() const
+	{
+		return object.valueAt(index);
 	}
 
 private:
-	const ObjectType* const* head = nullptr;
-	unsigned count = 0;
+	const ObjectType& object;
 	unsigned index = 0;
 };
 

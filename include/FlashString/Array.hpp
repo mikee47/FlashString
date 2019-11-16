@@ -22,7 +22,7 @@
 #pragma once
 
 #include "Object.hpp"
-#include "ArrayIterator.hpp"
+#include "ObjectIterator.hpp"
 #include "ArrayPrinter.hpp"
 
 /**
@@ -101,7 +101,7 @@ namespace FSTR
 template <typename ElementType> class Array
 {
 public:
-	using Iterator = ArrayIterator<Array, ElementType>;
+	using Iterator = ObjectIterator<Array, ElementType>;
 
 	Iterator begin() const
 	{
