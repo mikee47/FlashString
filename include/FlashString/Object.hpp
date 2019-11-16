@@ -61,12 +61,12 @@ public:
 	/**
 	 * @brief Get the length of the array in elements
 	 */
-	FORCE_INLINE uint32_t length() const
+	FSTR_INLINE uint32_t length() const
 	{
 		return ObjectBase::length() / sizeof(ElementType);
 	}
 
-	FORCE_INLINE ElementType valueAt(unsigned index) const
+	FSTR_INLINE ElementType valueAt(unsigned index) const
 	{
 		if(index < this->length()) {
 			return readValue(this->data() + index);
@@ -78,17 +78,17 @@ public:
 	/**
 	 * @brief Array operator[]
 	 */
-	FORCE_INLINE ElementType operator[](unsigned index) const
+	FSTR_INLINE ElementType operator[](unsigned index) const
 	{
 		return this->valueAt(index);
 	}
 
-	FORCE_INLINE size_t elementSize() const
+	FSTR_INLINE size_t elementSize() const
 	{
 		return sizeof(ElementType);
 	}
 
-	FORCE_INLINE const ElementType* data() const
+	FSTR_INLINE const ElementType* data() const
 	{
 		return reinterpret_cast<const ElementType*>(ObjectBase::data());
 	}

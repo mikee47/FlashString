@@ -57,7 +57,7 @@
 	constexpr const struct {                                                                                           \
 		FSTR::ObjectBase object;                                                                                       \
 		ElementType data[sizeof((const ElementType[]){__VA_ARGS__}) / sizeof(ElementType)];                            \
-	} ATTR_PACKED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                                 \
+	} FSTR_PACKED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                                 \
 	FSTR_CHECK_STRUCT(name);
 
 #define DEFINE_FSTR_ARRAY_DATA_LOCAL(name, ElementType, ...)                                                           \

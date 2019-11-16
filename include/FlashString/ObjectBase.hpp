@@ -31,7 +31,7 @@ public:
 	/**
 	 * @brief Get the length of the object in elements
 	 */
-	FORCE_INLINE uint32_t length() const
+	FSTR_INLINE uint32_t length() const
 	{
 		return objectPtr()->flashLength_;
 	}
@@ -40,12 +40,12 @@ public:
 	 * @brief Get the object data size in bytes
 	 * @note Always an integer multiple of 4 bytes
 	 */
-	FORCE_INLINE uint32_t size() const
+	FSTR_INLINE uint32_t size() const
 	{
 		return ALIGNUP(objectPtr()->flashLength_);
 	}
 
-	template <class ObjectType> FORCE_INLINE constexpr const ObjectType& as() const
+	template <class ObjectType> FSTR_INLINE constexpr const ObjectType& as() const
 	{
 		return *static_cast<const ObjectType*>(this);
 	}
@@ -53,7 +53,7 @@ public:
 	/**
 	 * @brief Get a pointer to the flash data
 	 */
-	FORCE_INLINE const uint8_t* data() const
+	FSTR_INLINE const uint8_t* data() const
 	{
 		return reinterpret_cast<const uint8_t*>(&objectPtr()->flashLength_ + 1);
 	}
@@ -92,7 +92,7 @@ public:
 	 */
 	size_t readFlash(size_t offset, void* buffer, size_t count) const;
 
-	FORCE_INLINE bool isCopy() const
+	FSTR_INLINE bool isCopy() const
 	{
 		return flashLength_ & copyBit;
 	}
@@ -122,7 +122,7 @@ protected:
 private:
 	static constexpr uint32_t copyBit = 0x80000000U;
 
-	FORCE_INLINE const ObjectBase* objectPtr() const
+	FSTR_INLINE const ObjectBase* objectPtr() const
 	{
 		if(isCopy()) {
 			return reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit);

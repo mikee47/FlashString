@@ -74,7 +74,7 @@
 	constexpr const struct {                                                                                           \
 		FSTR::ObjectBase object;                                                                                       \
 		FSTR::MapPair<KeyType, ContentType> data[size];                                                                \
-	} ATTR_PACKED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                                 \
+	} FSTR_PACKED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                                 \
 	FSTR_CHECK_STRUCT(name);
 
 #define DEFINE_FSTR_MAP_DATA_SIZED_LOCAL(name, KeyType, ContentType, size, ...)                                        \

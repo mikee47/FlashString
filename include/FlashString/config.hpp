@@ -23,5 +23,5 @@
 
 #include <FakePgmSpace.h>
 
-#define FORCE_INLINE __attribute__((always_inline)) inline
-#define ATTR_PACKED __attribute__((packed)) __attribute__((aligned(4)))
+#define FSTR_INLINE __attribute__((always_inline)) inline
+#define FSTR_PACKED __attribute__((packed)) __attribute__((aligned(4)))
