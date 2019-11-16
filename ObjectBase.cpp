@@ -1,5 +1,5 @@
 /**
- * Object.cpp
+ * ObjectBase.cpp
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -17,7 +17,7 @@
  *
  ****/
 
-#include "include/FlashString/Object.hpp"
+#include "include/FlashString/ObjectBase.hpp"
 #include <esp_spi_flash.h>
 
 namespace FSTR
@@ -27,11 +27,12 @@ constexpr uint32_t ObjectBase::copyBit;
 
 size_t ObjectBase::readFlash(size_t offset, void* buffer, size_t count) const
 {
-	if(offset >= flashLength) {
+	auto len = length();
+	if(offset >= len) {
 		return 0;
 	}
 
-	count = std::min(flashLength - offset, count);
+	count = std::min(len - offset, count);
 	auto addr = flashmem_get_address(data() + offset);
 	return flashmem_read(buffer, addr, count);
 }
