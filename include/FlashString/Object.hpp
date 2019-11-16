@@ -67,6 +67,13 @@ template <typename T, typename U> struct argument_type<T(U)> {
 #define FSTR_DATA_NAME(name) fstr_data_##name
 
 /**
+ * @brief Check structure is POD-compliant and correctly aligned
+ */
+#define FSTR_CHECK_STRUCT(name)                                                                                        \
+	static_assert(std::is_pod<decltype(name)>::value, "FSTR structure not POD");                                       \
+	static_assert(offsetof(decltype(name), data) == sizeof(uint32_t), "FSTR structure alignment error");
+
+/**
  * @brief Link the contents of a file
  * @note We need inline assembler's `.incbin` instruction to actually import the data.
  * We use a macro STR() so that if required the name can be resolved from a #defined value.

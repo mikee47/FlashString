@@ -77,7 +77,8 @@ using FlashString = FSTR::String;
 	constexpr const struct {                                                                                           \
 		FlashString object;                                                                                            \
 		char data[ALIGNUP(sizeof(str))];                                                                               \
-	} name PROGMEM = {{sizeof(str) - 1}, str};
+	} name PROGMEM = {{sizeof(str) - 1}, str};                                                                         \
+	FSTR_CHECK_STRUCT(name);
 
 #define DEFINE_FSTR_DATA_LOCAL(name, str) static DEFINE_FSTR_DATA(name, str)
 

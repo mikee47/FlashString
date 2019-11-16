@@ -59,7 +59,8 @@
 		FSTR::Array<ElementType> object;                                                                               \
 		ElementType data[sizeof((const ElementType[]){__VA_ARGS__}) / sizeof(ElementType)];                            \
 	} ATTR_PACKED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                      \
-	static_assert(int(name.data) - int(&name) == 4, "Alignment error");
+	FSTR_CHECK_STRUCT(name);
+
 #define DEFINE_FSTR_ARRAY_DATA_LOCAL(name, ElementType, ...)                                                           \
 	static DEFINE_FSTR_ARRAY_DATA(name, ElementType, __VA_ARGS__)
 
