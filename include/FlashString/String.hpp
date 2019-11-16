@@ -122,11 +122,20 @@ class String : public Object<String, char>
 {
 public:
 	/**
+	 * @brief Get the number of bytes used to store the String
+	 * @note Always an integer multiple of 4 bytes
+	 */
+	uint32_t size() const
+	{
+		return ALIGNUP(Object::length() + 1);
+	}
+
+	/**
 	 * @brief Get a WString-compatible pointer to the flash data
 	 */
 	flash_string_t data() const
 	{
-		return reinterpret_cast<flash_string_t>(&flashLength + 1);
+		return reinterpret_cast<flash_string_t>(Object::data());
 	}
 
 	/** @brief Check for equality with a C-string

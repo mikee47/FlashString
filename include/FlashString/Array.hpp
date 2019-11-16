@@ -109,11 +109,11 @@ public:
 		union {
 			uint8_t u8;
 			uint16_t u16;
-			uint32_t u32[2];
 			ElementType elem;
 		} buf;
 
 		auto p = this->data() + index;
+
 		switch(sizeof(ElementType)) {
 		case 1:
 			buf.u8 = pgm_read_byte(p);
@@ -122,11 +122,8 @@ public:
 			buf.u16 = pgm_read_word(p);
 			break;
 		case 4:
-			buf.elem = *p;
-			break;
 		case 8:
-			buf.u32[0] = reinterpret_cast<const uint32_t*>(p)[0];
-			buf.u32[1] = reinterpret_cast<const uint32_t*>(p)[1];
+			buf.elem = *p;
 			break;
 		default:
 			memcpy_P(&buf, p, sizeof(ElementType));

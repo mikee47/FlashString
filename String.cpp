@@ -61,8 +61,9 @@ String::operator WString() const
 bool String::equals(const WString& str) const
 {
 	auto len = str.length();
-	if(len != length())
+	if(len != length()) {
 		return false;
+	}
 	// @todo optimise memcmp_P then we won't need to load entire String into RAM first
 	LOAD_FSTR(buf, *this);
 	return memcmp(buf, str.c_str(), len) == 0;

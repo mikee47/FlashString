@@ -96,7 +96,22 @@ public:
 	 */
 	const Pair valueAt(unsigned index) const
 	{
-		return (index < this->length()) ? this->data()[index] : Pair::empty();
+		if(index >= this->length()) {
+			return Pair::empty();
+		}
+
+		if(IS_ALIGNED(sizeof(KeyType))) {
+			return this->data()[index];
+		}
+
+		// Compiler insists on mucking about accesssing short key field
+		union X {
+			uint64_t u64;
+			Pair pair;
+		};
+		uint64_t tmp;
+		memcpy(&tmp, this->data() + index, sizeof(tmp));
+		return reinterpret_cast<X*>(&tmp)->pair;
 	}
 
 	/**

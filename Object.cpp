@@ -23,6 +23,7 @@
 namespace FSTR
 {
 const ObjectBase ObjectBase::empty_{0};
+constexpr uint32_t ObjectBase::copyBit;
 
 size_t ObjectBase::readFlash(size_t offset, void* buffer, size_t count) const
 {

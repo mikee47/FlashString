@@ -125,22 +125,30 @@ class ObjectBase
 {
 public:
 	/**
+	 * @brief Get the length of the object in elements
+	 */
+	uint32_t length() const
+	{
+		return objectPtr()->flashLength;
+	}
+
+	/**
 	 * @brief Get the object data size in bytes
 	 * @note Always an integer multiple of 4 bytes
 	 */
 	uint32_t size() const
 	{
-		return ALIGNUP(flashLength + 1);
+		return ALIGNUP(objectPtr()->flashLength);
 	}
 
 	uint8_t valueAt(unsigned index) const
 	{
-		return (index < size()) ? pgm_read_byte(data() + index) : 0;
+		return (index < length()) ? pgm_read_byte(data() + index) : 0;
 	}
 
 	template <class ObjectType> constexpr const ObjectType& as() const
 	{
-		return *reinterpret_cast<const ObjectType*>(this);
+		return *static_cast<const ObjectType*>(this);
 	}
 
 	/**
@@ -156,7 +164,7 @@ public:
 	 */
 	const uint8_t* data() const
 	{
-		return reinterpret_cast<const uint8_t*>(&flashLength + 1);
+		return reinterpret_cast<const uint8_t*>(&objectPtr()->flashLength + 1);
 	}
 
 	/**
@@ -192,6 +200,11 @@ public:
 	 */
 	size_t readFlash(size_t offset, void* buffer, size_t count) const;
 
+	bool isCopy() const
+	{
+		return flashLength & copyBit;
+	}
+
 	/* Private member data */
 
 	uint32_t flashLength;
@@ -199,12 +212,49 @@ public:
 
 protected:
 	static const ObjectBase empty_;
+	static constexpr uint32_t copyBit = 0x80000000U;
+
+private:
+	FORCE_INLINE const ObjectBase* objectPtr() const
+	{
+		if(isCopy()) {
+			return reinterpret_cast<const ObjectBase*>(flashLength & ~copyBit);
+		} else {
+			return this;
+		}
+	}
 };
 
 template <class ObjectType, typename ElementType> class Object : public ObjectBase
 {
 public:
 	using Iterator = ObjectIterator<ObjectType, ElementType>;
+
+//	Object()
+//	{
+//		flashLength = 0;
+//	}
+
+	/*
+	 * @brief Copy constructor
+	 * @note FlashStrings are usually passed around by reference or as a pointer,
+	 * but for better compatibility with other string types (e.g. String) we
+	 * need a working copy constructor.
+	 *
+	 * As far as the compiler is concerned, a FlashString is only 4 bytes containing
+	 * flashLength. The copy constructor stores a pointer to the real FlashString
+	 * object here and sets the top bit.
+	 */
+	Object(const Object& obj)
+	{
+		if(obj.isCopy()) {
+			// Copy of a copy
+			flashLength = obj.flashLength;
+		} else {
+			// Copy of a real Object
+			flashLength = reinterpret_cast<uint32_t>(&obj) | copyBit;
+		}
+	}
 
 	Iterator begin() const
 	{
@@ -226,7 +276,7 @@ public:
 	 */
 	uint32_t length() const
 	{
-		return flashLength / sizeof(ElementType);
+		return ObjectBase::length() / sizeof(ElementType);
 	}
 
 	/**
@@ -235,6 +285,11 @@ public:
 	char operator[](unsigned index) const
 	{
 		return this->valueAt(index);
+	}
+
+	size_t elementSize() const
+	{
+		return sizeof(ElementType);
 	}
 
 	const ElementType* data() const
