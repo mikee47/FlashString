@@ -19,7 +19,6 @@
 
 #include "include/FlashString/StringPrinter.hpp"
 #include "include/FlashString/String.hpp"
-#include <WString.h>
 #include <Print.h>
 
 namespace FSTR

@@ -24,12 +24,10 @@
 #include "Object.hpp"
 #include "StringPrinter.hpp"
 
-// Arduino String - cannot include WString.h here because of recursion
+// Arduino String - this file is included from WString.h so define required types only
 class String;
 class __FlashStringHelper;
 typedef const __FlashStringHelper* flash_string_t;
-
-using FlashString = FSTR::String;
 
 /**
  * @brief Define an inline FlashString
@@ -212,3 +210,5 @@ public:
 };
 
 } // namespace FSTR
+
+using FlashString = FSTR::String;

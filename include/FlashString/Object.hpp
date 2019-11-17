@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include "config.hpp"
 #include "Utility.hpp"
 #include "ObjectBase.hpp"
 #include "ObjectIterator.hpp"

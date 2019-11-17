@@ -21,8 +21,8 @@
 
 #pragma once
 
-#include <Data/Stream/DataSourceStream.h>
 #include "String.hpp"
+#include <Data/Stream/DataSourceStream.h>
 
 namespace FSTR
 {
