@@ -1,5 +1,5 @@
 /**
- * FlashString.h
+ * String.hpp - Defines the String class and associated macros for efficient flash memory string access.
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -15,14 +15,38 @@
  * You should have received a copy of the GNU General Public License along with FlashString.
  * If not, see <https://www.gnu.org/licenses/>.
  *
- * @author: 23 Oct 2018 - mikee47 <mike@sillyhouse.net>
+ * @author: 2018 - Mikee47 <mike@sillyhouse.net>
  *
  ****/
 
 #pragma once
 
-#include "FlashString/String.hpp"
-#include "FlashString/Array.hpp"
-#include "FlashString/Table.hpp"
-#include "FlashString/Vector.hpp"
-#include "FlashString/Map.hpp"
+#include "ArrayPrinter.hpp"
+
+namespace FSTR
+{
+template <typename ElementType, size_t Columns> struct TableRow {
+	ElementType values[Columns];
+
+	ElementType operator[](size_t index) const
+	{
+		return values[index];
+	}
+
+	size_t length() const
+	{
+		return Columns;
+	}
+
+	size_t printTo(Print& p) const
+	{
+		return FSTR::ArrayPrinter<TableRow>(*this, ", ").printTo(p);
+	}
+
+	static TableRow empty()
+	{
+		return TableRow{0};
+	}
+};
+
+} // namespace FSTR
