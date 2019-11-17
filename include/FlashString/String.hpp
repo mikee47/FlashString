@@ -30,17 +30,24 @@ class __FlashStringHelper;
 typedef const __FlashStringHelper* flash_string_t;
 
 /**
- * @brief Define an inline FlashString
- * @note This returns a pointer, not a reference
+ * @brief Define an inline FlashString and return a pointer to it
+ * @note The rather obscure `asm` statement is required to prevent the compiler from discarding
+ * the symbol at link time, which leads to an 'undefined reference' error
  */
-#define FS(str)                                                                                                        \
+#define FS_PTR(str)                                                                                                    \
 	(__extension__({                                                                                                   \
-		static constexpr struct {                                                                                      \
-			FSTR::ObjectBase object;                                                                                   \
-			char data[ALIGNUP(sizeof(str))];                                                                           \
-		} struc PROGMEM = {{sizeof(str) - 1}, str};                                                                    \
-		&struc.object.as<FSTR::String>();                                                                              \
+		DEFINE_FSTR_DATA_LOCAL(struc, str);                                                                            \
+		asm("" : : ""(struc));                                                                                         \
+		static_cast<const FSTR::String*>(&struc.object);                                                               \
 	}))
+
+/**
+ * @brief Define an inline FlashString and return it as a copy
+ * @note Example:
+ *
+ * 		Serial.println(FS("This is a Flash String"));
+ */
+#define FS(str) *FS_PTR(str)
 
 /**
  * @brief Declare a global String instance
