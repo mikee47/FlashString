@@ -116,6 +116,33 @@ typedef const __FlashStringHelper* flash_string_t;
 	IMPORT_FSTR_DATA(name, file)                                                                                       \
 	extern "C" const FSTR::String name;
 
+/**
+ * @brief Get a pointer to the actual FlashString
+ * @param fstr The FlashString& reference
+ * @deprecated Not required, taking address of a references is fine so just use &
+ */
+#define FSTR_PTR(fstr) &fstr
+
+/** @brief declare a table of FlashStrings
+ *  @param name name of the table
+ *  @deprecated Use a Vector or Map
+ *  @note Declares a simple table. Example:
+ *
+ *  	DEFINE_FSTR(fstr1, "Test string #1");
+ *  	DEFINE_FSTR(fstr2, "Test string #2");
+ *
+ *  	FSTR_TABLE(table) = {
+ *  		&fstr1,
+ *  		&fstr2,
+ *  	};
+ *
+ *  Table entries may be accessed directly as they are word-aligned. Examples:
+ *  	debugf("fstr1 = '%s'", String(*table[0]).c_str());
+ *  	debugf("fstr2.length() = %u", table[1]->length());
+ *
+ */
+#define FSTR_TABLE(name) const FlashString* const name[] PROGMEM
+
 namespace FSTR
 {
 using WString = ::String;
