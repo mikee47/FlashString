@@ -33,6 +33,13 @@ template <class ObjectType, typename ElementType> class Object : public ObjectBa
 public:
 	using Iterator = ObjectIterator<ObjectType, ElementType>;
 
+	/**
+	 * @brief Creates an empty object
+	 */
+	Object() : ObjectBase{0}
+	{
+	}
+
 	/*
 	 * @brief Copy constructor
 	 * @note Objects are usually passed around by reference or as a pointer,

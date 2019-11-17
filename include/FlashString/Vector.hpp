@@ -22,6 +22,7 @@
 #pragma once
 
 #include "Object.hpp"
+#include "ArrayPrinter.hpp"
 
 /**
  * @brief Declare a global Vector
@@ -54,7 +55,7 @@
  */
 #define DEFINE_FSTR_VECTOR_SIZED_LOCAL(name, ObjectType, size, ...)                                                    \
 	DEFINE_FSTR_VECTOR_DATA_SIZED_LOCAL(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                          \
-	static DEFINE_FSTR_REF_NAMED(name, Vector<ObjectType>);
+	static DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
  * @brief Define a Vector data structure, global (non-static)
@@ -106,6 +107,18 @@ public:
 	const ObjectType& operator[](unsigned index) const
 	{
 		return valueAt(index);
+	}
+
+	/* Arduino Print support */
+
+	ArrayPrinter<Vector> printer(const WString& separator = ", ") const
+	{
+		return ArrayPrinter<Vector>(*this, separator);
+	}
+
+	size_t printTo(Print& p) const
+	{
+		return printer().printTo(p);
 	}
 };
 

@@ -29,11 +29,11 @@ class ObjectBase
 {
 public:
 	/**
-	 * @brief Get the length of the object in elements
+	 * @brief Get the length of the object data in bytes
 	 */
 	FSTR_INLINE uint32_t length() const
 	{
-		return objectPtr()->flashLength_;
+		return getObjectLength(getObjectPtr());
 	}
 
 	/**
@@ -42,9 +42,15 @@ public:
 	 */
 	FSTR_INLINE uint32_t size() const
 	{
-		return ALIGNUP(objectPtr()->flashLength_);
+		return ALIGNUP(getObjectLength(getObjectPtr()));
 	}
 
+	/**
+	 * @brief Cast to a different object type
+	 * @note example:
+	 *
+	 * 		fstr.as<Array<int>>();
+	 */
 	template <class ObjectType> FSTR_INLINE constexpr const ObjectType& as() const
 	{
 		return *static_cast<const ObjectType*>(this);
@@ -55,7 +61,7 @@ public:
 	 */
 	FSTR_INLINE const uint8_t* data() const
 	{
-		return reinterpret_cast<const uint8_t*>(&objectPtr()->flashLength_ + 1);
+		return getObjectData(getObjectPtr());
 	}
 
 	/**
@@ -67,13 +73,14 @@ public:
 	 */
 	size_t read(size_t offset, void* buffer, size_t count) const
 	{
-		auto len = length();
+		auto ptr = getObjectPtr();
+		auto len = getObjectLength(ptr);
 		if(offset >= len) {
 			return 0;
 		}
 
 		count = std::min(len - offset, count);
-		memcpy_P(buffer, data() + offset, count);
+		memcpy_P(buffer, getObjectData(ptr) + offset, count);
 		return count;
 	}
 
@@ -110,11 +117,9 @@ protected:
 	 */
 	void copy(const ObjectBase& obj)
 	{
-		if(obj.isCopy()) {
-			// Copy of a copy
+		if(obj.isCopy() || obj.flashLength_ == 0) {
 			flashLength_ = obj.flashLength_;
 		} else {
-			// Copy of a real Object
 			flashLength_ = reinterpret_cast<uint32_t>(&obj) | copyBit;
 		}
 	}
@@ -122,13 +127,20 @@ protected:
 private:
 	static constexpr uint32_t copyBit = 0x80000000U;
 
-	FSTR_INLINE const ObjectBase* objectPtr() const
+	/**
+	 * @brief Get a pointer to the read flash object as it may be a copy
+	 */
+	const ObjectBase* getObjectPtr() const;
+
+	FSTR_INLINE uint32_t getObjectLength(const ObjectBase* ptr) const
 	{
-		if(isCopy()) {
-			return reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit);
-		} else {
-			return this;
-		}
+		assert(ptr != nullptr && !ptr->isCopy());
+		return ptr->flashLength_;
+	}
+
+	FSTR_INLINE const uint8_t* getObjectData(const ObjectBase* ptr) const
+	{
+		return reinterpret_cast<const uint8_t*>(&ptr->flashLength_ + 1);
 	}
 };
 

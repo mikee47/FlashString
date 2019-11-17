@@ -27,14 +27,40 @@ constexpr uint32_t ObjectBase::copyBit;
 
 size_t ObjectBase::readFlash(size_t offset, void* buffer, size_t count) const
 {
-	auto len = length();
+	auto ptr = getObjectPtr();
+	auto len = getObjectLength(ptr);
 	if(offset >= len) {
 		return 0;
 	}
 
 	count = std::min(len - offset, count);
-	auto addr = flashmem_get_address(data() + offset);
+	auto addr = flashmem_get_address(getObjectData(ptr) + offset);
 	return flashmem_read(buffer, addr, count);
+}
+
+const ObjectBase* ObjectBase::getObjectPtr() const
+{
+	const ObjectBase* ptr;
+	if(isCopy()) {
+		ptr = reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit);
+	} else if(flashLength_ == 0) {
+		ptr = &empty_;
+	} else {
+#ifdef ARCH_HOST
+		// Cannot yet differentiate memory addresses on Host
+		ptr = this;
+#else
+		// Just in case this object was copied directly
+		assert(isFlashPtr(this));
+		if(isFlashPtr(this)) {
+			ptr = this;
+		} else {
+			// In release code just return an empty object
+			ptr = &empty_;
+		}
+#endif
+	}
+	return ptr;
 }
 
 } // namespace FSTR

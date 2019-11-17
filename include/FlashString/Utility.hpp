@@ -120,6 +120,11 @@ template <typename T, typename U> struct argument_type<T(U)> {
 
 namespace FSTR
 {
+/**
+ * @brief Read a typed value from flash memory ensuring correct alignment of access
+ * @{
+ */
+
 template <typename T> FSTR_INLINE typename std::enable_if<sizeof(T) == 1, T>::type readValue(const T* ptr)
 {
 	return static_cast<T>(pgm_read_byte(ptr));
@@ -134,5 +139,7 @@ template <typename T> FSTR_INLINE typename std::enable_if<IS_ALIGNED(sizeof(T)),
 {
 	return *static_cast<const T*>(ptr);
 }
+
+/** @} */
 
 } // namespace FSTR
