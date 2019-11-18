@@ -55,7 +55,7 @@ bool String::equals(const String& str) const
 
 String::operator WString() const
 {
-	return WString(data(), length());
+	return isNull() ? WString() : WString(data(), length());
 }
 
 bool String::equals(const WString& str) const

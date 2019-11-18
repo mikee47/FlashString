@@ -39,10 +39,11 @@ public:
 	using Iterator = ObjectIterator<ObjectType, ElementType>;
 
 	/**
-	 * @brief Creates an empty object
+	 * @brief Creates a null object
 	 */
-	Object() : ObjectBase{0}
+	Object()
 	{
+		invalidate();
 	}
 
 	/*
@@ -65,6 +66,9 @@ public:
 		return Iterator(as<ObjectType>(), length());
 	}
 
+	/**
+	 * @brief Return an empty object which evaluates to null
+	 */
 	static const ObjectType& empty()
 	{
 		return empty_.as<ObjectType>();

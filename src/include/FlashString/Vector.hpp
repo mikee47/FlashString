@@ -86,10 +86,13 @@ public:
 	const ObjectType& valueAt(unsigned index) const
 	{
 		if(index < this->length()) {
-			return *this->data()[index];
-		} else {
-			return ObjectType::empty();
+			auto ptr = this->data()[index];
+			if(ptr != nullptr) {
+				return *ptr;
+			}
 		}
+
+		return ObjectType::empty();
 	}
 
 	const ObjectType& operator[](unsigned index) const

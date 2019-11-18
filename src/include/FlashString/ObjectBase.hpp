@@ -31,10 +31,7 @@ public:
 	/**
 	 * @brief Get the length of the object data in bytes
 	 */
-	FSTR_INLINE uint32_t length() const
-	{
-		return getObjectLength(getObjectPtr());
-	}
+	uint32_t length() const;
 
 	/**
 	 * @brief Get the object data size in bytes
@@ -42,7 +39,7 @@ public:
 	 */
 	FSTR_INLINE uint32_t size() const
 	{
-		return ALIGNUP(getObjectLength(getObjectPtr()));
+		return ALIGNUP(length());
 	}
 
 	/**
@@ -59,10 +56,7 @@ public:
 	/**
 	 * @brief Get a pointer to the flash data
 	 */
-	FSTR_INLINE const uint8_t* data() const
-	{
-		return getObjectData(getObjectPtr());
-	}
+	const uint8_t* data() const;
 
 	/**
 	 * @brief Read contents of a String into RAM
@@ -73,14 +67,13 @@ public:
 	 */
 	size_t read(size_t offset, void* buffer, size_t count) const
 	{
-		auto ptr = getObjectPtr();
-		auto len = getObjectLength(ptr);
+		auto len = length();
 		if(offset >= len) {
 			return 0;
 		}
 
 		count = std::min(len - offset, count);
-		memcpy_P(buffer, getObjectData(ptr) + offset, count);
+		memcpy_P(buffer, data() + offset, count);
 		return count;
 	}
 
@@ -101,7 +94,16 @@ public:
 
 	FSTR_INLINE bool isCopy() const
 	{
-		return flashLength_ & copyBit;
+		return (flashLength_ & copyBit) != 0;
+	}
+
+	/**
+	 * @brief Indicates an invalid String, used for return value from lookups, etc.
+	 * @note A real FlashString can be zero-length, but it cannot be null
+	 */
+	FSTR_INLINE bool isNull() const
+	{
+		return flashLength_ == lengthInvalid;
 	}
 
 	/* Member data must be public for initialisation to work but DO NOT ACCESS DIRECTLY !! */
@@ -113,11 +115,16 @@ protected:
 	static const ObjectBase empty_;
 
 	/*
-	 * @brief Make a 'copy' of this object
+	 * @brief Called by Object<> default constructor
+	 */
+	void invalidate();
+
+	/*
+	 * @brief Make a 'copy' of this object by taking a reference to the real one
 	 */
 	void copy(const ObjectBase& obj)
 	{
-		if(obj.isCopy() || obj.flashLength_ == 0) {
+		if(obj.isCopy()) {
 			flashLength_ = obj.flashLength_;
 		} else {
 			flashLength_ = reinterpret_cast<uint32_t>(&obj) | copyBit;
@@ -125,23 +132,8 @@ protected:
 	}
 
 private:
-	static constexpr uint32_t copyBit = 0x80000000U;
-
-	/**
-	 * @brief Get a pointer to the read flash object as it may be a copy
-	 */
-	const ObjectBase* getObjectPtr() const;
-
-	FSTR_INLINE uint32_t getObjectLength(const ObjectBase* ptr) const
-	{
-		assert(ptr != nullptr && !ptr->isCopy());
-		return ptr->flashLength_;
-	}
-
-	FSTR_INLINE const uint8_t* getObjectData(const ObjectBase* ptr) const
-	{
-		return reinterpret_cast<const uint8_t*>(&ptr->flashLength_ + 1);
-	}
+	static constexpr uint32_t copyBit = 0x80000000U;	   ///< Set to indicate copy
+	static constexpr uint32_t lengthInvalid = copyBit | 0; ///< Indicates null string in a copy
 };
 
 }; // namespace FSTR

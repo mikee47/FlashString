@@ -22,45 +22,65 @@
 
 namespace FSTR
 {
-const ObjectBase ObjectBase::empty_{0};
+const ObjectBase ObjectBase::empty_{ObjectBase::lengthInvalid};
 constexpr uint32_t ObjectBase::copyBit;
 
 size_t ObjectBase::readFlash(size_t offset, void* buffer, size_t count) const
 {
-	auto ptr = getObjectPtr();
-	auto len = getObjectLength(ptr);
+	auto len = length();
 	if(offset >= len) {
 		return 0;
 	}
 
 	count = std::min(len - offset, count);
-	auto addr = flashmem_get_address(getObjectData(ptr) + offset);
+	auto addr = flashmem_get_address(data() + offset);
 	return flashmem_read(buffer, addr, count);
 }
 
-const ObjectBase* ObjectBase::getObjectPtr() const
+uint32_t ObjectBase::length() const
 {
-	const ObjectBase* ptr;
-	if(isCopy()) {
-		ptr = reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit);
-	} else if(flashLength_ == 0) {
-		ptr = &empty_;
+	if(isNull()) {
+		return 0;
+	} else if(isCopy()) {
+		return reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit)->length();
 	} else {
-#ifdef ARCH_HOST
-		// Cannot yet differentiate memory addresses on Host
-		ptr = this;
-#else
-		// Just in case this object was copied directly
-		assert(isFlashPtr(this));
-		if(isFlashPtr(this)) {
-			ptr = this;
-		} else {
-			// In release code just return an empty object
-			ptr = &empty_;
-		}
-#endif
+		return flashLength_;
 	}
-	return ptr;
+}
+
+const uint8_t* ObjectBase::data() const
+{
+	if(isNull()) {
+		// Return a pointer to a valid memory location
+		return reinterpret_cast<const uint8_t*>(&flashLength_);
+	}
+
+	auto ptr = this;
+
+	if(isCopy()) {
+		// Get real object
+		ptr = reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit);
+	}
+
+	// Cannot yet differentiate memory addresses on Host
+#ifndef ARCH_HOST
+	// Check we've got a real flash pointer
+	assert(isFlashPtr(ptr));
+#endif
+
+	return reinterpret_cast<const uint8_t*>(&ptr->flashLength_ + 1);
+}
+
+void ObjectBase::invalidate()
+{
+#ifndef ARCH_HOST
+	// Illegal on real flash object
+	assert(isFlashPtr(this));
+	if(isFlashPtr(this)) {
+		return;
+	}
+#endif
+	flashLength_ = lengthInvalid;
 }
 
 } // namespace FSTR

@@ -35,14 +35,14 @@ public:
 
 		TEST_CASE("empty")
 		{
-			REQUIRE(empty.isCopy() == false);
+			REQUIRE(empty.isCopy() == true);
 			REQUIRE(empty == "");
 		}
 
 		TEST_CASE("empty copy")
 		{
 			auto copy1 = empty;
-			REQUIRE(copy1.isCopy() == false);
+			REQUIRE(copy1.isCopy() == true);
 			REQUIRE(copy1 == "");
 		}
 
