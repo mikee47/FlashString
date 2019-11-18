@@ -36,7 +36,7 @@
  *  @note Unlike String, array is not nul-terminated
  */
 #define DEFINE_FSTR_ARRAY(name, ElementType, ...)                                                                      \
-	DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                            \
+	static DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                     \
 	DEFINE_FSTR_REF_NAMED(name, FSTR::Array<ElementType>);
 
 /** @brief Define an array for local (static) use
@@ -45,7 +45,7 @@
  *  @param elements
  */
 #define DEFINE_FSTR_ARRAY_LOCAL(name, ElementType, ...)                                                                \
-	DEFINE_FSTR_ARRAY_DATA_LOCAL(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                      \
+	static DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                     \
 	static DEFINE_FSTR_REF_NAMED(name, FSTR::Array<ElementType>);
 
 /** @brief Define an array structure
@@ -60,9 +60,6 @@
 	} FSTR_PACKED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                                 \
 	FSTR_CHECK_STRUCT(name);
 
-#define DEFINE_FSTR_ARRAY_DATA_LOCAL(name, ElementType, ...)                                                           \
-	static DEFINE_FSTR_ARRAY_DATA(name, ElementType, __VA_ARGS__)
-
 /**
  * @brief Load an Array object into a named local (stack) buffer
  * @note Example:
@@ -74,14 +71,14 @@
  */
 #define LOAD_FSTR_ARRAY(name, array)                                                                                   \
 	decltype(array)[0] name[(array).size()] __attribute__((aligned(4)));                                               \
-	memcpy_aligned(name, (fstr).data(), (fstr).size());
+	memcpy_aligned(name, (array).data(), (array).size());
 
 /**
  * @brief Define an Array and load it into a named buffer on the stack
  * @note Equivalent to `ElementType name[] = {a, b, c}` except the buffer is word-aligned
  */
 #define FSTR_ARRAY_ARRAY(name, ElementType, ...)                                                                       \
-	DEFINE_FSTR_ARRAY_DATA_LOCAL(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                      \
+	static DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                     \
 	LOAD_FSTR_ARRAY(name, FSTR_DATA_NAME(name).object)
 
 /** @brief Define an Array containing data from an external file

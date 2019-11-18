@@ -33,28 +33,28 @@
  * @brief Define a Vector (size calculated) with global reference
  */
 #define DEFINE_FSTR_VECTOR(name, ObjectType, ...)                                                                      \
-	DEFINE_FSTR_VECTOR_DATA(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                            \
+	static DEFINE_FSTR_VECTOR_DATA(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                     \
 	DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
  * @brief Define a Vector (size calculated) with local reference
  */
 #define DEFINE_FSTR_VECTOR_LOCAL(name, ObjectType, ...)                                                                \
-	DEFINE_FSTR_VECTOR_DATA_LOCAL(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                      \
+	static DEFINE_FSTR_VECTOR_DATA(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                     \
 	static DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
  * @brief Define a Vector (size provided) with global reference
  */
 #define DEFINE_FSTR_VECTOR_SIZED(name, ObjectType, size, ...)                                                          \
-	DEFINE_FSTR_VECTOR_DATA_SIZED(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                                \
+	static DEFINE_FSTR_VECTOR_DATA_SIZED(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                         \
 	DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
  * @brief Define a Vector (size provided) with local reference
  */
 #define DEFINE_FSTR_VECTOR_SIZED_LOCAL(name, ObjectType, size, ...)                                                    \
-	DEFINE_FSTR_VECTOR_DATA_SIZED_LOCAL(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                          \
+	static DEFINE_FSTR_VECTOR_DATA_SIZED(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                         \
 	static DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
@@ -62,12 +62,6 @@
  */
 #define DEFINE_FSTR_VECTOR_DATA(name, ObjectType, ...)                                                                 \
 	DEFINE_FSTR_VECTOR_DATA_SIZED(name, ObjectType, sizeof((const void* []){__VA_ARGS__}) / sizeof(void*), __VA_ARGS__)
-
-/**
- * @brief Define a Vector data structure, local (static)
- */
-#define DEFINE_FSTR_VECTOR_DATA_LOCAL(name, ObjectType, ...)                                                           \
-	static DEFINE_FSTR_VECTOR_DATA(name, ObjectType, __VA_ARGS__)
 
 /**
  * @brief Define a Vector data structure (size provided), global scope
@@ -80,12 +74,6 @@
 		const ObjectType* data[size];                                                                                  \
 	} name PROGMEM = {{sizeof(name.data)}, __VA_ARGS__};                                                               \
 	FSTR_CHECK_STRUCT(name);
-
-/**
- * @brief Define a Vector data structure (size provided), local scope
- */
-#define DEFINE_FSTR_VECTOR_DATA_SIZED_LOCAL(name, ObjectType, size, ...)                                               \
-	static DEFINE_FSTR_VECTOR_DATA_SIZED(name, ObjectType, size, __VA_ARGS__)
 
 namespace FSTR
 {

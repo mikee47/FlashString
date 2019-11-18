@@ -61,7 +61,6 @@ template <typename T, typename U> struct argument_type<T(U)> {
  * @param object FSTR::Object instance to cast
  */
 #define DEFINE_FSTR_REF(name, ObjectType, object) constexpr const ObjectType& name PROGMEM = object.as<ObjectType>();
-#define DEFINE_FSTR_REF_LOCAL(name, ObjectType, object) static DEFINE_FSTR_REF(name, ObjectType, object)
 
 #define DEFINE_FSTR_REF_NAMED(name, ObjectType) DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name).object);
 

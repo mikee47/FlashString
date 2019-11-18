@@ -36,7 +36,7 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define FS_PTR(str)                                                                                                    \
 	(__extension__({                                                                                                   \
-		DEFINE_FSTR_DATA_LOCAL(struc, str);                                                                            \
+		static DEFINE_FSTR_DATA(struc, str);                                                                           \
 		asm("" : : ""(struc));                                                                                         \
 		static_cast<const FSTR::String*>(&struc.object);                                                               \
 	}))
@@ -70,7 +70,7 @@ typedef const __FlashStringHelper* flash_string_t;
  *  @param str content of the string
  */
 #define DEFINE_FSTR_LOCAL(name, str)                                                                                   \
-	DEFINE_FSTR_DATA_LOCAL(FSTR_DATA_NAME(name), str);                                                                 \
+	static DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                \
 	static DEFINE_FSTR_REF_NAMED(name, FSTR::String);
 
 /** @brief Define a string in a String-compatible structure
@@ -83,8 +83,6 @@ typedef const __FlashStringHelper* flash_string_t;
 		char data[ALIGNUP(sizeof(str))];                                                                               \
 	} name PROGMEM = {{sizeof(str) - 1}, str};                                                                         \
 	FSTR_CHECK_STRUCT(name);
-
-#define DEFINE_FSTR_DATA_LOCAL(name, str) static DEFINE_FSTR_DATA(name, str)
 
 /**
  * @brief Load a String object into a named local (stack) buffer
@@ -105,7 +103,7 @@ typedef const __FlashStringHelper* flash_string_t;
  * @note Equivalent to `char name[] = "text"` except the buffer is word aligned.
  */
 #define FSTR_ARRAY(name, str)                                                                                          \
-	DEFINE_FSTR_DATA_LOCAL(FSTR_DATA_NAME(name), str);                                                                 \
+	static DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                \
 	LOAD_FSTR(name, FSTR_DATA_NAME(name).object.as<FSTR::String>())
 
 /** @brief Define a String containing data from an external file

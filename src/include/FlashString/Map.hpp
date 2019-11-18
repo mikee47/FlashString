@@ -38,33 +38,30 @@
  * @brief Define a Map with reference
  */
 #define DEFINE_FSTR_MAP(name, KeyType, ContentType, ...)                                                               \
-	DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                                     \
+	static DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                              \
 	DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
 #define DEFINE_FSTR_MAP_LOCAL(name, KeyType, ContentType, ...)                                                         \
-	DEFINE_FSTR_MAP_DATA_LOCAL(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                               \
+	static DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                              \
 	static DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
 #define DEFINE_FSTR_MAP_SIZED(name, KeyType, ContentType, size, ...)                                                   \
-	DEFINE_FSTR_MAP_DATA_SIZED(FSTR_DATA_NAME(name), KeyType, ContentType, size, __VA_ARGS__);                         \
+	static DEFINE_FSTR_MAP_DATA_SIZED(FSTR_DATA_NAME(name), KeyType, ContentType, size, __VA_ARGS__);                  \
 	DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
 #define DEFINE_FSTR_MAP_SIZED_LOCAL(name, KeyType, ContentType, size, ...)                                             \
-	DEFINE_FSTR_MAP_DATA_SIZED_LOCAL(FSTR_DATA_NAME(name), KeyType, ContentType, size, __VA_ARGS__);                   \
+	static DEFINE_FSTR_MAP_DATA_SIZED(FSTR_DATA_NAME(name), KeyType, ContentType, size, __VA_ARGS__);                  \
 	static DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
 /**
  * @brief Define a structure containing map data
  * @param name name of the map structure
  */
-#define FSTR_MAP_ARGSIZE(KeyType, ContentType, ...)                                                                    \
-	(sizeof((const FSTR::MapPair<KeyType, ContentType>[]){__VA_ARGS__}) / sizeof(FSTR::MapPair<KeyType, ContentType>))
 #define DEFINE_FSTR_MAP_DATA(name, KeyType, ContentType, ...)                                                          \
-	DEFINE_FSTR_MAP_DATA_SIZED(name, KeyType, ContentType, FSTR_MAP_ARGSIZE(KeyType, ContentType, __VA_ARGS__),        \
+	DEFINE_FSTR_MAP_DATA_SIZED(name, KeyType, ContentType,                                                             \
+							   (sizeof((const FSTR::MapPair<KeyType, ContentType>[]){__VA_ARGS__}) /                   \
+								sizeof(FSTR::MapPair<KeyType, ContentType>)),                                          \
 							   __VA_ARGS__)
-#define DEFINE_FSTR_MAP_DATA_LOCAL(name, KeyType, ContentType, ...)                                                    \
-	DEFINE_FSTR_MAP_DATA_SIZED_LOCAL(name, KeyType, ContentType, FSTR_MAP_ARGSIZE(KeyType, ContentType, __VA_ARGS__),  \
-									 __VA_ARGS__)
 
 /**
  * @brief Use in situations where the array size cannot be automatically calculated,
@@ -76,9 +73,6 @@
 		FSTR::MapPair<KeyType, ContentType> data[size];                                                                \
 	} FSTR_PACKED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                                 \
 	FSTR_CHECK_STRUCT(name);
-
-#define DEFINE_FSTR_MAP_DATA_SIZED_LOCAL(name, KeyType, ContentType, size, ...)                                        \
-	static DEFINE_FSTR_MAP_DATA_SIZED(name, KeyType, ContentType, size, __VA_ARGS__)
 
 namespace FSTR
 {
