@@ -27,6 +27,12 @@
 
 namespace FSTR
 {
+/**
+ * @brief Base class template for all types
+ * @tparam ObjectType The object type actually being instantiated
+ * @tparam ElementType
+ * @see https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern
+ */
 template <class ObjectType, typename ElementType> class Object : public ObjectBase
 {
 public:
@@ -51,12 +57,12 @@ public:
 
 	Iterator begin() const
 	{
-		return Iterator(this->as<ObjectType>(), 0);
+		return Iterator(as<ObjectType>(), 0);
 	}
 
 	Iterator end() const
 	{
-		return Iterator(this->as<ObjectType>(), this->length());
+		return Iterator(as<ObjectType>(), length());
 	}
 
 	static const ObjectType& empty()
@@ -72,10 +78,22 @@ public:
 		return ObjectBase::length() / sizeof(ElementType);
 	}
 
+	template <typename ValueType> int indexOf(const ValueType& value) const
+	{
+		auto len = length();
+		for(unsigned i = 0; i < len; ++i) {
+			if(as<ObjectType>().valueAt(i) == value) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
 	FSTR_INLINE ElementType valueAt(unsigned index) const
 	{
-		if(index < this->length()) {
-			return readValue(this->data() + index);
+		if(index < length()) {
+			return readValue(data() + index);
 		} else {
 			return ElementType{0};
 		}
@@ -86,7 +104,7 @@ public:
 	 */
 	FSTR_INLINE ElementType operator[](unsigned index) const
 	{
-		return this->valueAt(index);
+		return valueAt(index);
 	}
 
 	FSTR_INLINE size_t elementSize() const
