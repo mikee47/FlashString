@@ -30,7 +30,7 @@ class __FlashStringHelper;
 typedef const __FlashStringHelper* flash_string_t;
 
 /**
- * @brief Define an inline FlashString and return a pointer to it
+ * @brief Define an inline String and return a pointer to it
  * @note The rather obscure `asm` statement is required to prevent the compiler from discarding
  * the symbol at link time, which leads to an 'undefined reference' error
  */
@@ -42,7 +42,7 @@ typedef const __FlashStringHelper* flash_string_t;
 	}))
 
 /**
- * @brief Define an inline FlashString and return it as a copy
+ * @brief Define an inline String and return it as a copy
  * @note Example:
  *
  * 		Serial.println(FS("This is a Flash String"));
@@ -115,8 +115,8 @@ typedef const __FlashStringHelper* flash_string_t;
 	extern "C" const FSTR::String name;
 
 /**
- * @brief Get a pointer to the actual FlashString
- * @param fstr The FlashString& reference
+ * @brief Get a pointer to the actual String
+ * @param fstr The String& reference
  * @deprecated Not required, taking address of a references is fine so just use &
  */
 #define FSTR_PTR(fstr) &fstr
@@ -139,7 +139,7 @@ typedef const __FlashStringHelper* flash_string_t;
  *  	debugf("fstr2.length() = %u", table[1]->length());
  *
  */
-#define FSTR_TABLE(name) const FlashString* const name[] PROGMEM
+#define FSTR_TABLE(name) const FSTR::String* const name[] PROGMEM
 
 namespace FSTR
 {
@@ -242,5 +242,3 @@ public:
 };
 
 } // namespace FSTR
-
-using FlashString = FSTR::String;

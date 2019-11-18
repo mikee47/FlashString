@@ -87,7 +87,7 @@ template <typename T, typename U> struct argument_type<T(U)> {
  *  		IMPORT_FSTR_DATA(myFlashData, PROJECT_DIR "/files/my_flash_file.txt");
  * Use COMPONENT_PATH within a component.
  * @note No C/C++ symbol is declared, this is type-dependent and must be done separately:
- * 			extern "C" FlashString myFlashData;
+ * 			extern "C" FSTR::String myFlashData;
  */
 // clang-format off
 #define STR(x) XSTR(x)
