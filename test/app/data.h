@@ -38,26 +38,22 @@ DECLARE_FSTR(externalFSTR1);
  * Array
  */
 
-DECLARE_FSTR_ARRAY(fstrArrayDouble, double);
-DECLARE_FSTR_ARRAY(fstrArrayint64, int64_t);
+DECLARE_FSTR_ARRAY(doubleArray, double);
+DECLARE_FSTR_ARRAY(int64Array, int64_t);
 
 using TableRow_Float_3 = FSTR::TableRow<float, 3>;
-DECLARE_FSTR_ARRAY(fstrArrayMulti, TableRow_Float_3);
-
-DECLARE_FSTR_VECTOR(arrayVector, FSTR::Array<float>);
-DECLARE_FSTR_MAP(arrayMap, int, FSTR::Array<float>);
+DECLARE_FSTR_ARRAY(tableArray, TableRow_Float_3);
 
 /**
  * Vector
  */
 
-DECLARE_FSTR_VECTOR(table, FlashString);
+DECLARE_FSTR_VECTOR(stringVector, FSTR::String);
+DECLARE_FSTR_VECTOR(arrayVector, FSTR::Array<float>);
 
 /**
  * Map
  */
-
-DECLARE_FSTR_MAP(stringMap, FlashString, FlashString);
 
 enum MapKey : uint8_t {
 	KeyA = 10,
@@ -65,6 +61,7 @@ enum MapKey : uint8_t {
 	KeyC = 123,
 };
 
-DECLARE_FSTR_MAP(enumMap, MapKey, FlashString);
-
-DECLARE_FSTR_MAP(tableMap, FlashString, FSTR::Vector<FlashString>);
+DECLARE_FSTR_MAP(enumMap, MapKey, FSTR::String);
+DECLARE_FSTR_MAP(stringMap, FSTR::String, FSTR::String);
+DECLARE_FSTR_MAP(arrayMap, int, FSTR::Array<float>);
+DECLARE_FSTR_MAP(vectorMap, FSTR::String, FSTR::Vector<FSTR::String>);

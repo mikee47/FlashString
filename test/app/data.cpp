@@ -32,14 +32,9 @@ DEFINE_FSTR(externalFSTR1, EXTERNAL_FSTR1_TEXT)
  * Array
  */
 
-DEFINE_FSTR_ARRAY(fstrArrayDouble, double, PI, 53.0, 100, 1e8, 47);
-DEFINE_FSTR_ARRAY(fstrArrayint64, int64_t, 1, 2, 3, 4, 5);
-
-// A multi-dimensional Array (table)
-DEFINE_FSTR_ARRAY(fstrArrayMulti, TableRow_Float_3, {1, 2, 3}, {4, 5, 6}, {7, 8, 9});
-
-DEFINE_FSTR_ARRAY(row1, float, 1, 2, 3);
-DEFINE_FSTR_ARRAY(row2, float, 4, 5, 6, 7, 8, 9, 10);
+DEFINE_FSTR_ARRAY(doubleArray, double, PI, 53.0, 100, 1e8, 47);
+DEFINE_FSTR_ARRAY(int64Array, int64_t, 1, 2, 3, 4, 5);
+DEFINE_FSTR_ARRAY(tableArray, TableRow_Float_3, {1, 2, 3}, {4, 5, 6}, {7, 8, 9});
 
 /**
  * Vector
@@ -47,8 +42,10 @@ DEFINE_FSTR_ARRAY(row2, float, 4, 5, 6, 7, 8, 9, 10);
 
 DEFINE_FSTR_LOCAL(data1, "Test string #1");
 DEFINE_FSTR_LOCAL(data2, "Test string #2");
-DEFINE_FSTR_VECTOR(table, FlashString, &data1, &data2);
+DEFINE_FSTR_VECTOR(stringVector, FSTR::String, &data1, nullptr, &data2);
 
+DEFINE_FSTR_ARRAY(row1, float, 1, 2, 3);
+DEFINE_FSTR_ARRAY(row2, float, 4, 5, 6, 7, 8, 9, 10);
 DEFINE_FSTR_VECTOR(arrayVector, FSTR::Array<float>, &row1, &row2);
 
 /**
@@ -57,16 +54,13 @@ DEFINE_FSTR_VECTOR(arrayVector, FSTR::Array<float>, &row1, &row2);
 
 DEFINE_FSTR_MAP(arrayMap, int, FSTR::Array<float>, {1, &row1}, {2, &row2});
 
-// Map of `FlashString => FlashString`
+// Map of `String => String`
 
-// Define the keys
 DEFINE_FSTR_LOCAL(key1, "key1");
 DEFINE_FSTR_LOCAL(key2, "key2");
-// Import a couple of files as content
 IMPORT_FSTR(FS_content1, COMPONENT_PATH "/files/content1.txt");
 IMPORT_FSTR(FS_content2, COMPONENT_PATH "/files/content2.txt");
-// Define the mapping
-DEFINE_FSTR_MAP(stringMap, FlashString, FlashString, {&key1, &FS_content1}, {&key2, &FS_content2});
+DEFINE_FSTR_MAP(stringMap, FSTR::String, FSTR::String, {&key1, &FS_content1}, {&key2, &FS_content2});
 
-DEFINE_FSTR_MAP(enumMap, MapKey, FlashString, {KeyA, &FS_content1}, {KeyB, &FS_content2});
-DEFINE_FSTR_MAP(tableMap, FlashString, FSTR::Vector<FlashString>, {&key1, &table});
+DEFINE_FSTR_MAP(enumMap, MapKey, FSTR::String, {KeyA, &FS_content1}, {KeyB, &FS_content2});
+DEFINE_FSTR_MAP(vectorMap, FSTR::String, FSTR::Vector<FSTR::String>, {&key1, &stringVector});

@@ -55,7 +55,7 @@ public:
 
 		TEST_CASE("inline")
 		{
-#define INLINE_TEXT "This is an inline\0 FlashString\0\0"
+#define INLINE_TEXT "This is an inline\0 Flash String\0\0"
 			auto str = FS(INLINE_TEXT);
 			REQUIRE(str == F(INLINE_TEXT));
 		}
@@ -126,7 +126,7 @@ public:
 
 		TEST_CASE("FSTR_ARRAY")
 		{
-			// Define a FlashString and load it into a stack buffer in one operation (non-reusable!)
+			// Define a String and load it into a stack buffer in one operation (non-reusable!)
 			Serial.print("> FSTR_ARRAY: ");
 			FSTR_ARRAY(fsarr, DEMO_TEST_TEXT);
 			Serial.print('"');
@@ -145,7 +145,7 @@ public:
 				char data[5];
 			} demoArray1 PROGMEM = {{5}, {1, 2, 3, 4, 5}};
 			// Use a reference for convenience
-			const auto& fstrArray = demoArray1.object.as<FlashString>();
+			const auto& fstrArray = demoArray1.object.as<FSTR::String>();
 			// fstrArray can be now be used in calls to functions, etc.
 			String arr(fstrArray);
 			for(unsigned i = 0; i < arr.length(); ++i) {

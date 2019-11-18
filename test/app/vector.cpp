@@ -31,32 +31,36 @@ public:
 
 	void execute() override
 	{
-		Serial.print("arrayVector: ");
-		arrayVector.printTo(Serial);
-		Serial.println();
-
-		//
-
-		Serial.println();
-		Serial.println(_F("Vector<String>"));
-
-		table.printTo(Serial);
-		Serial.println();
-
-		Serial.printf(_F("table[%u]\n"), table.length());
-
-		Serial.println(_F("  iterator:"));
-		for(auto& obj : table) {
-			Serial.println(obj);
-			Serial.printf(_F("    .length() = %u\n"), obj.length());
+		TEST_CASE("Vector<Array<float>>")
+		{
+			arrayVector.printTo(Serial);
+			Serial.println();
 		}
 
-		Serial.println(_F("  for-loop:"));
-		for(unsigned i = 0; i < table.length(); ++i) {
-			Serial.printf(_F("   fstr[%u] = "), i);
-			auto& content = table[i];
-			Serial.println(content);
-			Serial.printf(_F("     .length() = %u\n"), content.length());
+		TEST_CASE("Vector<String>")
+		{
+			stringVector.printTo(Serial);
+			Serial.println();
+
+			Serial.printf(_F("table[%u]\n"), stringVector.length());
+
+			TEST_CASE("iterator")
+			{
+				for(auto& obj : stringVector) {
+					Serial.println(obj);
+					Serial.printf(_F("    .length() = %u\n"), obj.length());
+				}
+			}
+
+			TEST_CASE("for-loop")
+			{
+				for(unsigned i = 0; i < stringVector.length(); ++i) {
+					Serial.printf(_F("fstr[%u] = "), i);
+					auto& content = stringVector[i];
+					Serial.println(content);
+					Serial.printf(_F("  .length() = %u\n"), content.length());
+				}
+			}
 		}
 	}
 };

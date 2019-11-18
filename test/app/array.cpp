@@ -48,28 +48,28 @@ public:
 		Serial.print(_F("Array of double"));
 
 		Serial.print("  iterator: {");
-		for(auto f : fstrArrayDouble) {
+		for(auto f : doubleArray) {
 			Serial.print(f);
 			Serial.print(", ");
 		}
 		Serial.println(" }");
 
-		Serial.printf(_F("Array[double] length = %u, size = %u"), fstrArrayDouble.length(), fstrArrayDouble.size());
-		for(unsigned i = 0; i < fstrArrayDouble.length(); ++i) {
-			Serial.printf(_F("   arr[%u] = %f\n"), i, fstrArrayDouble[i]);
+		Serial.printf(_F("Array[double] length = %u, size = %u"), doubleArray.length(), doubleArray.size());
+		for(unsigned i = 0; i < doubleArray.length(); ++i) {
+			Serial.printf(_F("   arr[%u] = %f\n"), i, doubleArray[i]);
 		}
 
-		FSTR::println(Serial, fstrArrayDouble);
+		FSTR::println(Serial, doubleArray);
 
 		//
 
 		Serial.println();
 		Serial.print(_F("Multi-dimensional array"));
 
-		FSTR::println(Serial, fstrArrayMulti);
+		FSTR::println(Serial, tableArray);
 
 		Serial.println("  iterator: {");
-		for(auto row : fstrArrayMulti) {
+		for(auto row : tableArray) {
 			Serial.print("    { ");
 			for(auto v : row.values) {
 				Serial.print(v);
@@ -79,8 +79,8 @@ public:
 		}
 		Serial.println(" }");
 
-		//	FSTR::println(Serial, fstrArrayint64);
-		for(auto v : fstrArrayint64) {
+		//	FSTR::println(Serial, int64Array);
+		for(auto v : int64Array) {
 			Serial.print(v, HEX);
 			Serial.print(", ");
 		}
