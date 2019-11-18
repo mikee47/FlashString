@@ -90,6 +90,7 @@ template <typename T, typename U> struct argument_type<T(U)> {
  * @note No C/C++ symbol is declared, this is type-dependent and must be done separately:
  * 			extern "C" FlashString myFlashData;
  */
+// clang-format off
 #define STR(x) XSTR(x)
 #define XSTR(x) #x
 #ifdef __WIN32
@@ -117,6 +118,7 @@ template <typename T, typename U> struct argument_type<T(U)> {
 			".incbin \"" file "\"\n"                                                                                   \
 			"_" STR(name) "_end:\n");
 #endif
+// clang-format on
 
 namespace FSTR
 {
