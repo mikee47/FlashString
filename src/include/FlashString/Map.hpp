@@ -79,11 +79,10 @@ namespace FSTR
 /**
  * @brief Class template to access an associative map
  */
-template <typename KeyType, class ContentType> class Map : public Array<MapPair<KeyType, ContentType>>
+template <typename KeyType, class ContentType, class Pair = MapPair<KeyType, ContentType>>
+class Map : public Object<Map<KeyType, ContentType>, Pair>
 {
 public:
-	using Pair = MapPair<KeyType, ContentType>;
-
 	/**
 	 * @brief Get a map entry by index, if it exists
 	 * @note Result validity can be checked using if()
