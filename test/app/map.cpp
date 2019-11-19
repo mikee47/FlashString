@@ -51,6 +51,7 @@ public:
 				Serial.print(_F("stringMap['key1']: "));
 				FSTR::println(Serial, stringMap["key1"]);
 				REQUIRE(stringMap["key1"]);
+				REQUIRE(stringMap["KEY1"]);
 				REQUIRE(!stringMap["key1"].content().isNull());
 				Serial.print(_F("stringMap['key2']: "));
 				FSTR::println(Serial, stringMap["key2"]);

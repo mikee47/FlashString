@@ -63,8 +63,7 @@ public:
 	template <typename T = KeyType> typename std::enable_if<!std::is_class<T>::value, KeyType>::type key() const
 	{
 		// Ensure access is aligned for 1/2 byte keys
-		volatile auto pair = *this;
-		return pair.key_;
+		return readValue<KeyType>(&key_);
 	}
 
 	/**
@@ -73,12 +72,7 @@ public:
 	template <typename T = KeyType>
 	typename std::enable_if<std::is_same<T, String>::value, const KeyType&>::type key() const
 	{
-		auto k = key_;
-		if(k == nullptr) {
-			return KeyType::empty();
-		} else {
-			return *k;
-		}
+		return (key_ == nullptr) ? String::empty() : *key_;
 	}
 
 	/**
@@ -86,11 +80,7 @@ public:
 	 */
 	const ContentType& content() const
 	{
-		if(content_ == nullptr) {
-			return ContentType::empty();
-		} else {
-			return *content_;
-		}
+		return (content_ == nullptr) ? ContentType::empty() : *content_;
 	}
 
 	operator const ContentType&() const

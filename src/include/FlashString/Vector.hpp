@@ -83,6 +83,24 @@ namespace FSTR
 template <class ObjectType> class Vector : public Object<Vector<ObjectType>, ObjectType*>
 {
 public:
+	template <typename ValueType, typename T = ObjectType>
+	typename std::enable_if<std::is_same<T, String>::value, int>::type indexOf(const ValueType& value,
+																			   bool ignoreCase = true) const
+	{
+		if(!ignoreCase) {
+			return Object<Vector<String>, String*>::indexOf(value);
+		}
+
+		auto len = this->length();
+		for(unsigned i = 0; i < len; ++i) {
+			if(valueAt(i).equalsIgnoreCase(value)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
 	const ObjectType& valueAt(unsigned index) const
 	{
 		if(index < this->length()) {

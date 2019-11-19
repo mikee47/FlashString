@@ -11,7 +11,7 @@ HOST_NETWORK_OPTIONS := --nonet
 
 # Time in milliseconds to pause after a test group has completed
 CONFIG_VARS += TEST_GROUP_INTERVAL
-TEST_GROUP_INTERVAL ?= 500
+TEST_GROUP_INTERVAL ?= 100
 APP_CFLAGS += -DTEST_GROUP_INTERVAL=$(TEST_GROUP_INTERVAL)
 
 # Time in milliseconds to wait before re-starting all tests

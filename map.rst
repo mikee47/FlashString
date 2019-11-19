@@ -95,6 +95,12 @@ We can now do this::
       }
    }
 
+.. note::
+
+   As with Vector<String>, Map<String, ...> performs lookups without case-sensitivity.
+
+   The ``indexOf`` method has an extra ``ignoreCase`` parameter, which defaults to ``true``.
+
 
 Additional Macros
 -----------------

@@ -42,24 +42,40 @@ public:
 			stringVector.printTo(Serial);
 			Serial.println();
 
-			Serial.printf(_F("table[%u]\n"), stringVector.length());
+			Serial.printf(_F("stringVector[%u]\n"), stringVector.length());
 
 			TEST_CASE("iterator")
 			{
 				for(auto& obj : stringVector) {
 					Serial.println(obj);
-					Serial.printf(_F("    .length() = %u\n"), obj.length());
+					Serial.printf(_F("  .length() = %u\n"), obj.length());
 				}
 			}
 
 			TEST_CASE("for-loop")
 			{
 				for(unsigned i = 0; i < stringVector.length(); ++i) {
-					Serial.printf(_F("fstr[%u] = "), i);
+					Serial.printf(_F("stringVector[%u] = "), i);
 					auto& content = stringVector[i];
 					Serial.println(content);
 					Serial.printf(_F("  .length() = %u\n"), content.length());
 				}
+			}
+
+			TEST_CASE("lookup")
+			{
+				int i = stringVector.indexOf(_F("Test string #2"));
+				REQUIRE(i == 2);
+				i = stringVector.indexOf(_F("Test STRING #2"), false);
+				REQUIRE(i == -1);
+				i = stringVector.indexOf(_F("Test STRING #2"));
+				REQUIRE(i == 2);
+				i = stringVector.indexOf(nullptr);
+				REQUIRE(i == 1);
+				i = stringVector.indexOf("");
+				REQUIRE(i == 1);
+				i = stringVector.indexOf(String::empty);
+				REQUIRE(i == 1);
 			}
 		}
 	}

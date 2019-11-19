@@ -62,6 +62,16 @@ You can share Vectors between translation units by declaring it in a header::
 
    DECLARE_FSTR_VECTOR(table);
 
+To search a Vector::
+
+   int i = table.indexOf("TEST STRING #1");
+
+.. note::
+
+   By default, searches in Vector<String> are not case-sensitive.
+
+   The ``indexOf`` method has an extra ``ignoreCase`` parameter, which defaults to ``true``.
+
 
 Additional Macros
 -----------------

@@ -41,16 +41,26 @@ public:
 
 		TEST_CASE("empty copy")
 		{
-			auto copy1 = empty;
-			REQUIRE(copy1.isCopy() == true);
-			REQUIRE(copy1 == "");
+			auto copy = empty;
+			REQUIRE(copy.isCopy() == true);
+			REQUIRE(copy == "");
 		}
 
 		TEST_CASE("normal copy")
 		{
-			auto copy2 = externalFSTR1;
-			REQUIRE(copy2.isCopy() == true);
-			REQUIRE(copy2 == F(EXTERNAL_FSTR1_TEXT));
+			auto copy = externalFSTR1;
+			REQUIRE(copy.isCopy() == true);
+			REQUIRE(copy == F(EXTERNAL_FSTR1_TEXT));
+		}
+
+		TEST_CASE("Assign to WString")
+		{
+			String s = empty;
+			REQUIRE(!s);
+			s = externalFSTR1;
+			REQUIRE(s == externalFSTR1);
+			auto copy = externalFSTR1;
+			REQUIRE(s == copy);
 		}
 
 		TEST_CASE("inline")

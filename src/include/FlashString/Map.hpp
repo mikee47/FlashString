@@ -109,16 +109,8 @@ public:
 		auto p = this->data();
 		auto len = this->length();
 		for(unsigned i = 0; i < len; ++i, ++p) {
-			if(IS_ALIGNED(sizeof(KeyType))) {
-				if(p->key_ == key) {
-					return i;
-				}
-			} else {
-				// Ensure access is aligned for 1/2 byte keys
-				volatile auto pair = *p;
-				if(pair.key_ == key) {
-					return i;
-				}
+			if(p->key() == key) {
+				return i;
 			}
 		}
 
@@ -128,15 +120,19 @@ public:
 	/**
 	 * @brief Lookup a String key and return the index
 	 * @retval int If key isn't found, return -1
-	 * @note Comparison is case-sensitive
 	 */
 	template <typename TRefKey, typename T = KeyType>
-	typename std::enable_if<std::is_same<T, String>::value, int>::type indexOf(const TRefKey& key) const
+	typename std::enable_if<std::is_same<T, String>::value, int>::type indexOf(const TRefKey& key,
+																			   bool ignoreCase = true) const
 	{
 		auto p = this->data();
 		auto len = this->length();
 		for(unsigned i = 0; i < len; ++i, ++p) {
-			if(*p->key_ == key) {
+			if(ignoreCase) {
+				if(p->key().equalsIgnoreCase(key)) {
+					return i;
+				}
+			} else if(p->key() == key) {
 				return i;
 			}
 		}
