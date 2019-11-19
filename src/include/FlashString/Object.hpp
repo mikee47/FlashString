@@ -25,6 +25,53 @@
 #include "ObjectBase.hpp"
 #include "ObjectIterator.hpp"
 
+/**
+ * @brief Define a reference to an object
+ * @param name Name for reference
+ * @param ObjectType Fully qualified typename of object required, e.g. FSTR::String, FlashString, FSTR::Vector<int>, etc.
+ * @param object FSTR::Object instance to cast
+ */
+#define DEFINE_FSTR_REF(name, ObjectType, object) const ObjectType& name PROGMEM = object.as<ObjectType>();
+
+#define DEFINE_FSTR_REF_NAMED(name, ObjectType) DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name).object);
+
+/**
+ * @brief Provide internal name for generated flash string structures
+ */
+#define FSTR_DATA_NAME(name) fstr_data_##name
+
+/**
+ * @brief Given an Object& reference, return a pointer to the actual object
+ * @param objref
+ * @note When an Object pointer is required, such when defining entries for a Vector or Map,
+ * it is usually sufficient to use &objref.
+ *
+ * However, some older compilers such as GCC 4.8.5 requires such references to
+ * be declared constexpr. For example, this fails with `FSTR structure not POD`:
+ *
+ * 		DEFINE_FSTR(globalStringRef, "This creates a global reference");
+ * 		DEFINE_VECTOR(myVector, FSTR::String, &globalStringRef);
+ *                                            ^^^
+ *
+ * Global references cannot be declared constexpr, so changing DEFINE_FSTR to DEFINE_FSTR_LOCAL
+ * will fix the problem.
+ *
+ * Another solution is to get a direct pointer to the actual data structure:
+ *
+ * 		DEFINE_VECTOR(myVector, FSTR::String, FSTR_PTR(globalStringRef));
+ *
+ * We can only do this of course if the data structure is in scope.
+ *
+ */
+#define FSTR_PTR(objref) static_cast<std::remove_reference<decltype(objref)>::type*>(&FSTR_DATA_NAME(objref).object)
+
+/**
+ * @brief Check structure is POD-compliant and correctly aligned
+ */
+#define FSTR_CHECK_STRUCT(name)                                                                                        \
+	static_assert(std::is_pod<decltype(name)>::value, "FSTR structure not POD");                                       \
+	static_assert(offsetof(decltype(name), data) == sizeof(uint32_t), "FSTR structure alignment error");
+
 namespace FSTR
 {
 /**

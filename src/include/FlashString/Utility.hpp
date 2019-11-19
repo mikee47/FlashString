@@ -55,28 +55,6 @@ template <typename T, typename U> struct argument_type<T(U)> {
 };
 
 /**
- * @brief Define a reference to an object
- * @param name Name for reference
- * @param ObjectType Fully qualified typename of object required, e.g. FSTR::String, FlashString, FSTR::Vector<int>, etc.
- * @param object FSTR::Object instance to cast
- */
-#define DEFINE_FSTR_REF(name, ObjectType, object) constexpr const ObjectType& name PROGMEM = object.as<ObjectType>();
-
-#define DEFINE_FSTR_REF_NAMED(name, ObjectType) DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name).object);
-
-/**
- * @brief Provide internal name for generated flash string structures
- */
-#define FSTR_DATA_NAME(name) fstr_data_##name
-
-/**
- * @brief Check structure is POD-compliant and correctly aligned
- */
-#define FSTR_CHECK_STRUCT(name)                                                                                        \
-	static_assert(std::is_pod<decltype(name)>::value, "FSTR structure not POD");                                       \
-	static_assert(offsetof(decltype(name), data) == sizeof(uint32_t), "FSTR structure alignment error");
-
-/**
  * @brief Link the contents of a file
  * @note We need inline assembler's `.incbin` instruction to actually import the data.
  * We use a macro STR() so that if required the name can be resolved from a #defined value.

@@ -46,7 +46,7 @@
  */
 #define DEFINE_FSTR_ARRAY_LOCAL(name, ElementType, ...)                                                                \
 	static DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                     \
-	static DEFINE_FSTR_REF_NAMED(name, FSTR::Array<ElementType>);
+	static constexpr DEFINE_FSTR_REF_NAMED(name, FSTR::Array<ElementType>);
 
 /** @brief Define an array structure
  *  @param name Name to use for data structure

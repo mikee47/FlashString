@@ -32,7 +32,7 @@ namespace FSTR
  */
 template <typename KeyType, class ContentType> class MapPair
 {
-	typedef typename std::conditional<std::is_same<KeyType, String>::value, const KeyType*, const KeyType>::type
+	typedef typename std::conditional<std::is_same<KeyType, String>::value, const KeyType*, KeyType>::type
 		KeyStoreType;
 
 public:

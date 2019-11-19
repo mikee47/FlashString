@@ -71,7 +71,7 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define DEFINE_FSTR_LOCAL(name, str)                                                                                   \
 	static DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                \
-	static DEFINE_FSTR_REF_NAMED(name, FSTR::String);
+	static constexpr DEFINE_FSTR_REF_NAMED(name, FSTR::String);
 
 /** @brief Define a string in a String-compatible structure
  *  @param name Name to use for data structure
@@ -113,13 +113,6 @@ typedef const __FlashStringHelper* flash_string_t;
 #define IMPORT_FSTR(name, file)                                                                                        \
 	IMPORT_FSTR_DATA(name, file)                                                                                       \
 	extern "C" const FSTR::String name;
-
-/**
- * @brief Get a pointer to the actual String
- * @param fstr The String& reference
- * @deprecated Not required, taking address of a references is fine so just use &
- */
-#define FSTR_PTR(fstr) &fstr
 
 /** @brief declare a table of FlashStrings
  *  @param name name of the table

@@ -41,7 +41,7 @@
  */
 #define DEFINE_FSTR_VECTOR_LOCAL(name, ObjectType, ...)                                                                \
 	static DEFINE_FSTR_VECTOR_DATA(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                     \
-	static DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
+	static constexpr DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
  * @brief Define a Vector (size provided) with global reference
@@ -55,7 +55,7 @@
  */
 #define DEFINE_FSTR_VECTOR_SIZED_LOCAL(name, ObjectType, size, ...)                                                    \
 	static DEFINE_FSTR_VECTOR_DATA_SIZED(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                         \
-	static DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
+	static constexpr DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
  * @brief Define a Vector data structure, global (non-static)

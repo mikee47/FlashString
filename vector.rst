@@ -34,7 +34,7 @@ Note the use of ``nullptr`` to indicate an invalid vector entry, as distinct fro
 
 This is the resulting structure::
 
-   constexpr struct {
+   const struct {
       ObjectBase object;
       String* entries[3];
    } fstr_data_myTable PROGMEM = {
