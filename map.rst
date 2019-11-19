@@ -27,7 +27,7 @@ Example: int => String
 
 Here's a basic example using integer keys::
 
-   #include <FlashString/Map.h>
+   #include <FlashString/Map.hpp>
 
    IMPORT_FSTR(content1, PROJECT_DIR "/files/index.html");
    IMPORT_FSTR(content2, PROJECT_DIR "/files/favicon.html");
@@ -67,7 +67,7 @@ Example: String -> String
 
 Both the key and the content are stored as Strings::
 
-   #include <FlashString/Map.h>
+   #include <FlashString/Map.hpp>
 
    DEFINE_FSTR_LOCAL(key1, "index.html");
    DEFINE_FSTR_LOCAL(key2, "favicon.ico");

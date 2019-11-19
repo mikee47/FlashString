@@ -36,8 +36,18 @@ performance and flexibility.
 
 The classes are all in the ``FSTR`` namespace.
 
-Note that ``FlashString``, ``FlashMemoryStream`` and ``TemplateFlashMemoryStream`` 
-have been retained as aliases for compatibility with existing code.
+The Sming framework provides several aliases to provide compatibility with existing code:
+
+-  ``FlashString`` -> ``FSTR::String``
+-  ``FlashMemoryStream`` -> ``FSTR::Stream``
+-  ``TemplateFlashMemoryStream`` -> ``FSTR::TemplateStream``
+
+Only ``FlashString`` is provided by default as it integrates with Wiring Strings.
+If you wish to use any of the other object types, #include the appropriate header::
+
+   #include <FlashString/Array.hpp>
+
+You can find more detail in the following sections.
 
 .. toctree::
 

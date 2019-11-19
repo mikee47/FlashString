@@ -10,6 +10,8 @@ Supports simple arrays of simple types, such as char, int, double, or POD struct
 
 The ``Array`` is a class template, so requires an additional ``ElementType`` parameter::
 
+   #include <FlashString/Array.hpp>
+
    DEFINE_FSTR_ARRAY(myDoubleArray, double,
       PI, 53.0, 100, 1e8, 47
    );
@@ -52,6 +54,8 @@ Simple tables can be implemented using Arrays, like this::
    }
 
 Each row is a fixed size. The ``TableRow`` class is provided to simplify this::
+
+   #include <FlashString/Table.hpp>
 
    using FloatRow = FSTR::TableRow<float, 3>;
    DEFINE_FSTR_ARRAY(table, FloatRow,

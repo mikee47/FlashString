@@ -99,7 +99,7 @@ public:
 
 	/**
 	 * @brief Indicates an invalid String, used for return value from lookups, etc.
-	 * @note A real FlashString can be zero-length, but it cannot be null
+	 * @note A real String can be zero-length, but it cannot be null
 	 */
 	FSTR_INLINE bool isNull() const
 	{

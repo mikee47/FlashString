@@ -18,7 +18,7 @@ A key use for this is the construction of string tables.
 Defining Vectors
 ----------------
 
-Inline strings are not supported, so the content has to be defined separately::
+Inline Strings are not supported, so the content has to be defined separately::
 
    DEFINE_FSTR(str1, "Test string #1");
    DEFINE_FSTR(str2, "Test string #2");
@@ -26,7 +26,7 @@ Inline strings are not supported, so the content has to be defined separately::
 
 Then define the Vector::
 
-   #include <FlashString.h>
+   #include <FlashString/Vector.hpp>
 
    DEFINE_FSTR_VECTOR(myTable, FlashString, &str1, &str2, nullptr, &str3);
 

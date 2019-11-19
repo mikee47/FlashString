@@ -29,7 +29,11 @@ DECLARE_FSTR_\*
 
 Created symbols are C++ and adopt any enclosing namespaced.
 
-To read parts of a FlashString, use the ``read()`` method.
+
+Reading Object content
+----------------------
+
+To read parts of an Object, use the ``read()`` method.
 
 If the data isn't used very often, use the ``readFlash()`` method instead as it avoids
 disrupting the cache. The ``Stream`` class (alias FlashMemoryStream) does this by default.
