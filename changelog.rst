@@ -71,8 +71,8 @@ Change summary:
 
 -  Add FlashString::read() and readFlash() methods
 -  Revise FlashString internals to be more consistent with naming
--  Improve FlashString table handling using new `FlashStringTable` class
--  Add `FlashStringMap` and `FlashStringIntMap` classes
+-  Improve FlashString table handling using new `Vector` class
+-  Add associative mapping support with `Map` class
 -  Investigate alternative structures to allow copy construction. Nope, not going to happen.
    Cannot use constructors at all as with global instances produces constructor code which attempts
    to write to flashmem. These MUST be vanilla structs to work correctly.
@@ -85,36 +85,4 @@ Change summary:
    -  Clean way to get at the actual FlashString
 -  Move FlashString into Component
 -  Documentation!
-
-Upgrade notes
-~~~~~~~~~~~~~
-
-.. highlight:: c++
-
-FlashString tables have been improved. Previously::
-
-   DEFINE_FSTR_LOCAL(fstr1, "Test string #1");
-   DEFINE_FSTR_LOCAL(fstr2, "Test string #2");
-   
-   static FSTR_TABLE(table) = {
-      FSTR_PTR(fstr1),
-      FSTR_PTR(fstr2),
-   };
-
-   Serial.println("FSTR tables[%u]\n", ARRAY_SIZE(table));
-   Serial.printf(" fstr1 = '%s'\n", String(*table[0]).c_str());
-   Serial.printf(" fstr1.length() = %u\n", table[0]->length());
-
-Now you can do this::
-
-   DEFINE_FSTR_DATA_LOCAL(data1, "Test string #1");
-   DEFINE_FSTR_DATA_LOCAL(data2, "Test string #2");
-
-   DEFINE_FSTR_TABLE(table, &data1.fstr, &data2.fstr);
-
-   Serial.printf("FSTR table[%u]\n", table.length());
-   Serial.printf(" fstr1 = '%s'\n", String(table[0]).c_str());
-   Serial.printf(" fstr1.length() = %u\n", table[0].length());
-
-Two mapping classes have also been added to support keys using a FlashString or an integral type.
 

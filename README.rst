@@ -8,6 +8,7 @@ Introduction
 
 This is a C++ library to simplify the definition and use of data structures stored in
 program (flash) memory in an embedded microcontroller.
+
 It was developed for use with `Sming <https://github.com/SmingHub/Sming>`__ and the ESP8266
 but could be ported to other platforms relatively easily.
 
@@ -26,30 +27,29 @@ Both of these are easily solved by passing the length along with the string, lik
 Of course, passing two parameters instead of one gets tiresome and is not very C++, is it?
 
 
-What is a FlashString?
-----------------------
+The library
+-----------
 
-A FlashString is a counted String object, stored in flash.
+This library provides a set of class templates and macros for storing C++ objects directly
+in flash memory.
 
-That is to say, the class instances themselves are actually stored in PROGMEM.
+Objects which may then be accessed using modern and efficient C++ programming techniques.
 
-There are a few caveats to this:
+The classes are all in the ``FSTR`` namespace.
 
-1. No constructors
-2. No virtual methods
-3. Member data must be initialised at compile time
-
-It's not magic, so using them from interrupt service routines is still forbidden. Sorry.
-
-This library contains several classes, with macros to simplify data construction.
-Here are the guides to using the library. For details of the class methods, see the source code.
+Note that ``FlashString``, ``FlashMemoryStream`` and ``TemplateFlashMemoryStream`` 
+have been retained as aliases for compatibility with existing code.
 
 .. toctree::
 
-   FlashString
-   FlashMemoryStream
-   FlashStringTable
-   FlashStringMap
-   FlashStringIntMap
-   technical
+   object
+   string
+   array
+   vector
+   map
+   utility
+   upgrade
    changelog
+   technical
+   todo
+   about

@@ -1,7 +1,9 @@
 /**
- * FlashMemoryStream.h
+ * Stream.hpp
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
+ *
+ * This file is part of the FlashString Library
  *
  * This library is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, version 3 or later.
@@ -10,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SHEM.
+ * You should have received a copy of the GNU General Public License along with FlashString.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  * @author: 23 Oct 2018 - mikee47 <mike@sillyhouse.net>
@@ -19,30 +21,27 @@
 
 #pragma once
 
+#include "String.hpp"
 #include <Data/Stream/DataSourceStream.h>
-#include "FlashString.h"
 
+namespace FSTR
+{
 /** @addtogroup stream
  *  @{
  */
 
 /*
- * FlashMemoryDataStream
- *
- * Provides a stream buffer on flash storage, so it's read-only
- *
+ * Provides a stream buffer on flash storage (read-only)
  */
-class FlashMemoryStream : public IDataSourceStream
+class Stream : public IDataSourceStream
 {
 public:
 	/**
 	 * @brief Constructor
-	 * @param flashString
-	 * @param flashread Specify true to read using flashmem functions,
-	 * otherwise data is accessed via CPU cache
+	 * @param string
+	 * @param flashread Specify true to read using flashmem functions, otherwise data is accessed via cache
 	 */
-	FlashMemoryStream(const FlashString& flashString, bool flashread = true)
-		: flashString(flashString), flashread(flashread)
+	Stream(const String& string, bool flashread = true) : string(string), flashread(flashread)
 	{
 	}
 
@@ -57,7 +56,7 @@ public:
 	*/
 	int available() override
 	{
-		return flashString.length() - readPos;
+		return string.length() - readPos;
 	}
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
@@ -66,13 +65,15 @@ public:
 
 	bool isFinished() override
 	{
-		return readPos >= flashString.length();
+		return readPos >= string.length();
 	}
 
 private:
-	const FlashString& flashString;
+	const String& string;
 	size_t readPos = 0;
 	bool flashread;
 };
 
 /** @} */
+
+} // namespace FSTR

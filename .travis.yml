@@ -1,0 +1,14 @@
+language: cpp
+jobs:
+  include:
+  - stage: test
+    os: linux
+    dist: xenial
+    addons:
+      apt:
+        packages:
+        - gcc-multilib
+        - g++-multilib
+git:
+  submodules: false
+script: ".travis/build-and-execute.sh"

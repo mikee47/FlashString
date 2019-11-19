@@ -103,3 +103,32 @@ Reasons not to use FlashString
    always point to the actual data. In this case, that doesn't offer any advantages
    as directly accessing the data is discouraged. Therefore, the length field always
    comes first.
+
+Structure packing
+~~~~~~~~~~~~~~~~~
+
+When using Arrays with 64-bit types (including double) this is what we define::
+
+   struct {
+      Array<int64_t> object;
+      int64_t data[5];
+   } x;
+
+The object is a structure containing a single 32-bit value.
+Data arrays with uint8, uint16 or uint32 elements will start on the next 32-bit boundary,
+which is what we want.
+
+With 64-bit values this is what the compiler does::
+
+   struct {
+      Array<int64_t> object;
+      uint32_t; // Packing added by compiler
+      int64_t values[5];
+   } x;
+
+Which messes things up of course. Therefore Array classes and data are packed.
+
+This is currently only an issue for Array types, but it also means that if you want to use
+Array with custom data structures then they should also be packed. That means you need to pay
+careful attention to member alignment and if packing is required then add it manually.
+
