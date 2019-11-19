@@ -4,4 +4,5 @@
 	XX(string)                                                                                                         \
 	XX(array)                                                                                                          \
 	XX(vector)                                                                                                         \
-	XX(map)
+	XX(map)                                                                                                            \
+	XX(custom)

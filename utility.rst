@@ -34,7 +34,7 @@ IMPORT_FSTR_DATA(name, file)
 
       IMPORT_FSTR_DATA(myCustomData, PROJECT_DIR "/files/data.bin");
 
-   You'll need to define your own symbol::
+   You'll need to define an appropriate symbol::
 
       struct MyCustomStruct {
          uint32_t length;
@@ -42,4 +42,14 @@ IMPORT_FSTR_DATA(name, file)
          char description[256];
          uint8_t data[1024];
       };
+
       extern "C" const MyCustomStruct myCustomData;
+
+   You'll still have to consider how the data is accessed. If it's small and un-complicated
+   you can just copy it into RAM::
+
+      MyCustomStruct buf;
+      memcpy_P(&buf, &myCustomData, sizeof(buf));
+
+   However, a better way is to define a custom Object to handle it.
+   You can find an example of how to do this in ``test/app/custom.cpp``.
