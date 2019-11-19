@@ -37,7 +37,7 @@ size_t ObjectBase::readFlash(size_t offset, void* buffer, size_t count) const
 	return flashmem_read(buffer, addr, count);
 }
 
-uint32_t ObjectBase::length() const
+size_t ObjectBase::length() const
 {
 	if(isNull()) {
 		return 0;

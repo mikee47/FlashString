@@ -1,9 +1,6 @@
 TODO List
 =========
 
-Change all sizes to size_t
-   e.g. length()
-
 Missing methods
    Behaviour of String should reflect WString. Review and add any missing methods.
    Note that implementations for some are likely non-trivial since we cannot assume

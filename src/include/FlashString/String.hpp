@@ -155,7 +155,7 @@ public:
 	 * @brief Get the number of bytes used to store the String
 	 * @note Always an integer multiple of 4 bytes
 	 */
-	uint32_t size() const
+	size_t size() const
 	{
 		return ALIGNUP(Object::length() + 1);
 	}

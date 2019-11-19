@@ -77,7 +77,7 @@ public:
 	/**
 	 * @brief Get the length of the array in elements
 	 */
-	FSTR_INLINE uint32_t length() const
+	FSTR_INLINE size_t length() const
 	{
 		return ObjectBase::length() / sizeof(ElementType);
 	}

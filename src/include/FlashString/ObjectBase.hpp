@@ -31,13 +31,13 @@ public:
 	/**
 	 * @brief Get the length of the object data in bytes
 	 */
-	uint32_t length() const;
+	size_t length() const;
 
 	/**
 	 * @brief Get the object data size in bytes
 	 * @note Always an integer multiple of 4 bytes
 	 */
-	FSTR_INLINE uint32_t size() const
+	FSTR_INLINE size_t size() const
 	{
 		return ALIGNUP(length());
 	}
