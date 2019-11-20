@@ -1,6 +1,9 @@
 language: cpp
 jobs:
   include:
+  - stage: build
+    os: linux
+    env: SMING_ARCH=Esp8266 SDK_VERSION=3.0.1
   - stage: test
     os: linux
     dist: xenial
@@ -9,6 +12,7 @@ jobs:
         packages:
         - gcc-multilib
         - g++-multilib
+    env: SMING_ARCH=Host
 git:
   submodules: false
 script: ".travis/build-and-execute.sh"

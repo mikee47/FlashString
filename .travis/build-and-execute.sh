@@ -18,6 +18,23 @@ export STRICT=1
 
 env
 
-# Build and run our tests
-cd test
-$MAKE_PARALLEL execute SMING_ARCH=Host
+if [ "$SMING_ARCH" == "Esp8266" ]; then
+	export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
+	mkdir -p $ESP_HOME
+
+	if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+	  wget --no-verbose https://github.com/nodemcu/nodemcu-firmware/raw/2d958750b56fc60297f564b4ec303e47928b5927/tools/esp-open-sdk.tar.xz
+	  tar -Jxf esp-open-sdk.tar.xz; ln -s $(pwd)/esp-open-sdk/xtensa-lx106-elf $ESP_HOME/.
+	fi
+
+	export PATH=$PATH:$ESP_HOME/xtensa-lx106-elf/bin:$ESP_HOME/utils/
+
+	cd test
+	$MAKE_PARALLEL
+
+else
+	# Build and run our tests
+	cd test
+	$MAKE_PARALLEL execute SMING_ARCH=Host
+fi
+
