@@ -75,7 +75,7 @@ void ObjectBase::invalidate()
 {
 #ifndef ARCH_HOST
 	// Illegal on real flash object
-	assert(isFlashPtr(this));
+	assert(!isFlashPtr(this));
 	if(isFlashPtr(this)) {
 		return;
 	}
