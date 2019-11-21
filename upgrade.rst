@@ -21,9 +21,9 @@ FlashString
 
 This has been moved inside the ``FSTR`` namespace and renamed to ``String``.
 
-FlashString has been retained as an alias for convenience to avoid ambiguity when used with Arduino String.
+FlashString has been retained as an alias for convenience to avoid ambiguity when used with Wiring String.
 
-``FlashString::isEqual()`` has been renamed to ``equal()`` for consistency with arduino String. 
+``FlashString::isEqual()`` has been renamed to ``equal()`` for consistency with Wiring String. 
 
 Tables
 ------
@@ -53,34 +53,17 @@ Now you can do this::
    Serial.printf(" fstr1 = '%s'\n", String(table[0]).c_str());
    Serial.printf(" fstr1.length() = %u\n", table[0].length());
 
-Inline Strings
---------------
+And perform lookups:
 
-The FS() macro has been added which can be used if you only use the string in one place.
-
-For example::
-
-   Serial.println(*FS("A Flash String"));
-
-Note that it returns a ``FlashString*``, not a ``FlashString&``.
-
-You can use this in table construction but only within functions, and the array size must be specified explicitly::
-
-   void test()
-   {
-      DEFINE_FSTR_VECTOR_SIZED_LOCAL(table2, FlashString, 2, FS("String 1"), FS("String 2"));
-
-      Serial.println(table2[0]);
-   }
-
+   Serial.print(" indexOf('Test STRING #1') = ");
+   Serial.println(table.indexOf("Test STRING #1"));
 
 
 Maps and other features
 -----------------------
 
-Associative maps have been added to support keys using a FlashString or an integral type.
-Content is typically a FlashString, but can also be another table or map for
-building hierarchical structures.
+Associative maps have been added to support keys using a Flash String or an integral type.
+Content is typically a String, but can also be another Table or Map for building hierarchical structures.
 
 Moving to class templates has added a lot of possibilities so I hope you
 have fun finding out what can be done with this library!

@@ -24,7 +24,7 @@
 #include "Object.hpp"
 #include "StringPrinter.hpp"
 
-// Arduino String - this file is included from WString.h so define required types only
+// Wiring String - this file is included from WString.h so define required types only
 class String;
 class __FlashStringHelper;
 typedef const __FlashStringHelper* flash_string_t;

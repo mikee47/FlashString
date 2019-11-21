@@ -17,7 +17,7 @@ The Map contains an array of ``MapPair`` structures::
    };
 
 ``KeyType`` can be any simple type such as ``char``, ``int``, ``float``, ``enum`` etc.
-It may also be a ``String`` object.
+It may also be a ``String`` Object (or, more precisely, ``String*``).
 
 ``ContentType`` can be any Object type (String, Array, Vector or Map).
 This allows hierarchical structures to be created.
@@ -32,21 +32,10 @@ Here's a basic example using integer keys::
    IMPORT_FSTR(content1, PROJECT_DIR "/files/index.html");
    IMPORT_FSTR(content2, PROJECT_DIR "/files/favicon.html");
 
-   DEFINE_FSTR_MAP(intmap, int, FlashString, {35, &content1}, {180, &content2} );
-
-The macro produces code similar to this::
-
-   const struct {
-      ObjectBase object;
-      MapPair<int, String> data[2];
-   } fstr_data_intmap PROGMEM = {
-      {2},
+   DEFINE_FSTR_MAP(intmap, int, FSTR::String,
       {35, &content1},
-      {180, &content2},
-   };
-   const Map<int, String>& intmap = fstr_data_intmap.object.as<Map<int, String>>();
-
-Note: ``FSTR::`` namespace qualifier omitted for clarity.
+      {180, &content2}
+   );
 
 We can now do this::
 
@@ -62,7 +51,7 @@ We can now do this::
    }
 
 
-Example: String -> String
+Example: String => String
 -------------------------
 
 Both the key and the content are stored as Strings::
@@ -97,9 +86,29 @@ We can now do this::
 
 .. note::
 
-   As with Vector<String>, Map<String, ...> performs lookups without case-sensitivity.
+   As with ``Vector<String>``, ``Map<String, ...>`` lookups are by default case-insensitive.
+   
+   If you require a case-sensitive lookup, use the ``indexOf`` method with ``ignoreCase = false``.
 
-   The ``indexOf`` method has an extra ``ignoreCase`` parameter, which defaults to ``true``.
+
+Structure
+---------
+
+The macro in the first example above produces a structure like this::
+
+   constexpr const struct {
+      ObjectBase object;
+      MapPair<int, String> data[2];
+   } fstr_data_intmap PROGMEM = {
+      {16},
+      {35, &content1},
+      {180, &content2},
+   };
+   const Map<int, String>& intmap = fstr_data_intmap.object.as<Map<int, String>>();
+
+Note: ``FSTR::`` namespace qualifier omitted for clarity.
+
+Usually, each MapPair is 8 bytes, but if the key is a double or int64 it would be 12 bytes.
 
 
 Additional Macros

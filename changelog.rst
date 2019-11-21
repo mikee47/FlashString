@@ -4,9 +4,6 @@ Change Log
 Sming 3.7.0
 -----------
 
-FlashString was first introduced in Sming 3.7.0 on 17 November 2018, as a single file in the Wiring directory.
-Other than bugfixes and Host Emulator support it hasn't had any significant updates.
-
 Here's the PR summary from the original repository. The 'pull-request' links are rendered during Sming documentation build.
 
 Thu Sep 20 18:00:58 2018 :pull-request:`1438`
@@ -56,6 +53,9 @@ Sat Nov 2 13:01:20 2019
 Sming version 4.0.0 is due for release next week, and FlashString has proven to be a useful
 addition to the toolkit. Time for an upgrade.
 
+Sming 4.0.1
+-----------
+
 FlashString has been expanded from a single file into its own Component library to:
 
 1. Improve support for tables and add associative mapping
@@ -66,23 +66,17 @@ FlashString has been expanded from a single file into its own Component library 
 6. Make it easier to port to other frameworks (e.g. Arduino)
 7. Get it out of Wiring - doesn't really belong there and certainly don't want to clutter up that directory
 8. Improve maintainability
+9. Fix compatibility with ArduinoJson 6.13.0
 
 Change summary:
 
+-  Move FlashString into a separate Component
 -  Add FlashString::read() and readFlash() methods
--  Revise FlashString internals to be more consistent with naming
--  Improve FlashString table handling using new `Vector` class
+-  Revise internals to be more consistent with naming
+-  Improve table handling using new `Vector` class
 -  Add associative mapping support with `Map` class
--  Investigate alternative structures to allow copy construction. Nope, not going to happen.
-   Cannot use constructors at all as with global instances produces constructor code which attempts
-   to write to flashmem. These MUST be vanilla structs to work correctly.
--  Revise FlashString structure so it contains only the length,
-   obtaining data position using pointer arithmetic.
+-  Revise structures so it contains only the length, obtaining data position using pointer arithmetic.
    This fixes an error with GCC 8.2.0 which didn't like accessing zero-length arrays.
--  All data structures use the appropriate class as the first element
-   -  Avoids violating any compiler rules
-   -  No need for casting
-   -  Clean way to get at the actual FlashString
--  Move FlashString into Component
+-  Use ObjectBase as the first element in a data structure to allow use of 'safe' static casting,
+   handled using the `as()` method template
 -  Documentation!
-

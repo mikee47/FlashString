@@ -15,7 +15,7 @@ using IMPORT_FSTR() or IMPORT_FSTR_ARRAY(). For example::
 A single global C symbol ``myFlashString`` will be defined so take care
 with naming to avoid the risk of conflicts, especially if used within a Component.
 
-One use for importing files like this is to stream the data, like this::
+One use for imported files is to serve content via HTTP, like this::
 
    void onFile(HttpRequest& request, HttpResponse& response)
    {
@@ -24,7 +24,9 @@ One use for importing files like this is to stream the data, like this::
       response.sendDataStream(fs);
    }
 
+Therefore files can be bound into the firmware and accessed without requiring a filing system.
 This idea is extended further using :doc:`map`.
+
 
 Additional Macros
 -----------------

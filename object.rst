@@ -6,8 +6,9 @@ Objects
 Introduction
 ------------
 
-An ``Object`` is a class template with array-like behaviour and is used to implement
-the four classes in the library:
+An ``Object`` is a class template with array-like behaviour, though it is not used directly.
+
+Instead, use one of the four classes in the library:
 
 -  String
 -  Array
@@ -41,6 +42,9 @@ disrupting the cache. The ``Stream`` class (alias FlashMemoryStream) does this b
 
 Object Internals
 ----------------
+
+This section provides some examples of how structures are created, but in normal use you
+should use the provided macros as they simplify the task and include structure validity checks.
 
 ``ObjectBase`` is a non-template
 `POD <https://stackoverflow.com/questions/4178175/what-are-aggregates-and-pods-and-how-why-are-they-special/7189821>`__
@@ -104,13 +108,6 @@ Here's a somewhat contrived example to demonstrate::
 
 In debug builds, this will throw an assertion. In release builds, you'll get a zero-length object.
 
-To permit aggregate initialization, ObjectBase cannot have any user-defined constructors
-which is why we always cast to an Object reference which has the necessary copy constructors::
-
-   auto myCopy = flashHelloData.object.as<FSTR::String>();
-   Serial.print("myCopy.length() = ");
-   Serial.println(myCopy.length());
-
 
 Aggregate initialization
 ------------------------
@@ -118,7 +115,7 @@ Aggregate initialization
 We use `aggregate initialization <https://en.cppreference.com/w/cpp/language/aggregate_initialization>`__
 to set up the structures so the data is fixed at link time without any constructor or initialiser functions.
 
-This means classes cannot have::
+This means classes cannot have:
 
 -  user-provided constructors
 -  brace-or-equal-initializers for non-static data members
@@ -126,13 +123,20 @@ This means classes cannot have::
 -  virtual functions
 -  base classes (until C++17)
 
-This is why we use ObjectBase.
+This is why ObjectBase is used for data structures.
+We work using an ``Object`` class template as it provides the necessary constructors::
+
+   auto myCopy = flashHelloData.object.as<FSTR::String>();
+   Serial.print("myCopy.length() = ");
+   Serial.println(myCopy.length());
+
+The macros create an appropriate Object reference for you.
 
 
 Structure checks
 ----------------
 
-The FlashString construction macros all include a sanity check to ensure the initialization is
+The construction macros include a sanity check to ensure the initialization is
 truly just Plain Old Data, without any hidden initialisers.
 
 You may encounter one of the following errors during compilation:

@@ -6,7 +6,7 @@ Arrays
 Introduction
 ------------
 
-Supports simple arrays of simple types, such as char, int, double, or POD structures.
+Supports arrays of simple types, such as char, int, double, or POD structures (i.e. basic C structures).
 
 The ``Array`` is a class template, so requires an additional ``ElementType`` parameter::
 
@@ -19,6 +19,7 @@ The ``Array`` is a class template, so requires an additional ``ElementType`` par
    myDoubleArray.printTo(Serial);
    Serial.println();
 
+
 .. note::
 
    Objects do not inherit from Printable because it is a virtual base class.
@@ -26,6 +27,12 @@ The ``Array`` is a class template, so requires an additional ``ElementType`` par
    Therefore, statements like ``Serial.println(myDoubleArray)`` are not supported.
 
    This also avoids ambiguity between implicit WString conversions.
+
+There are some Print helper functions in the library you can use::
+
+   FSTR::println(Serial, myDoubleArray);
+
+These are templated so will handle both simple data types and Objects.
 
 You can share Arrays between translation units by declaring it in a header::
 
@@ -53,7 +60,7 @@ Simple tables can be implemented using Arrays, like this::
       Serial.printf("%f, %f, %f\n", row[0], row[1], row[2]);
    }
 
-Each row is a fixed size. The ``TableRow`` class is provided to simplify this::
+Each row is a fixed size. The ``TableRow`` class template is provided to simplify this::
 
    #include <FlashString/Table.hpp>
 
@@ -66,7 +73,7 @@ Each row is a fixed size. The ``TableRow`` class is provided to simplify this::
    table.println();
 
 
-If you want to create a table with rows of different sizes or types, use a :doc:`vector`.
+If you want to create a table with rows of different sizes or types, use a :doc:`Vector <vector>`.
 
 
 Additional Macros

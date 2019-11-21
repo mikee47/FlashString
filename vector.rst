@@ -18,35 +18,24 @@ A key use for this is the construction of string tables.
 Defining Vectors
 ----------------
 
-Inline Strings are not supported, so the content has to be defined separately::
+Inline Strings are not supported, so the content has to be defined first::
 
    DEFINE_FSTR(str1, "Test string #1");
    DEFINE_FSTR(str2, "Test string #2");
    IMPORT_FSTR(str3, PROJECT_DIR "/files/somedata.json");
 
-Then define the Vector::
+Now we can define the Vector::
 
    #include <FlashString/Vector.hpp>
 
-   DEFINE_FSTR_VECTOR(myTable, FlashString, &str1, &str2, nullptr, &str3);
-
-Note the use of ``nullptr`` to indicate an invalid vector entry, as distinct from an empty String.
-
-This is the resulting structure::
-
-   const struct {
-      ObjectBase object;
-      String* entries[3];
-   } fstr_data_myTable PROGMEM = {
-      {3},
+   DEFINE_FSTR_VECTOR(myTable, FlashString,
       &str1,
       &str2,
       nullptr,
-      &str3,
-   };
-   const Vector<String>& myTable PROGMEM = fstr_data_myTable.as<Vector<String>>();
+      &str3
+   );
 
-Note: ``FSTR::`` namespace qualifier omitted for clarity.
+Note the use of ``nullptr`` to indicate an invalid vector entry, as distinct from an empty String.
 
 Using Vectors
 -------------
@@ -71,6 +60,26 @@ To search a Vector::
    By default, searches in Vector<String> are not case-sensitive.
 
    The ``indexOf`` method has an extra ``ignoreCase`` parameter, which defaults to ``true``.
+
+
+Structure
+---------
+
+The above example generates a structure like this::
+
+   const struct {
+      ObjectBase object;
+      String* entries[4];
+   } fstr_data_myTable PROGMEM = {
+      {16},
+      &str1,
+      &str2,
+      nullptr,
+      &str3,
+   };
+   const Vector<String>& myTable PROGMEM = fstr_data_myTable.as<Vector<String>>();
+
+Note: ``FSTR::`` namespace qualifier omitted for clarity.
 
 
 Additional Macros

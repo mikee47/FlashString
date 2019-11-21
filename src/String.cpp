@@ -51,7 +51,7 @@ bool String::equals(const String& str) const
 	return memcmp_aligned(data(), str.data(), length()) == 0;
 }
 
-/* Arduino String support */
+/* Wiring String support */
 
 String::operator WString() const
 {
