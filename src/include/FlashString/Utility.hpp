@@ -116,6 +116,7 @@ template <typename T> FSTR_INLINE typename std::enable_if<sizeof(T) == 2, T>::ty
 
 template <typename T> FSTR_INLINE typename std::enable_if<IS_ALIGNED(sizeof(T)), T>::type readValue(const T* ptr)
 {
+	assert(IS_ALIGNED(ptr));
 	return *static_cast<const T*>(ptr);
 }
 
