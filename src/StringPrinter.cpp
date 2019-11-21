@@ -25,15 +25,16 @@ namespace FSTR
 {
 size_t StringPrinter::printTo(Print& p) const
 {
-	if(string.length() < 256) {
-		return p.print(WString(string));
-	}
-
 	// Print in chunks
 	char buffer[256];
 	size_t offset = 0;
 	size_t totalWriteCount = 0;
 	size_t readCount;
+	// For small Strings, read via cache
+	if(string.length() <= 64) {
+		readCount = string.read(0, buffer, sizeof(buffer));
+		return p.write(buffer, readCount);
+	}
 	while((readCount = string.readFlash(offset, buffer, sizeof(buffer))) > 0) {
 		auto writeCount = p.write(buffer, readCount);
 		totalWriteCount += writeCount;
