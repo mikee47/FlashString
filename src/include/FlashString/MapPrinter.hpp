@@ -23,6 +23,10 @@
 
 namespace FSTR
 {
+/**
+ * @brief Class template to provide a simple way to print the contents of a Map
+ * @note Used by Map::printTo() method
+ */
 template <class MapType> class MapPrinter : public Printable
 {
 public:

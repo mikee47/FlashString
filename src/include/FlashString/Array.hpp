@@ -25,33 +25,39 @@
 #include "ArrayPrinter.hpp"
 
 /**
- * @brief Declare a global Array instance
+ * @brief Declare a global Array& reference
+ * @param name
+ * @param ElementType
+ * @note Use `DEFINE_FSTR_ARRAY` to instantiate the global Object
  */
 #define DECLARE_FSTR_ARRAY(name, ElementType) extern const FSTR::Array<ElementType>& name;
 
-/** @brief Define an array
- *  @param name variable to identify the array
- *  @param ElementType
- *  @param elements
- *  @note Unlike String, array is not nul-terminated
+/**
+ * @brief Define an Array Object with global reference
+ * @param name Name of Array& reference to define
+ * @param ElementType
+ * @param ... List of ElementType items
+ * @note Unlike String, array is not NUL-terminated
  */
 #define DEFINE_FSTR_ARRAY(name, ElementType, ...)                                                                      \
 	static DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                     \
 	DEFINE_FSTR_REF_NAMED(name, FSTR::Array<ElementType>);
 
-/** @brief Define an array for local (static) use
- *  @param name variable to identify the array
- *  @param ElementType
- *  @param elements
+/**
+ * @brief Define an Array Object with local reference
+ * @param name Name of Array& reference to define
+ * @param ElementType
+ * @param ... List of ElementType items
  */
 #define DEFINE_FSTR_ARRAY_LOCAL(name, ElementType, ...)                                                                \
 	static DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                     \
 	static constexpr DEFINE_FSTR_REF_NAMED(name, FSTR::Array<ElementType>);
 
-/** @brief Define an array structure
- *  @param name Name to use for data structure
- *  @param ElementType
- *  @param elements
+/**
+ * @brief Define an Array data structure
+ * @param name Name of data structure
+ * @param ElementType
+ * @param ... List of ElementType items
  */
 #define DEFINE_FSTR_ARRAY_DATA(name, ElementType, ...)                                                                 \
 	constexpr const struct {                                                                                           \
@@ -81,9 +87,10 @@
 	static DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                     \
 	LOAD_FSTR_ARRAY(name, FSTR_DATA_NAME(name).object)
 
-/** @brief Define an Array containing data from an external file
- *  @param name Name for the object
- *  @param file Absolute path to the file containing the content
+/**
+ * @brief Define an Array containing data from an external file
+ * @param name Name for the object
+ * @param file Absolute path to the file containing the content
  */
 #define IMPORT_FSTR_ARRAY(name, ElementType, file)                                                                     \
 	IMPORT_FSTR_DATA(name, file)                                                                                       \
@@ -92,7 +99,7 @@
 namespace FSTR
 {
 /**
- * @brief describes an array of integral values stored in flash memory
+ * @brief Class to access an array of integral values stored in flash
  */
 template <typename ElementType> class Array : public Object<Array<ElementType>, ElementType>
 {

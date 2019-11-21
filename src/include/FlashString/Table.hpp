@@ -1,5 +1,5 @@
 /**
- * String.hpp - Defines the String class and associated macros for efficient flash memory string access.
+ * Table.hpp - Additional definitions to assist with table creation using an Array
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -25,6 +25,13 @@
 
 namespace FSTR
 {
+/**
+ * @brief Class template to define the row of a table
+ * @tparam ElementType
+ * @tparam Columns Number of columns in the table
+ * @note Use with an Array Object to construct simple tables
+ * Methods provide Object-like access.
+ */
 template <typename ElementType, size_t Columns> struct TableRow {
 	ElementType values[Columns];
 

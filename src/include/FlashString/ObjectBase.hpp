@@ -1,5 +1,5 @@
 /**
- * ObjectBase.hpp - Definitions and macros common to all object types
+ * ObjectBase.hpp - POD base class type for defining data structures
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -25,6 +25,10 @@
 
 namespace FSTR
 {
+/**
+ * @brief Used when defining data structures
+ * @note Should not be used directly, use appropriate Object methods instead
+ */
 class ObjectBase
 {
 public:

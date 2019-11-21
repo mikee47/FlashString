@@ -25,6 +25,11 @@ namespace FSTR
 {
 class String;
 
+/**
+ * @brief Wrapper class to efficiently print large Strings
+ * @note Used by String::printTo() method.
+ * Output in chunks to avoid loading the entire content into RAM.
+ */
 class StringPrinter : public Printable
 {
 public:

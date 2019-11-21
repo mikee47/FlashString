@@ -25,48 +25,76 @@
 #include "ArrayPrinter.hpp"
 
 /**
- * @brief Declare a global Vector
+ * @brief Declare a global Vector& reference
+ * @param name
+ * @param ObjectType
+ * @note Use `DEFINE_VECTOR` to instantiate the global Object
  */
 #define DECLARE_FSTR_VECTOR(name, ObjectType) extern const FSTR::Vector<ObjectType>& name;
 
 /**
- * @brief Define a Vector (size calculated) with global reference
+ * @brief Define a Vector Object with global reference
+ * @param name Name of Vector& reference to define
+ * @param ObjectType
+ * @param ... List of ObjectType* pointers
+ * @note Size will be calculated
  */
 #define DEFINE_FSTR_VECTOR(name, ObjectType, ...)                                                                      \
 	static DEFINE_FSTR_VECTOR_DATA(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                     \
 	DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
- * @brief Define a Vector (size calculated) with local reference
+ * @brief Define a Vector Object with local reference
+ * @param name Name of Vector& reference to define
+ * @param ObjectType
+ * @param ... List of ObjectType* pointers
+ * @note Size will be calculated
  */
 #define DEFINE_FSTR_VECTOR_LOCAL(name, ObjectType, ...)                                                                \
 	static DEFINE_FSTR_VECTOR_DATA(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                     \
 	static constexpr DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
- * @brief Define a Vector (size provided) with global reference
+ * @brief Define a Vector Object with global reference, specifying the number of elements
+ * @param name Name of Vector& reference to define
+ * @param ObjectType
+ * @param size Number of elements
+ * @param ... List of ObjectType* pointers
+ * @note Use in situations where the array size cannot be automatically calculated
  */
 #define DEFINE_FSTR_VECTOR_SIZED(name, ObjectType, size, ...)                                                          \
 	static DEFINE_FSTR_VECTOR_DATA_SIZED(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                         \
 	DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
- * @brief Define a Vector (size provided) with local reference
+ * @brief Define a Vector Object with local reference, specifying the number of elements
+ * @param name Name of Vector& reference to define
+ * @param ObjectType
+ * @param size Number of elements
+ * @param ... List of ObjectType* pointers
+ * @note Use in situations where the array size cannot be automatically calculated
  */
 #define DEFINE_FSTR_VECTOR_SIZED_LOCAL(name, ObjectType, size, ...)                                                    \
 	static DEFINE_FSTR_VECTOR_DATA_SIZED(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                         \
 	static constexpr DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
- * @brief Define a Vector data structure, global (non-static)
+ * @brief Define a Vector data structure
+ * @param name Name of data structure
+ * @param ObjectType
+ * @param ... List of ObjectType* pointers
+ * @note Size will be calculated
  */
 #define DEFINE_FSTR_VECTOR_DATA(name, ObjectType, ...)                                                                 \
 	DEFINE_FSTR_VECTOR_DATA_SIZED(name, ObjectType, sizeof((const void* []){__VA_ARGS__}) / sizeof(void*), __VA_ARGS__)
 
 /**
- * @brief Define a Vector data structure (size provided), global scope
- * @note Use in situations where the array size cannot be automatically calculated,
- * such as when combined with inline Strings via FS()
+ * @brief Define a Vector data structure and specify the number of elements
+ * @param name Name of data structure
+ * @param ObjectType
+ * @param size Number of elements
+ * @param ... List of ObjectType* pointers
+ * @note Use in situations where the array size cannot be automatically calculated
  */
 #define DEFINE_FSTR_VECTOR_DATA_SIZED(name, ObjectType, size, ...)                                                     \
 	constexpr const struct {                                                                                           \

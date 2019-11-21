@@ -27,35 +27,69 @@
 #include "ObjectIterator.hpp"
 
 /**
- * @brief Declare a Map
- * @tparam KeyType Integral type to use for key
- * @param name name of the map
+ * @brief Declare a global Map& reference
+ * @param name
+ * @param KeyType Integral type to use for key
+ * @param ContentType Object type to declare for content
  * @note Use `DEFINE_FSTR_MAP` to instantiate the global object
  */
 #define DECLARE_FSTR_MAP(name, KeyType, ContentType) extern const FSTR::Map<KeyType, ContentType>& name;
 
 /**
- * @brief Define a Map with reference
+ * @brief Define a Map Object with global reference
+ * @name Name of the Map& reference to define
+ * @param KeyType Integral type to use for key
+ * @param ContentType Object type to declare for content
+ * @param ... List of MapPair definitions { key, &content }
+ * @note Size will be calculated
  */
 #define DEFINE_FSTR_MAP(name, KeyType, ContentType, ...)                                                               \
 	static DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                              \
 	DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
+/**
+ * @brief Define a Map Object with local reference
+ * @name Name of the Map& reference to define
+ * @param KeyType Integral type to use for key
+ * @param ContentType Object type to declare for content
+ * @param ... List of MapPair definitions { key, &content }
+ * @note Size will be calculated
+ */
 #define DEFINE_FSTR_MAP_LOCAL(name, KeyType, ContentType, ...)                                                         \
 	static DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                              \
 	static constexpr DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
+/**
+ * @brief Define a Map Object with global reference, specifying the number of elements
+ * @name Name of the Map& reference to define
+ * @param KeyType Integral type to use for key
+ * @param ContentType Object type to declare for content
+ * @param size Number of elements
+ * @param ... List of MapPair definitions { key, &content }
+ */
 #define DEFINE_FSTR_MAP_SIZED(name, KeyType, ContentType, size, ...)                                                   \
 	static DEFINE_FSTR_MAP_DATA_SIZED(FSTR_DATA_NAME(name), KeyType, ContentType, size, __VA_ARGS__);                  \
 	DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
+/**
+ * @brief Define a Map Object with local reference, specifying the number of elements
+ * @name Name of the Map& reference to define
+ * @param KeyType Integral type to use for key
+ * @param ContentType Object type to declare for content
+ * @param size Number of elements
+ * @param ... List of MapPair definitions { key, &content }
+ */
 #define DEFINE_FSTR_MAP_SIZED_LOCAL(name, KeyType, ContentType, size, ...)                                             \
 	static DEFINE_FSTR_MAP_DATA_SIZED(FSTR_DATA_NAME(name), KeyType, ContentType, size, __VA_ARGS__);                  \
 	static constexpr DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
 /**
- * @brief Define a structure containing map data
- * @param name name of the map structure
+ * @brief Define a Map data structure
+ * @param name Name of data structure
+ * @param KeyType Integral type to use for key
+ * @param ContentType Object type to declare for content
+ * @param ... List of MapPair definitions { key, &content }
+ * @note Size will be calculated
  */
 #define DEFINE_FSTR_MAP_DATA(name, KeyType, ContentType, ...)                                                          \
 	DEFINE_FSTR_MAP_DATA_SIZED(name, KeyType, ContentType,                                                             \
@@ -64,8 +98,12 @@
 							   __VA_ARGS__)
 
 /**
- * @brief Use in situations where the array size cannot be automatically calculated,
- * such as when combined with inline Strings via FS()
+ * @brief Define a Map data structure, specifying the number of elements
+ * @param name Name of data structure
+ * @param KeyType Integral type to use for key
+ * @param ContentType Object type to declare for content
+ * @param size Number of elements
+ * @param ... List of MapPair definitions { key, &content }
  */
 #define DEFINE_FSTR_MAP_DATA_SIZED(name, KeyType, ContentType, size, ...)                                              \
 	constexpr const struct {                                                                                           \
@@ -101,6 +139,7 @@ public:
 
 	/**
 	 * @brief Lookup an integral key and return the index
+	 * @param key Key to locate, must be compatible with KeyType for equality comparison
 	 * @retval int If key isn't found, return -1
 	 */
 	template <typename TRefKey, typename T = KeyType>
@@ -119,6 +158,8 @@ public:
 
 	/**
 	 * @brief Lookup a String key and return the index
+	 * @param key
+	 * @param ignoreCase Whether search is case-sensitive (default: true)
 	 * @retval int If key isn't found, return -1
 	 */
 	template <typename TRefKey, typename T = KeyType>
@@ -142,6 +183,7 @@ public:
 
 	/**
 	 * @brief Lookup a key and return the entry, if found
+	 * @param key
 	 * @note Result validity can be checked using if()
 	 */
 	template <typename TRefKey> const Pair operator[](const TRefKey& key) const

@@ -1,5 +1,5 @@
 /**
- * Print.cpp - Print support
+ * Print.cpp - Helper function templates to simplify printing of objects and variables
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -23,17 +23,35 @@
 
 namespace FSTR
 {
+/**
+ * @brief Print an object
+ * @param p
+ * @param object
+ * @retval size_t
+ */
 template <class ObjectType>
 typename std::enable_if<std::is_class<ObjectType>::value, size_t>::type print(Print& p, const ObjectType& object)
 {
 	return object.printTo(p);
 }
 
+/**
+ * @brief Print an elementary variable
+ * @param p
+ * @param value
+ * @retval size_t
+ */
 template <typename T> typename std::enable_if<!std::is_class<T>::value, size_t>::type print(Print& p, T value)
 {
 	return p.print(value);
 }
 
+/**
+ * @brief Print an object or elementary variable appending a carriage return
+ * @param p
+ * @param value
+ * @retval size_t
+ */
 template <typename T> size_t println(Print& p, T value)
 {
 	size_t size = print(p, value);

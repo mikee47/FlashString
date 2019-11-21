@@ -23,6 +23,10 @@
 
 namespace FSTR
 {
+/**
+ * @brief Class template to provide a simple way to print the contents of an array
+ * @note Used by Array::printTo() method
+ */
 template <class ArrayType> class ArrayPrinter : public Printable
 {
 public:
