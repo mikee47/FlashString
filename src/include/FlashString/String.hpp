@@ -1,4 +1,4 @@
-/**
+/****
  * String.hpp - Defines the String class and associated macros for efficient flash memory string access.
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
@@ -30,6 +30,12 @@ class __FlashStringHelper;
 typedef const __FlashStringHelper* flash_string_t;
 
 /**
+ * @defgroup fstr_string Strings
+ * @ingroup FlashString
+ * @{
+ */
+
+/**
  * @brief Define an inline String and return a pointer to it
  * @note The rather obscure `asm` statement is required to prevent the compiler from discarding
  * the symbol at link time, which leads to an 'undefined reference' error
@@ -42,44 +48,50 @@ typedef const __FlashStringHelper* flash_string_t;
 	}))
 
 /**
- * @brief Define an inline String and return it as a copy
- * @note Example:
+ * @brief Define an inline FSTR::String and return it as a copy
+ *
+ * Example:
  *
  * 		Serial.println(FS("This is a Flash String"));
  */
 #define FS(str) *FS_PTR(str)
 
 /**
- * @brief Declare a global String& reference
+ * @brief Declare a global FSTR::String& reference
  * @param name
- * @note Define the String Objectg using DEFINE_STR()
+ * @note Define the FSTR::String object using DEFINE_STR()
  */
 #define DECLARE_FSTR(name) extern const FSTR::String& name;
 
 /**
- * @brief Define a String Object with global reference
- * @param name Name of String& reference to define
- * @param str Content of the String
- * @note Example: DEFINE_FSTR(test, "This is a test\0Another test\0hello")
+ * @brief Define a FSTR::String object with global reference
+ * @param name Name of FSTR::String& reference to define
+ * @param str Content of the FSTR::String
+ *
+ *	Example:
+ *
+ *		DEFINE_FSTR(test, "This is a test\0Another test\0hello")
+ *
  * The data includes the nul terminator but the length does not.
+ *
  */
 #define DEFINE_FSTR(name, str)                                                                                         \
 	static DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                \
 	DEFINE_FSTR_REF_NAMED(name, FSTR::String);
 
 /**
- * @brief Define a String Object with local reference
- * @param name Name of String& reference to define
- * @param str Content of the String
+ * @brief Define a FSTR::String object with local reference
+ * @param name Name of FSTR::String& reference to define
+ * @param str Content of the FSTR::String
  */
 #define DEFINE_FSTR_LOCAL(name, str)                                                                                   \
 	static DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                \
 	static constexpr DEFINE_FSTR_REF_NAMED(name, FSTR::String);
 
 /**
- * @brief Define a String data structure
+ * @brief Define a FSTR::String data structure
  * @param name Name of data structure
- * @param str String to store
+ * @param str Quoted string content
  */
 #define DEFINE_FSTR_DATA(name, str)                                                                                    \
 	constexpr const struct {                                                                                           \
@@ -89,13 +101,15 @@ typedef const __FlashStringHelper* flash_string_t;
 	FSTR_CHECK_STRUCT(name);
 
 /**
- * @brief Load a String object into a named local (stack) buffer
- * @note Example:
+ * @brief Load a FSTR::String object into a named local (stack) buffer
  *
- * 	DEFINE_FSTR(globalTest, "This is a testing string")
- * 	...
- * 	LOAD_FSTR(local, globalTest)
- * 	printf("%s, %u characters, buffer is %u bytes\n", local, globalTest.length(), sizeof(local));
+ * Example:
+ *
+ *		DEFINE_FSTR(globalTest, "This is a testing string")
+ *		...
+ *		LOAD_FSTR(local, globalTest)
+ *		printf("%s, %u characters, buffer is %u bytes\n", local, globalTest.length(), sizeof(local));
+ *
  */
 #define LOAD_FSTR(name, fstr)                                                                                          \
 	char name[(fstr).size()] __attribute__((aligned(4)));                                                              \
@@ -103,18 +117,19 @@ typedef const __FlashStringHelper* flash_string_t;
 	name[(fstr).length()] = '\0';
 
 /**
- * @brief Define a flash String and load it into a named char[] buffer on the stack
+ * @brief Define a flash FSTR::String and load it into a named char[] buffer on the stack
  * @param name Name of char[] buffer
- * @param str Content of String
+ * @param str Content of FSTR::String
  * @note Equivalent to `char name[] = "text"` except the buffer is word aligned.
+ * Faster than using a temporary Wiring ::String and avoids using the heap.
  */
 #define FSTR_ARRAY(name, str)                                                                                          \
 	static DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                \
 	LOAD_FSTR(name, FSTR_DATA_NAME(name).object.as<FSTR::String>())
 
 /**
- * @brief Define a String containing data from an external file
- * @param name Name for the String object
+ * @brief Define a FSTR::String containing data from an external file
+ * @param name Name for the FSTR::String object
  * @param file Absolute path to the file containing the content
  */
 #define IMPORT_FSTR(name, file)                                                                                        \
@@ -125,7 +140,8 @@ typedef const __FlashStringHelper* flash_string_t;
  * @brief declare a table of FlashStrings
  * @param name name of the table
  * @deprecated Use a Vector or Map
- * @note Declares a simple table. Example:
+ *
+ * Declares a simple table. Example:
  *
  *  	DEFINE_FSTR(fstr1, "Test string #1");
  *  	DEFINE_FSTR(fstr2, "Test string #2");
@@ -136,7 +152,8 @@ typedef const __FlashStringHelper* flash_string_t;
  *  	};
  *
  * Table entries may be accessed directly as they are word-aligned. Examples:
- *  	debugf("fstr1 = '%s'", String(*table[0]).c_str());
+ *
+ *  	debugf("fstr1 = '%s'", FSTR::String(*table[0]).c_str());
  *  	debugf("fstr2.length() = %u", table[1]->length());
  *
  */
@@ -145,9 +162,9 @@ typedef const __FlashStringHelper* flash_string_t;
 namespace FSTR
 {
 /**
- * @brief A Wiring String
+ * @brief A Wiring ::String
  */
-using WString = ::String;
+typedef ::String WString;
 
 /**
  * @brief describes a counted string stored in flash memory
@@ -229,7 +246,8 @@ public:
 
 	/**
 	 * @brief Supports printing of large String objects
-	 * @note Avoids implicit String() cast when working with large FlashStrings:
+	 *
+	 * Avoids implicit String() cast when working with large FlashStrings:
 	 *
 	 *		IMPORT_FSTR(largeString, PROJECT_DIR "/files/large-text.txt");
 	 * 		Serial.println(largeString.printer());
@@ -247,3 +265,5 @@ public:
 };
 
 } // namespace FSTR
+
+/** @} */

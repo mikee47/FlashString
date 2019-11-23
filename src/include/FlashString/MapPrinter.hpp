@@ -1,4 +1,4 @@
-/**
+/****
  * MapPrinter.cpp - Print support for maps
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>

@@ -1,4 +1,4 @@
-/**
+/****
  * StringPrinter.cpp - Print support for String
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
@@ -27,8 +27,9 @@ class String;
 
 /**
  * @brief Wrapper class to efficiently print large Strings
- * @note Used by String::printTo() method.
- * Output in chunks to avoid loading the entire content into RAM.
+ *
+ * Outputs in chunks to avoid loading the entire content into RAM.
+ * Used by String::printTo() method.
  */
 class StringPrinter : public Printable
 {

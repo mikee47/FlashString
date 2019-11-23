@@ -1,4 +1,4 @@
-/**
+/****
  * ObjectBase.hpp - POD base class type for defining data structures
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
@@ -87,12 +87,13 @@ public:
 	 * @param buffer Where to store data
 	 * @param count How many bytes to read
 	 * @retval size_t Number of bytes actually read
-	 * @note PROGMEM data is accessed via the CPU data cache, so to avoid degrading performance
+	 * @see See also `FlashMemoryStream` class.
+	 *
+	 * PROGMEM data is accessed via the CPU data cache, so to avoid degrading performance
 	 * you can use this method to read data directly from flash memory.
 	 * This is appropriate for infrequently accessed data, especially if it is large.
 	 * For example, if storing content using `IMPORT_FSTR` instead of SPIFFS then it
 	 * is generally better to avoid contaminating the cache.
-	 * @see See also `FlashMemoryStream` class.
 	 */
 	size_t readFlash(size_t offset, void* buffer, size_t count) const;
 
@@ -140,4 +141,4 @@ private:
 	static constexpr uint32_t lengthInvalid = copyBit | 0; ///< Indicates null string in a copy
 };
 
-}; // namespace FSTR
+} // namespace FSTR

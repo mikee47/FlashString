@@ -1,5 +1,5 @@
-String
-======
+Flash Strings
+=============
 
 .. highlight:: C++
 
@@ -7,10 +7,10 @@ Introduction
 ------------
 
 Strings are basically just arrays of char, but have additional methods to allow them to be used more easily. 
-These methods are consistent with Wiring Strings, so should be reasonably familiar.
+These methods are consistent with Wiring :cpp:class:`String`, so should be reasonably familiar.
 
-- The ``length()`` method returns the number of characters in the String, excluding the NUL terminator
-- The ``size()`` method returns the number of bytes of storage used
+- :cpp:func:`length() <FSTR::Object::length>` returns the number of characters in the String, excluding the NUL terminator
+- :cpp:func:`size() <FSTR::String::size>` returns the number of bytes of storage used
 
 For example, "123" is actually stored as ``{ '1', '2', '3', '\0' }`` so the length is 3 and the size is 4.
 However, "1234" is stored as ``{ '1', '2', '3', '4', '\0' }`` so the length is 4 and the size is 8.
@@ -45,20 +45,20 @@ an implicit *::String()* operator. Note that ``WString`` is used within the libr
 Inline Strings
 --------------
 
-Use the ``FS()`` macro to create Flash Strings inline::
+Use the :c:func:`FS` macro to create Flash Strings inline::
 
    Serial.println(FS("A Flash String"));
 
 .. note::
 
    The macro makes use of ``FS_PTR()`` which creates the structure and returns a pointer to it.
-   It therefore behaves like a function call, although the compiler inlines the code.
+   It behaves like a function call, although the compiler inlines the code.
 
    Therefore FS() may only be used within functions. At file scope you'll get this error:
 
       *statement-expressions are not allowed outside functions nor in template-argument lists*
 
-The example above doesn't provide any improvement over an ``F()`` macro as there are no
+The example above doesn't provide any improvement over :c:macro:`F` as there are no
 Flash String overloads available, so is equivalent to this::
 
    String s = FS("A Flash String");
@@ -73,7 +73,7 @@ This is equivalent to::
    FS("A Flash String").printTo(Serial);
    Serial.println();
 
-The printTo() method uses no heap and imposes no restriction on the string length.
+:cpp:func:`FSTR::String::printTo` uses no heap and imposes no restriction on the string length.
 
 
 
@@ -94,15 +94,14 @@ Here's is a simplified structure we will attempt to initialize::
 
 The static *flashData* structure gets initialised at runtime on first use, as per C++ rules.
 This attempts to copy our pointer into the `flashData` structure which clearly it cannot do
-as it's in PROGMEM, so we get a LOAD/STORE error. We must remove PROGMEM.
+as it's in :c:macro:`PROGMEM`, so we get a LOAD/STORE error. We must remove PROGMEM.
 
 
-Additional Macros
+Avoiding the heap
 -----------------
 
-LOAD_FSTR(name, fstr)
-   Load a String into a named local (stack) buffer.
-   Faster than using a temporary Wiring String and avoids using the heap::
+Instead of using a temporary Wiring String, you can use :c:func:`LOAD_FSTR` to load the
+content into a temporary stack buffer::
 
       DEFINE_FSTR(globalTest, "This is a testing string");
 
@@ -112,13 +111,24 @@ LOAD_FSTR(name, fstr)
          printf("%s, %u characters, buffer is %u bytes\n", local, globalTest.length(), sizeof(local));
       }
 
-FSTR_ARRAY(name, str)
-   Define a flash String and load it into a named char[] buffer on the stack. This::
+You can do this with inline Flash Strings using :c:func:`FSTR_ARRAY`::
 
       FSTR_ARRAY(buffer, "text");
 
-   Is roughly equivalent to::
+Is roughly equivalent to::
 
-      char name[] = "text";
+   char name[] = "text";
 
-   Except the buffer is word aligned, so *sizeof(name)* may differ.
+Except the buffer is word aligned, so *sizeof(name)* may differ.
+
+
+Macros
+------
+
+.. doxygengroup:: fstr_string
+   :content-only:
+
+String Class
+------------
+
+.. doxygenclass:: FSTR::String

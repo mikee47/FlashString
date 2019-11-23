@@ -1,4 +1,4 @@
-/**
+/****
  * Stream.hpp
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
@@ -26,12 +26,10 @@
 
 namespace FSTR
 {
-/** @addtogroup stream
- *  @{
- */
-
-/*
- * Provides a stream buffer on flash storage (read-only)
+/**
+ * @defgroup fstr_stream Flash Streams
+ * @ingroup FlashString stream
+ * @brief Provides a stream buffer on flash storage (read-only)
  */
 class Stream : public IDataSourceStream
 {
@@ -73,7 +71,5 @@ private:
 	size_t readPos = 0;
 	bool flashread;
 };
-
-/** @} */
 
 } // namespace FSTR

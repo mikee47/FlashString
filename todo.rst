@@ -1,6 +1,8 @@
 TODO List
 =========
 
+.. highlight:: text
+
 Missing methods
    Behaviour of String should reflect WString. Review and add any missing methods.
    Note that implementations for some are likely non-trivial since we cannot assume
@@ -44,6 +46,7 @@ Multi-dimensional arrays
 
 Type Information
    The flashLength_ value can be redefined like this::
+
       length: 20;
       elementSize: 3; ///< Number of bytes in each element, less one
       type: 5; ///< Enumeration identifying element type

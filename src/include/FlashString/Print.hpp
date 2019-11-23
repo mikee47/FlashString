@@ -1,4 +1,4 @@
-/**
+/****
  * Print.cpp - Helper function templates to simplify printing of objects and variables
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
@@ -21,10 +21,17 @@
 
 #include <Print.h>
 
+/**
+ * @defgroup fstr_print Print support
+ * @ingroup FlashString
+ * @{
+ */
+
 namespace FSTR
 {
 /**
  * @brief Print an object
+ * @tparam ObjectType
  * @param p
  * @param object
  * @retval size_t
@@ -37,6 +44,7 @@ typename std::enable_if<std::is_class<ObjectType>::value, size_t>::type print(Pr
 
 /**
  * @brief Print an elementary variable
+ * @tparam T
  * @param p
  * @param value
  * @retval size_t
@@ -48,6 +56,7 @@ template <typename T> typename std::enable_if<!std::is_class<T>::value, size_t>:
 
 /**
  * @brief Print an object or elementary variable appending a carriage return
+ * @tparam T
  * @param p
  * @param value
  * @retval size_t
@@ -60,3 +69,5 @@ template <typename T> size_t println(Print& p, T value)
 }
 
 } // namespace FSTR
+
+/** @} */

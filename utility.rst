@@ -1,8 +1,11 @@
+Utilities
+=========
+
 Importing files
-===============
+---------------
 
 For String and Array objects you can import data directly from a file
-using IMPORT_FSTR() or IMPORT_FSTR_ARRAY(). For example::
+using :c:func:`IMPORT_FSTR` or :c:func:`IMPORT_FSTR_ARRAY`. For example::
 
    IMPORT_FSTR(myData, PROJECT_DIR "/files/myData.bin");
 
@@ -28,30 +31,39 @@ Therefore files can be bound into the firmware and accessed without requiring a 
 This idea is extended further using :doc:`map`.
 
 
-Additional Macros
------------------
+Custom Imports
+--------------
 
-IMPORT_FSTR_DATA(name, file)
-   Import the contents of a file without defining any C/C++ variable::
+Use :c:func:`IMPORT_FSTR_DATA` to import the contents of a file without defining any C/C++ variable::
 
       IMPORT_FSTR_DATA(myCustomData, PROJECT_DIR "/files/data.bin");
 
-   You'll need to define an appropriate symbol::
+You'll need to define an appropriate symbol::
 
-      struct MyCustomStruct {
-         uint32_t length;
-         char name[12];
-         char description[256];
-         uint8_t data[1024];
-      };
+   struct MyCustomStruct {
+      uint32_t length;
+      char name[12];
+      char description[256];
+      uint8_t data[1024];
+   };
 
-      extern "C" const MyCustomStruct myCustomData;
+   extern "C" const MyCustomStruct myCustomData;
 
-   You'll still have to consider how the data is accessed. If it's small and un-complicated
-   you can just copy it into RAM::
+You'll still have to consider how the data is accessed. If it's small and un-complicated
+you can just copy it into RAM::
 
-      MyCustomStruct buf;
-      memcpy_P(&buf, &myCustomData, sizeof(buf));
+   MyCustomStruct buf;
+   memcpy_P(&buf, &myCustomData, sizeof(buf));
 
-   However, a better way is to define a custom Object to handle it.
-   You can find an example of how to do this in ``test/app/custom.cpp``.
+However, a better way is to define a custom Object to handle it.
+You can find an example of how to do this in ``test/app/custom.cpp``.
+
+
+API Reference
+-------------
+
+.. doxygengroup:: fstr_utility
+   :content-only:
+
+.. doxygengroup:: fstr_print
+   :content-only:

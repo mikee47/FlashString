@@ -1,4 +1,4 @@
-/**
+/****
  * ObjectIterator.hpp - STL iterator support
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>

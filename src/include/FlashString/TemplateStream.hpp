@@ -1,4 +1,4 @@
-/**
+/****
  * TemplateStream.hpp
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
@@ -28,22 +28,17 @@ namespace FSTR
 {
 /**
   * @brief      Template Flash memory stream class
-  * @ingroup    stream data
-  *
-  *  @{
+  * @ingroup    stream data fstr_stream
  */
-
 class TemplateStream : public ::TemplateStream
 {
 public:
 	/** @brief Create a template stream on top of a flash memory stream
-     *  @param  flashString Source data for the stream
+     *  @param string Source data for the stream
      */
 	TemplateStream(const String& string) : ::TemplateStream(new FSTR::Stream(string))
 	{
 	}
 };
-
-/** @} */
 
 } // namespace FSTR

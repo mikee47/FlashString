@@ -1,4 +1,4 @@
-/**
+/****
  * MapPair.hpp - Defines the MapPair class template
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
@@ -29,11 +29,13 @@ namespace FSTR
 {
 /**
  * @brief describes a pair mapping key => data for a specified key type
+ * @ingroup fstr_map
+ * @tparam KeyType Integral, floating point, enum or String
+ * @tparam ContentType Object type to use for content
  */
 template <typename KeyType, class ContentType> class MapPair
 {
-	typedef typename std::conditional<std::is_same<KeyType, String>::value, const KeyType*, KeyType>::type
-		KeyStoreType;
+	typedef typename std::conditional<std::is_same<KeyType, String>::value, const KeyType*, KeyType>::type KeyStoreType;
 
 public:
 	typedef void (MapPair::*IfHelperType)() const;

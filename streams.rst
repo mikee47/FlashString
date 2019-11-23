@@ -1,27 +1,27 @@
 Streams
 =======
 
-Stream
-------
+.. cpp:class:: FSTR::Stream : public IDataSourceStream
 
-Alias: FlashMemoryStream
+Alias: :cpp:class:`FlashMemoryStream`
 
-This is a Sming *IDataSourceStream* descendant which you can use to stream the contents of
-a FlashString. It's especially useful when used in conjuction with IMPORT_FSTR::
+This is a Sming :cpp:class:`IDataSourceStream` descendant which you can use to stream the contents of
+a FlashString. It's especially useful when used in conjuction with :c:macro:`IMPORT_FSTR`::
 
    IMPORT_FSTR(myLargeFile, PROJECT_DIR "/files/lots-of-stuff.txt");
-   FlashMemoryStream fs(myLargeFile);
+   FSTR::Stream fs(myLargeFile);
    Serial.println(myLargefile);
 
 Because the data is read in sections, it's not limited by available RAM.
 
-Like a FileStream, you can also seek randomly within a *FlashMemoryStream*, so you can
-use it as the basis for an elementary read-only filesystem.
-See :doc:`maps` for a more useful example.
+Like a :cpp:class:`FileStream`, you can also seek randomly within a :cpp:class:`FlashMemoryStream`,
+so you can use it as the basis for an elementary read-only filesystem.
 
-TemplateStream
---------------
+See :doc:`map` for a more useful example.
 
-Alias: TemplateFlashMemoryStream
+.. cpp:class:: FSTR::TemplateStream : public TemplateStream
 
-Standard templating stream for tag replacement
+Alias: :cpp:class:`TemplateFlashMemoryStream`
+
+Standard templating stream for tag replacement.
+

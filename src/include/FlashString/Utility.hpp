@@ -1,4 +1,4 @@
-/**
+/****
  * Utility.hpp - Definitions, common macros and utility functions
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
@@ -24,28 +24,35 @@
 #include "config.hpp"
 
 /**
+ * @defgroup fstr_utility Utilities
+ * @ingroup FlashString
+ * @{
+ */
+
+/**
  * @brief Wrap a type declaration so it can be passed with commas in it
- * @note Example:
  *
- *	template <typename ElementType, size_t Columns>
- *	struct MultiRow
- *	{
- *		ElementType values[Columns];
- *	}
+ * Example:
+ *
+ *		template <typename ElementType, size_t Columns>
+ *		struct MultiRow
+ *		{
+ *			ElementType values[Columns];
+ *		}
  *
  * These fail:
  *
- * 	DECLARE_FSTR_ARRAY(myArray, MultiRow<double, 3>);
- * 	DECLARE_FSTR_ARRAY(myArray, (MultiRow<double, 3>));
+ * 		DECLARE_FSTR_ARRAY(myArray, MultiRow<double, 3>);
+ * 		DECLARE_FSTR_ARRAY(myArray, (MultiRow<double, 3>));
  *
  * Use DECL like this:
  *
- * 	DECLARE_FSTR_ARRAY(myArray, DECL((MultiRow<double, 3>)) );
+ * 		DECLARE_FSTR_ARRAY(myArray, DECL((MultiRow<double, 3>)) );
  *
  * Although for this example we should probably do this:
  *
- * 	using MultiRow_double_3 = MultiRow<double, 3>;
- * 	DECLARE_FSTR_ARRAY(myArray, MultiRow_double_3);
+ * 		using MultiRow_double_3 = MultiRow<double, 3>;
+ * 		DECLARE_FSTR_ARRAY(myArray, MultiRow_double_3);
  *
  */
 #define DECL(t) argument_type<void(t)>::type
@@ -55,17 +62,26 @@ template <typename T, typename U> struct argument_type<T(U)> {
 };
 
 /**
+ * @def IMPORT_FSTR_DATA
  * @brief Link the contents of a file
- * @note We need inline assembler's `.incbin` instruction to actually import the data.
- * We use a macro STR() so that if required the name can be resolved from a #defined value.
- * @note This provides a more efficient way to read constant (read-only) file data.
+ *
+ * This provides a more efficient way to read constant (read-only) file data.
  * The file content is bound into firmware image at link time.
- * @note Use PROJECT_DIR to locate files in your project's source tree:
- *  		IMPORT_FSTR_DATA(myFlashData, PROJECT_DIR "/files/my_flash_file.txt");
+ *
+ * We need inline assembler's `.incbin` instruction to actually import the data.
+ * We use a macro STR() so that if required the name can be resolved from a `#defined` value.
+ *
+ * Use PROJECT_DIR to locate files in your project's source tree:
+ *
+ *		IMPORT_FSTR_DATA(myFlashData, PROJECT_DIR "/files/my_flash_file.txt");
+ *
  * Use COMPONENT_PATH within a component.
- * @note No C/C++ symbol is declared, this is type-dependent and must be done separately:
- * 			extern "C" FSTR::String myFlashData;
- * @note If the symbol is not referenced the content will be discarded by the linker.
+ *
+ * No C/C++ symbol is declared, this is type-dependent and must be done separately:
+ *
+ *		extern "C" FSTR::String myFlashData;
+ *
+ * If the symbol is not referenced the content will be discarded by the linker.
  */
 // clang-format off
 #define STR(x) XSTR(x)
@@ -125,3 +141,5 @@ template <typename T> FSTR_INLINE typename std::enable_if<IS_ALIGNED(sizeof(T)),
 /** @} */
 
 } // namespace FSTR
+
+/** @} */

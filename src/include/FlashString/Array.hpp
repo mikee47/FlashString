@@ -1,4 +1,4 @@
-/**
+/****
  * Array.hpp - Defines the Array class and associated macros
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
@@ -23,6 +23,12 @@
 
 #include "Object.hpp"
 #include "ArrayPrinter.hpp"
+
+/**
+ * @defgroup fstr_array Arrays
+ * @ingroup FlashString
+ * @{
+ */
 
 /**
  * @brief Declare a global Array& reference
@@ -90,6 +96,7 @@
 /**
  * @brief Define an Array containing data from an external file
  * @param name Name for the object
+ * @param ElementType
  * @param file Absolute path to the file containing the content
  */
 #define IMPORT_FSTR_ARRAY(name, ElementType, file)                                                                     \
@@ -100,6 +107,7 @@ namespace FSTR
 {
 /**
  * @brief Class to access an array of integral values stored in flash
+ * @tparam ElementType
  */
 template <typename ElementType> class Array : public Object<Array<ElementType>, ElementType>
 {
@@ -122,3 +130,5 @@ public:
 };
 
 } // namespace FSTR
+
+/** @} */

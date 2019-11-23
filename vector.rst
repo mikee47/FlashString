@@ -6,7 +6,7 @@ Vectors
 Introduction
 ------------
 
-A ``Vector`` is an array of Object pointers::
+A :cpp:class:`FSTR::Vector` is an array of Object pointers::
 
    struct Vector<ObjectType> {
       FSTR::Object object;
@@ -82,8 +82,13 @@ The above example generates a structure like this::
 Note: ``FSTR::`` namespace qualifier omitted for clarity.
 
 
-Additional Macros
------------------
+Macros
+------
 
-DEFINE_FSTR_VECTOR_DATA(name, ...)
-   Define the data structure without an associated reference.
+.. doxygengroup:: fstr_vector
+   :content-only:
+
+Class Template
+--------------
+
+.. doxygenclass:: FSTR::Vector

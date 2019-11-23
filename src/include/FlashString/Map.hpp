@@ -1,4 +1,4 @@
-/**
+/****
  * Map.hpp - Defines the Map class template and associated macros
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
@@ -27,11 +27,17 @@
 #include "ObjectIterator.hpp"
 
 /**
+ * @defgroup fstr_map Associative Maps
+ * @ingroup FlashString
+ * @{
+ */
+
+/**
  * @brief Declare a global Map& reference
  * @param name
  * @param KeyType Integral type to use for key
  * @param ContentType Object type to declare for content
- * @note Use `DEFINE_FSTR_MAP` to instantiate the global object
+ * @note Use DEFINE_FSTR_MAP to instantiate the global object
  */
 #define DECLARE_FSTR_MAP(name, KeyType, ContentType) extern const FSTR::Map<KeyType, ContentType>& name;
 
@@ -116,6 +122,8 @@ namespace FSTR
 {
 /**
  * @brief Class template to access an associative map
+ * @tparam KeyType
+ * @tparam ContentType
  */
 template <typename KeyType, class ContentType, class Pair = MapPair<KeyType, ContentType>>
 class Map : public Object<Map<KeyType, ContentType>, Pair>
@@ -209,3 +217,5 @@ public:
 };
 
 } // namespace FSTR
+
+/** @} */

@@ -13,7 +13,7 @@ I created it as a one-file solution to address these specific issues:
    FlashString classes as if they were just stored in flash so I wouldn't have to wrap
    everything in a macro, like F() does.
 
-   Solution: The FlashString class.
+   Solution: The :cpp:class:`FlashString` class.
 
 2. Using PROGMEM directly for data is cumbersome, slow and fraught with danger: It's inherently unsafe
    because of the alignment issues. Some smart cookie came up with a compiler patch so it could
@@ -21,24 +21,24 @@ I created it as a one-file solution to address these specific issues:
    execution of inefficient code since the hardware requires we perform aligned accesses.
    Generating the structures correctly in the first place felt the best way forward.
 
-   Solution: DEFINE_FSTR
+   Solution: :c:func:`DEFINE_FSTR`
 
 3. Sharing flash data structures globally
 
-   Solution: DECLARE_FSTR
+   Solution: :c:func:`DECLARE_FSTR`
 
 4. How to get content into PROGMEM without having to manually convert everything into
    C structures. One solution to this is using external tools but that complicates the build
    process and felt un-necessary.
    
-   Solution: IMPORT_FSTR
+   Solution: :c:func:`IMPORT_FSTR`
 
 5. Relying on SPIFFS for serving fixed content is inefficient and problematic if/when the
    filesystem gets corrupted. I needed a solution which allowed large content to be
    served up without requiring a filesystem. The long term solution to this is, of course,
    a read-only filesystem but that is a complex thing indeed to do properly.
 
-   Solution: FlashMemoryStream
+   Solution: :cpp:class:`FlashMemoryStream`
 
 
 Embedded microsystems

@@ -1,4 +1,4 @@
-/**
+/****
  * ArrayPrinter.cpp - Print support for arrays
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>

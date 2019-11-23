@@ -1,4 +1,4 @@
-/**
+/****
  * Vector.hpp - Defines the Vector class template and associated macros
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
@@ -23,6 +23,12 @@
 
 #include "Object.hpp"
 #include "ArrayPrinter.hpp"
+
+/**
+ * @defgroup fstr_vector Vectors
+ * @ingroup FlashString
+ * @{
+ */
 
 /**
  * @brief Declare a global Vector& reference
@@ -107,6 +113,7 @@ namespace FSTR
 {
 /**
  * @brief Class to access a Vector of objects stored in flash
+ * @tparam ObjectType
  */
 template <class ObjectType> class Vector : public Object<Vector<ObjectType>, ObjectType*>
 {
@@ -160,3 +167,5 @@ public:
 };
 
 } // namespace FSTR
+
+/** @} */

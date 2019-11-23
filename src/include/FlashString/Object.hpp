@@ -1,4 +1,4 @@
-/**
+/****
  * Object.hpp - Definitions and macros common to all object types
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
@@ -26,10 +26,18 @@
 #include "ObjectIterator.hpp"
 
 /**
+ * @defgroup FlashString FlashString Library
+ * @ingroup flash
+ * @defgroup fstr_object Objects
+ * @ingroup FlashString
+ * @{
+ */
+
+/**
  * @brief Define a reference to an object
  * @param name Name for reference
  * @param ObjectType Fully qualified typename of object required, e.g. FSTR::String, FlashString, FSTR::Vector<int>, etc.
- * @param object FSTR::Object instance to cast
+ * @param object Object instance to cast
  */
 #define DEFINE_FSTR_REF(name, ObjectType, object) const ObjectType& name PROGMEM = object.as<ObjectType>();
 
@@ -43,7 +51,8 @@
 /**
  * @brief Given an Object& reference, return a pointer to the actual object
  * @param objref
- * @note When an Object pointer is required, such when defining entries for a Vector or Map,
+ *
+ * When an Object pointer is required, such when defining entries for a Vector or Map,
  * it is usually sufficient to use &objref.
  *
  * However, some older compilers such as GCC 4.8.5 requires such references to
@@ -93,7 +102,7 @@ public:
 		invalidate();
 	}
 
-	/*
+	/**
 	 * @brief Copy constructor
 	 * @note Objects are usually passed around by reference or as a pointer,
 	 * but for ease of use we need a working copy constructor.
@@ -122,7 +131,7 @@ public:
 	}
 
 	/**
-	 * @brief Get the length of the array in elements
+	 * @brief Get the length of the content in elements
 	 */
 	FSTR_INLINE size_t length() const
 	{
@@ -169,7 +178,7 @@ public:
 	}
 
 	/**
-	 * @brief Read contents of an Array into RAM
+	 * @brief Read content into RAM
 	 * @param index First element to read
 	 * @param buffer Where to store data
 	 * @param count How many elements to read
@@ -183,7 +192,7 @@ public:
 	}
 
 	/**
-	 * @brief Read contents of an Array into RAM, using flashread()
+	 * @brief Read content into RAM,using `flashmem_read()`
 	 * @param index First element to read
 	 * @param buffer Where to store data
 	 * @param count How many elements to read
@@ -197,4 +206,6 @@ public:
 	}
 };
 
-}; // namespace FSTR
+} // namespace FSTR
+
+/** @} */

@@ -1,15 +1,15 @@
-Associative Maps
-================
+Maps
+====
 
 .. highlight:: C++
 
 Introduction
 ------------
 
-A ``Map`` is analogous to the Wiring HashMap class, allowing content to be indexed using
+A :cpp:class:`FSTR::Map` is analogous to the Wiring :cpp:class:`HashMap` class, allowing content to be indexed using
 a key value.
 
-The Map contains an array of ``MapPair`` structures::
+The Map contains an array of :cpp:class:`FSTR::MapPair` structures::
 
    struct MapPair<KeyType, ContentType> {
       KeyType key_;
@@ -22,8 +22,10 @@ It may also be a ``String`` Object (or, more precisely, ``String*``).
 ``ContentType`` can be any Object type (String, Array, Vector or Map).
 This allows hierarchical structures to be created.
 
-Example: int => String
-----------------------
+.. |rArr| unicode:: 0x21D2 .. => arrow
+
+Example: int |rArr| String
+--------------------------
 
 Here's a basic example using integer keys::
 
@@ -51,8 +53,8 @@ We can now do this::
    }
 
 
-Example: String => String
--------------------------
+Example: String |rArr| String
+-----------------------------
 
 Both the key and the content are stored as Strings::
 
@@ -111,9 +113,16 @@ Note: ``FSTR::`` namespace qualifier omitted for clarity.
 Usually, each MapPair is 8 bytes, but if the key is a double or int64 it would be 12 bytes.
 
 
-Additional Macros
------------------
+Macros
+------
 
-DEFINE_FSTR_MAP_DATA(name, KeyType, ContentType, ...)
-   Define the map structure without an associated reference.
+.. doxygengroup:: fstr_map
+   :content-only:
 
+
+Class Templates
+---------------
+
+.. doxygenclass:: FSTR::Map
+
+.. doxygenclass:: FSTR::MapPair
