@@ -46,7 +46,7 @@
 /**
  * @brief Provide internal name for generated flash string structures
  */
-#define FSTR_DATA_NAME(name) fstr_data_##name
+#define FSTR_DATA_NAME(name) __fstr__##name
 
 /**
  * @brief Given an Object& reference, return a pointer to the actual object

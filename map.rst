@@ -101,12 +101,12 @@ The macro in the first example above produces a structure like this::
    constexpr const struct {
       ObjectBase object;
       MapPair<int, String> data[2];
-   } fstr_data_intmap PROGMEM = {
+   } __fstr__intmap PROGMEM = {
       {16},
       {35, &content1},
       {180, &content2},
    };
-   const Map<int, String>& intmap = fstr_data_intmap.object.as<Map<int, String>>();
+   const Map<int, String>& intmap = __fstr__intmap.object.as<Map<int, String>>();
 
 Note: ``FSTR::`` namespace qualifier omitted for clarity.
 
