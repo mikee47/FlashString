@@ -43,7 +43,6 @@ typedef const __FlashStringHelper* flash_string_t;
 #define FS_PTR(str)                                                                                                    \
 	(__extension__({                                                                                                   \
 		static DEFINE_FSTR_DATA(struc, str);                                                                           \
-		asm("" : : ""(struc));                                                                                         \
 		static_cast<const FSTR::String*>(&struc.object);                                                               \
 	}))
 
