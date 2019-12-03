@@ -69,7 +69,7 @@
 	constexpr const struct {                                                                                           \
 		FSTR::ObjectBase object;                                                                                       \
 		ElementType data[sizeof((const ElementType[]){__VA_ARGS__}) / sizeof(ElementType)];                            \
-	} FSTR_PACKED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                                 \
+	} FSTR_PACKED FSTR_ALIGNED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                    \
 	FSTR_CHECK_STRUCT(name);
 
 /**
@@ -82,7 +82,7 @@
  * 	printf("arr[0] = %f, %u elements, buffer is %u bytes\n", arr[0], fsArray.length(), sizeof(arr));
  */
 #define LOAD_FSTR_ARRAY(name, array)                                                                                   \
-	decltype(array)[0] name[(array).size()] __attribute__((aligned(4)));                                               \
+	decltype(array)[0] name[(array).size()] FSTR_ALIGNED;                                                              \
 	memcpy_aligned(name, (array).data(), (array).size());
 
 /**
