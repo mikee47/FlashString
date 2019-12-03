@@ -70,14 +70,14 @@ The above example generates a structure like this::
    const struct {
       ObjectBase object;
       String* entries[4];
-   } fstr_data_myTable PROGMEM = {
+   } __fstr__myTable PROGMEM = {
       {16},
       &str1,
       &str2,
       nullptr,
       &str3,
    };
-   const Vector<String>& myTable PROGMEM = fstr_data_myTable.as<Vector<String>>();
+   const Vector<String>& myTable PROGMEM = __fstr__myTable.as<Vector<String>>();
 
 Note: ``FSTR::`` namespace qualifier omitted for clarity.
 
