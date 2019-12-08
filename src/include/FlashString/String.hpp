@@ -124,7 +124,7 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define FSTR_ARRAY(name, str)                                                                                          \
 	static DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                \
-	LOAD_FSTR(name, FSTR_DATA_NAME(name).object.as<FSTR::String>())
+	LOAD_FSTR(name, FSTR_DATA_NAME(name).object.template as<FSTR::String>())
 
 /**
  * @brief Define a FSTR::String containing data from an external file

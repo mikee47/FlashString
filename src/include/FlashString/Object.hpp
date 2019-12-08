@@ -39,7 +39,7 @@
  * @param ObjectType Fully qualified typename of object required, e.g. FSTR::String, FlashString, FSTR::Vector<int>, etc.
  * @param object Object instance to cast
  */
-#define DEFINE_FSTR_REF(name, ObjectType, object) const ObjectType& name PROGMEM = object.as<ObjectType>();
+#define DEFINE_FSTR_REF(name, ObjectType, object) const ObjectType& name PROGMEM = object.template as<ObjectType>();
 
 #define DEFINE_FSTR_REF_NAMED(name, ObjectType) DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name).object);
 
