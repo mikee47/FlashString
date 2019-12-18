@@ -111,7 +111,7 @@ typedef const __FlashStringHelper* flash_string_t;
  *
  */
 #define LOAD_FSTR(name, fstr)                                                                                          \
-	char name[(fstr).size()] __attribute__((aligned(4)));                                                              \
+	char name[(fstr).size()] FSTR_ALIGNED;                                                                             \
 	memcpy_aligned(name, (fstr).data(), (fstr).length());                                                              \
 	name[(fstr).length()] = '\0';
 
