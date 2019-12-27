@@ -130,10 +130,12 @@ typedef const __FlashStringHelper* flash_string_t;
  * @brief Define a FSTR::String containing data from an external file
  * @param name Name for the FSTR::String object
  * @param file Absolute path to the file containing the content
+ * @See See also `IMPORT_FSTR_DATA`
+ * @{
  */
-#define IMPORT_FSTR(name, file)                                                                                        \
-	IMPORT_FSTR_DATA(name, file)                                                                                       \
-	extern "C" const FSTR::String name;
+#define IMPORT_FSTR(name, file) IMPORT_FSTR_OBJECT(name, FSTR::String, file)
+#define IMPORT_FSTR_LOCAL(name, file) IMPORT_FSTR_OBJECT_LOCAL(name, FSTR::String, file)
+/** @} */
 
 /**
  * @brief declare a table of FlashStrings

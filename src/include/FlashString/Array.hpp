@@ -95,13 +95,15 @@
 
 /**
  * @brief Define an Array containing data from an external file
- * @param name Name for the object
- * @param ElementType
+ * @param name Name for the Array object
+ * @param ElementType Array element type
  * @param file Absolute path to the file containing the content
+ * @See See also `IMPORT_FSTR_DATA`
+ * @{
  */
-#define IMPORT_FSTR_ARRAY(name, ElementType, file)                                                                     \
-	IMPORT_FSTR_DATA(name, file)                                                                                       \
-	extern "C" const FSTR::Array<ElementType> name;
+#define IMPORT_FSTR_ARRAY(name, ElementType, file) IMPORT_FSTR_OBJECT(name, FSTR::Array<ElementType>, file)
+#define IMPORT_FSTR_ARRAY_LOCAL(name, ElementType, file) IMPORT_FSTR_OBJECT_LOCAL(name, FSTR::Array<ElementType>, file)
+/** @} */
 
 namespace FSTR
 {

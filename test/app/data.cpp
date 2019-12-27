@@ -58,8 +58,8 @@ DEFINE_FSTR_MAP(arrayMap, int, FSTR::Array<float>, {1, &row1}, {2, &row2});
 
 DEFINE_FSTR_LOCAL(key1, "key1");
 DEFINE_FSTR_LOCAL(key2, "key2");
-IMPORT_FSTR(FS_content1, COMPONENT_PATH "/files/content1.txt");
-IMPORT_FSTR(FS_content2, COMPONENT_PATH "/files/content2.txt");
+IMPORT_FSTR_LOCAL(FS_content1, COMPONENT_PATH "/files/content1.txt");
+IMPORT_FSTR_LOCAL(FS_content2, COMPONENT_PATH "/files/content2.txt");
 DEFINE_FSTR_MAP(stringMap, FSTR::String, FSTR::String, {&key1, &FS_content1}, {&key2, &FS_content2});
 
 DEFINE_FSTR_MAP(enumMap, MapKey, FSTR::String, {KeyA, &FS_content1}, {KeyB, &FS_content2});

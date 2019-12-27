@@ -81,6 +81,26 @@
 	static_assert(std::is_pod<decltype(name)>::value, "FSTR structure not POD");                                       \
 	static_assert(offsetof(decltype(name), data) == sizeof(uint32_t), "FSTR structure alignment error");
 
+/**
+ * @brief Import an object from an external file with reference
+ * @param name Name for the object
+ * @param ObjectType Object type for reference
+ * @param file Absolute path to the file containing the content
+ * @See See also `IMPORT_FSTR_DATA`
+ * @note Can only be used at file scope
+ * @{
+ */
+#define IMPORT_FSTR_OBJECT(name, ObjectType, file)                                                                     \
+	IMPORT_FSTR_DATA(FSTR_DATA_NAME(name), file)                                                                       \
+	extern "C" const FSTR::ObjectBase FSTR_DATA_NAME(name);                                                            \
+	DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name));
+
+#define IMPORT_FSTR_OBJECT_LOCAL(name, ObjectType, file)                                                               \
+	IMPORT_FSTR_DATA(FSTR_DATA_NAME(name), file)                                                                       \
+	extern "C" const FSTR::ObjectBase FSTR_DATA_NAME(name);                                                            \
+	static constexpr DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name));
+/** @} */
+
 namespace FSTR
 {
 /**
