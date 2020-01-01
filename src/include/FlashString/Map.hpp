@@ -39,7 +39,7 @@
  * @param ContentType Object type to declare for content
  * @note Use DEFINE_FSTR_MAP to instantiate the global object
  */
-#define DECLARE_FSTR_MAP(name, KeyType, ContentType) extern const FSTR::Map<KeyType, ContentType>& name;
+#define DECLARE_FSTR_MAP(name, KeyType, ContentType) DECLARE_FSTR_OBJECT(name, DECL((FSTR::Map<KeyType, ContentType>)))
 
 /**
  * @brief Define a Map Object with global reference

@@ -36,7 +36,7 @@
  * @param ElementType
  * @note Use `DEFINE_FSTR_ARRAY` to instantiate the global Object
  */
-#define DECLARE_FSTR_ARRAY(name, ElementType) extern const FSTR::Array<ElementType>& name;
+#define DECLARE_FSTR_ARRAY(name, ElementType) DECLARE_FSTR_OBJECT(name, FSTR::Array<ElementType>)
 
 /**
  * @brief Define an Array Object with global reference

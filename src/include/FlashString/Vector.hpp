@@ -36,7 +36,7 @@
  * @param ObjectType
  * @note Use `DEFINE_VECTOR` to instantiate the global Object
  */
-#define DECLARE_FSTR_VECTOR(name, ObjectType) extern const FSTR::Vector<ObjectType>& name;
+#define DECLARE_FSTR_VECTOR(name, ObjectType) DECLARE_FSTR_OBJECT(name, FSTR::Vector<ObjectType>)
 
 /**
  * @brief Define a Vector Object with global reference

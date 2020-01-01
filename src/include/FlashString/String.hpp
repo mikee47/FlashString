@@ -60,7 +60,7 @@ typedef const __FlashStringHelper* flash_string_t;
  * @param name
  * @note Define the FSTR::String object using DEFINE_STR()
  */
-#define DECLARE_FSTR(name) extern const FSTR::String& name;
+#define DECLARE_FSTR(name) DECLARE_FSTR_OBJECT(name, FSTR::String)
 
 /**
  * @brief Define a FSTR::String object with global reference

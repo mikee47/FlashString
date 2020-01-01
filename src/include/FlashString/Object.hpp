@@ -34,6 +34,13 @@
  */
 
 /**
+ * @brief Declare a global Object reference
+ * @param name
+ * @param ObjectType
+ */
+#define DECLARE_FSTR_OBJECT(name, ObjectType) extern const ObjectType& name;
+
+/**
  * @brief Define a reference to an object
  * @param name Name for reference
  * @param ObjectType Fully qualified typename of object required, e.g. FSTR::String, FlashString, FSTR::Vector<int>, etc.

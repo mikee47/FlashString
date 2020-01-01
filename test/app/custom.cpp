@@ -20,80 +20,13 @@
  ****/
 
 #include <SmingTest.h>
-#include <FlashString/Array.hpp>
+#include "custom.h"
 
 /*
- * This is the structure for our custom object, the contents of which will be
- * loaded from an external file.
+ * Import the data and define a reference for it.
+ * If we don't want `customObject` to be global, use `IMPORT_FSTR_OBJECT_LOCAL`.
  */
-struct MyCustomStruct {
-	FSTR::ObjectBase object;
-	char name[12];
-	char description[20];
-	/*
-	 * A contained Object. This could be:
-	 *
-	 * 	- A String
-	 * 	- An Array
-	 * 	- Another MyCustomObject
-	 * 	- Another custom object
-	 *
-	 * Structures cannot contain pointers when loaded from a file,
-	 * so Vectors and Maps aren't possible.
-	 */
-	FSTR::ObjectBase dataArray;
-};
-
-class CustomObject : public FSTR::Object<CustomObject, char>
-{
-};
-
-class MyCustomObject : public CustomObject
-{
-public:
-	String name() const
-	{
-		return readString(offsetof(MyCustomStruct, name), sizeof(MyCustomStruct::name));
-	}
-
-	String description() const
-	{
-		return readString(offsetof(MyCustomStruct, description), sizeof(MyCustomStruct::description));
-	}
-
-	/*
-	 * Access the contained object as uint8_t[]
-	 */
-	const FSTR::Array<uint8_t>& content() const
-	{
-		return data()->dataArray.as<FSTR::Array<uint8_t>>();
-	}
-
-	/*
-	 * Provide a pointer to the raw data as defined by our structure
-	 */
-	const MyCustomStruct* data() const
-	{
-		return reinterpret_cast<const MyCustomStruct*>(CustomObject::data());
-	}
-
-private:
-	// Helper method so we can pull out the text strings more easily
-	String readString(size_t offset, size_t len) const
-	{
-		char buf[len + 1];
-		read(offset, buf, len);
-		buf[len] = '\0';
-		return buf;
-	}
-};
-
-/*
- * Import the data and define a symbol for it.
- * Note that the symbol _is_ the data, it's not a pointer or a reference.
- */
-IMPORT_FSTR_DATA(customObject, COMPONENT_PATH "/files/custom.bin");
-extern "C" const MyCustomObject customObject;
+IMPORT_FSTR_OBJECT(customObject, MyCustomObject, COMPONENT_PATH "/files/custom.bin");
 
 class CustomTest : public TestGroup
 {
