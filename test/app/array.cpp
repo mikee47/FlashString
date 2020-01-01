@@ -22,6 +22,8 @@
 #include <SmingTest.h>
 #include "data.h"
 
+IMPORT_FSTR_ARRAY_LOCAL(custom_bin, char, COMPONENT_PATH "/files/custom.bin");
+
 class ArrayTest : public TestGroup
 {
 public:
@@ -31,60 +33,87 @@ public:
 
 	void execute() override
 	{
-		externalFSTR1.as<FSTR::Array<uint8_t>>().printTo(Serial);
-		Serial.println();
-		externalFSTR1.as<FSTR::Array<uint32_t>>().printTo(Serial);
-		for(auto c : externalFSTR1.as<FSTR::Array<uint32_t>>()) {
-			Serial.print(c, HEX);
-			Serial.print(',');
-		}
-		Serial.println();
-		externalFSTR1.as<FSTR::Array<char>>().printTo(Serial);
-		Serial.println();
-
-		//
-
-		Serial.println();
-		Serial.print(_F("Array of double"));
-
-		Serial.print("  iterator: {");
-		for(auto f : doubleArray) {
-			Serial.print(f);
-			Serial.print(", ");
-		}
-		Serial.println(" }");
-
-		Serial.printf(_F("Array[double] length = %u, size = %u"), doubleArray.length(), doubleArray.size());
-		for(unsigned i = 0; i < doubleArray.length(); ++i) {
-			Serial.printf(_F("   arr[%u] = %f\n"), i, doubleArray[i]);
+		TEST_CASE("print uint8_t[]")
+		{
+			externalFSTR1.as<FSTR::Array<uint8_t>>().printTo(Serial);
+			Serial.println();
 		}
 
-		FSTR::println(Serial, doubleArray);
+		TEST_CASE("print uint32_t[]")
+		{
+			externalFSTR1.as<FSTR::Array<uint32_t>>().printTo(Serial);
+			Serial.println();
+		}
 
-		//
+		TEST_CASE("iterate uint32_t[]")
+		{
+			for(auto c : externalFSTR1.as<FSTR::Array<uint32_t>>()) {
+				Serial.print(c, HEX);
+				Serial.print(',');
+			}
+			Serial.println();
+		}
 
-		Serial.println();
-		Serial.print(_F("Multi-dimensional array"));
+		TEST_CASE("print char[]")
+		{
+			externalFSTR1.as<FSTR::Array<char>>().printTo(Serial);
+			Serial.println();
+		}
 
-		FSTR::println(Serial, tableArray);
-
-		Serial.println("  iterator: {");
-		for(auto row : tableArray) {
-			Serial.print("    { ");
-			for(auto v : row.values) {
-				Serial.print(v);
+		TEST_CASE("iterate double[]")
+		{
+			Serial.print("{");
+			for(auto f : doubleArray) {
+				Serial.print(f);
 				Serial.print(", ");
 			}
-			Serial.println("},");
+			Serial.println(" }");
 		}
-		Serial.println(" }");
 
-		//	FSTR::println(Serial, int64Array);
-		for(auto v : int64Array) {
-			Serial.print(v, HEX);
-			Serial.print(", ");
+		TEST_CASE("for-loop double[]")
+		{
+			Serial.printf(_F("Array[double] length = %u, size = %u"), doubleArray.length(), doubleArray.size());
+			Serial.println();
+			for(unsigned i = 0; i < doubleArray.length(); ++i) {
+				Serial.printf(_F("   arr[%u] = %f\n"), i, doubleArray[i]);
+			}
 		}
-		Serial.println();
+
+		TEST_CASE("print double[]")
+		{
+			FSTR::println(Serial, doubleArray);
+		}
+
+		TEST_CASE("iterate int64_t[]")
+		{
+			//	FSTR::println(Serial, int64Array);
+			for(auto v : int64Array) {
+				Serial.print(v, HEX);
+				Serial.print(", ");
+			}
+			Serial.println();
+		}
+
+		TEST_CASE("Multi-dimensional array")
+		{
+			FSTR::println(Serial, tableArray);
+
+			Serial.println("  iterator: {");
+			for(auto row : tableArray) {
+				Serial.print("    { ");
+				for(auto v : row.values) {
+					Serial.print(v);
+					Serial.print(", ");
+				}
+				Serial.println("},");
+			}
+			Serial.println(" }");
+		}
+
+		TEST_CASE("IMPORT_FSTR_ARRAY")
+		{
+			FSTR::println(Serial, custom_bin);
+		}
 	}
 };
 
