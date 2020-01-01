@@ -50,11 +50,7 @@
 	DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
- * @brief Define a Vector Object with local reference
- * @param name Name of Vector& reference to define
- * @param ObjectType
- * @param ... List of ObjectType* pointers
- * @note Size will be calculated
+ * @brief Like DEFINE_FSTR_VECTOR except reference is declared static constexpr
  */
 #define DEFINE_FSTR_VECTOR_LOCAL(name, ObjectType, ...)                                                                \
 	static DEFINE_FSTR_VECTOR_DATA(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                     \
@@ -73,12 +69,7 @@
 	DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
- * @brief Define a Vector Object with local reference, specifying the number of elements
- * @param name Name of Vector& reference to define
- * @param ObjectType
- * @param size Number of elements
- * @param ... List of ObjectType* pointers
- * @note Use in situations where the array size cannot be automatically calculated
+ * @brief Like DEFINE_FSTR_VECTOR_SIZED except reference is declared static constexpr
  */
 #define DEFINE_FSTR_VECTOR_SIZED_LOCAL(name, ObjectType, size, ...)                                                    \
 	static DEFINE_FSTR_VECTOR_DATA_SIZED(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                         \
