@@ -53,7 +53,7 @@ You'll need to define an appropriate symbol::
    struct MyCustomStruct {
       uint32_t length;
       char name[12];
-      char description[256];
+      char description[20];
       uint8_t data[1024];
    };
 
@@ -65,8 +65,33 @@ you can just copy it into RAM::
    MyCustomStruct buf;
    memcpy_P(&buf, &myCustomData, sizeof(buf));
 
-However, a better way is to define a custom Object to handle it.
-You can find an example of how to do this in ``test/app/custom.cpp``.
+
+Custom Objects
+--------------
+
+A better way to handle large, complex structures is to define a custom Object to handle it.
+You can find an example of how to do this in ``test/app/custom.cpp``, which does this:
+
+1. Define ``MyCustomStruct``::
+   
+      struct MyCustomStruct {
+         FSTR::ObjectBase object;
+         char name[12];
+         char description[20];
+         FSTR::ObjectBase dataArray;
+      };
+
+2. Define a base object type (``CustomObject``) using the :cpp:class:`FSTR::Object` class template.
+   This determines the underlying element type, generally ``char`` or ``uint8_t`` are most useful.
+
+3. Derive an Object class (``MyCustomObject``) to encapsulate access to ``MyCustomStruct``.
+
+4. Use the :c:func:`IMPORT_FSTR_OBJECT` macro to import the custom data and define a global
+   reference (``customObject``) of type ``MyCustomObject&``.
+
+5. Use :c:func:`DECLARE_FSTR_OBJECT` macro to declare the reference in a header.
+ 
+More complex examples may involve multiple custom Object types.
 
 
 API Reference

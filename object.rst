@@ -22,7 +22,7 @@ Macros follow the same pattern:
 
 ``DEFINE_FSTR_*``
    Creates a static data structure with an associated Object reference.
-   The _LOCAL variant makes the reference static.
+   The _LOCAL variant makes the reference ``static constexpr``.
 
 ``DECLARE_FSTR_*``
    Use this in a header to declare Object reference so it can be used across

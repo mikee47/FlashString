@@ -39,7 +39,7 @@
  * @param ContentType Object type to declare for content
  * @note Use DEFINE_FSTR_MAP to instantiate the global object
  */
-#define DECLARE_FSTR_MAP(name, KeyType, ContentType) extern const FSTR::Map<KeyType, ContentType>& name;
+#define DECLARE_FSTR_MAP(name, KeyType, ContentType) DECLARE_FSTR_OBJECT(name, DECL((FSTR::Map<KeyType, ContentType>)))
 
 /**
  * @brief Define a Map Object with global reference
@@ -54,12 +54,7 @@
 	DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
 /**
- * @brief Define a Map Object with local reference
- * @name Name of the Map& reference to define
- * @param KeyType Integral type to use for key
- * @param ContentType Object type to declare for content
- * @param ... List of MapPair definitions { key, &content }
- * @note Size will be calculated
+ * @brief Like DEFINE_FSTR_MAP except reference is declared static constexpr
  */
 #define DEFINE_FSTR_MAP_LOCAL(name, KeyType, ContentType, ...)                                                         \
 	static DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                              \
@@ -78,12 +73,7 @@
 	DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
 /**
- * @brief Define a Map Object with local reference, specifying the number of elements
- * @name Name of the Map& reference to define
- * @param KeyType Integral type to use for key
- * @param ContentType Object type to declare for content
- * @param size Number of elements
- * @param ... List of MapPair definitions { key, &content }
+ * @brief Like DEFINE_FSTR_MAP_SIZED except reference is declared static
  */
 #define DEFINE_FSTR_MAP_SIZED_LOCAL(name, KeyType, ContentType, size, ...)                                             \
 	static DEFINE_FSTR_MAP_DATA_SIZED(FSTR_DATA_NAME(name), KeyType, ContentType, size, __VA_ARGS__);                  \

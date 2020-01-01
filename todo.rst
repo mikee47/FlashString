@@ -77,12 +77,3 @@ Translation tools
       producing a header file and a source file.
 
    All we need to do then is write a JSON serializer to produce the appropriate structures.
-
-
-Sming improvements
-------------------
-
-memcmp_P
-   Requires optimisation, comparing byte-by-byte is very slow.
-   Look to libc implementations for ways to optimise.
-

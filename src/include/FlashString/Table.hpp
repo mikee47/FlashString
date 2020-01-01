@@ -66,7 +66,7 @@ public:
 	 */
 	size_t printTo(Print& p) const
 	{
-		return FSTR::ArrayPrinter<TableRow>(*this, ", ").printTo(p);
+		return FSTR::ArrayPrinter<TableRow>(*this).printTo(p);
 	}
 
 	/**

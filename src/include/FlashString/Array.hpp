@@ -36,7 +36,7 @@
  * @param ElementType
  * @note Use `DEFINE_FSTR_ARRAY` to instantiate the global Object
  */
-#define DECLARE_FSTR_ARRAY(name, ElementType) extern const FSTR::Array<ElementType>& name;
+#define DECLARE_FSTR_ARRAY(name, ElementType) DECLARE_FSTR_OBJECT(name, FSTR::Array<ElementType>)
 
 /**
  * @brief Define an Array Object with global reference
@@ -50,10 +50,7 @@
 	DEFINE_FSTR_REF_NAMED(name, FSTR::Array<ElementType>);
 
 /**
- * @brief Define an Array Object with local reference
- * @param name Name of Array& reference to define
- * @param ElementType
- * @param ... List of ElementType items
+ * @brief Like DEFINE_FSTR_ARRAY except reference is declared static constexpr
  */
 #define DEFINE_FSTR_ARRAY_LOCAL(name, ElementType, ...)                                                                \
 	static DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                     \
@@ -98,12 +95,14 @@
  * @param name Name for the Array object
  * @param ElementType Array element type
  * @param file Absolute path to the file containing the content
- * @See See also `IMPORT_FSTR_DATA`
- * @{
+ * @see See also `IMPORT_FSTR_DATA`
  */
 #define IMPORT_FSTR_ARRAY(name, ElementType, file) IMPORT_FSTR_OBJECT(name, FSTR::Array<ElementType>, file)
+
+/**
+ * @brief Like IMPORT_FSTR_ARRAY except reference is declared static constexpr
+ */
 #define IMPORT_FSTR_ARRAY_LOCAL(name, ElementType, file) IMPORT_FSTR_OBJECT_LOCAL(name, FSTR::Array<ElementType>, file)
-/** @} */
 
 namespace FSTR
 {
@@ -120,9 +119,9 @@ public:
 	 * @brief Returns a printer object for this array
 	 * @note ElementType must be supported by Print
 	 */
-	ArrayPrinter<Array> printer(const WString& separator = ", ") const
+	ArrayPrinter<Array> printer() const
 	{
-		return ArrayPrinter<Array>(*this, separator);
+		return ArrayPrinter<Array>(*this);
 	}
 
 	size_t printTo(Print& p) const
