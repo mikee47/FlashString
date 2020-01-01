@@ -119,9 +119,9 @@ public:
 	 * @brief Returns a printer object for this array
 	 * @note ElementType must be supported by Print
 	 */
-	ArrayPrinter<Array> printer(const WString& separator = ", ") const
+	ArrayPrinter<Array> printer() const
 	{
-		return ArrayPrinter<Array>(*this, separator);
+		return ArrayPrinter<Array>(*this);
 	}
 
 	size_t printTo(Print& p) const

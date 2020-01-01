@@ -146,9 +146,9 @@ public:
 
 	/* Arduino Print support */
 
-	ArrayPrinter<Vector> printer(const WString& separator = ", ") const
+	ArrayPrinter<Vector> printer() const
 	{
-		return ArrayPrinter<Vector>(*this, separator);
+		return ArrayPrinter<Vector>(*this);
 	}
 
 	size_t printTo(Print& p) const
