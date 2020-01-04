@@ -89,7 +89,6 @@ template <typename T, typename U> struct argument_type<T(U)> {
 #ifdef __WIN32
 #define IMPORT_FSTR_DATA(name, file)                                                                                   \
 	__asm__(".section .rodata\n"                                                                                       \
-			".global _" STR(name) "\n"                                                                                 \
 			".def _" STR(name) "; .scl 2; .type 32; .endef\n"                                                          \
 			".align 4\n"                                                                                               \
 			"_" STR(name) ":\n"                                                                                        \
@@ -104,7 +103,6 @@ template <typename T, typename U> struct argument_type<T(U)> {
 #endif
 #define IMPORT_FSTR_DATA(name, file)                                                                                   \
 	__asm__(".section " IROM_SECTION "\n"                                                                              \
-			".global " STR(name) "\n"                                                                                  \
 			".type " STR(name) ", @object\n"                                                                           \
 			".align 4\n" STR(name) ":\n"                                                                               \
 			".long _" STR(name) "_end - " STR(name) " - 4\n"                                                           \
