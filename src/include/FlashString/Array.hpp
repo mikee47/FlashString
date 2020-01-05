@@ -79,7 +79,7 @@
  * 	printf("arr[0] = %f, %u elements, buffer is %u bytes\n", arr[0], fsArray.length(), sizeof(arr));
  */
 #define LOAD_FSTR_ARRAY(name, array)                                                                                   \
-	decltype(array[0]) name[(array).size()] FSTR_ALIGNED;                                                              \
+	decltype((array)[0]) name[(array).size()] FSTR_ALIGNED;                                                              \
 	memcpy_aligned(name, (array).data(), (array).size());
 
 /**
