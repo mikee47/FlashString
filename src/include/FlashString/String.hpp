@@ -53,7 +53,7 @@ typedef const __FlashStringHelper* flash_string_t;
  *
  * 		Serial.println(FS("This is a Flash String"));
  */
-#define FS(str) *FS_PTR(str)
+#define FS(str) (*FS_PTR(str))
 
 /**
  * @brief Declare a global FSTR::String& reference
