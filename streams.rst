@@ -14,6 +14,10 @@ a FlashString. It's especially useful when used in conjuction with :c:macro:`IMP
 
 Because the data is read in sections, it's not limited by available RAM.
 
+.. note::
+   
+   Unless you need ``myLargeFile`` to be a global symbol, you'll generally want to use :c:func:`IMPORT_FSTR_LOCAL`.
+
 Like a :cpp:class:`FileStream`, you can also seek randomly within a :cpp:class:`FlashMemoryStream`,
 so you can use it as the basis for an elementary read-only filesystem.
 
