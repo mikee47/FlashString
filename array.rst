@@ -49,3 +49,4 @@ Classes
 -------
 
 .. doxygenclass:: FSTR::Array
+   :members:

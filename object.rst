@@ -164,3 +164,4 @@ Class Template
 --------------
 
 .. doxygenclass:: FSTR::Object
+   :members:

@@ -92,3 +92,4 @@ Class Template
 --------------
 
 .. doxygenclass:: FSTR::Vector
+   :members:

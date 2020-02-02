@@ -143,5 +143,7 @@ Class Templates
 ---------------
 
 .. doxygenclass:: FSTR::Map
+   :members:
 
 .. doxygenclass:: FSTR::MapPair
+   :members:
