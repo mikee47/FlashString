@@ -26,9 +26,9 @@ namespace FSTR
 uint16_t Stream::readMemoryBlock(char* data, int bufSize)
 {
 	if(flashread) {
-		return string.readFlash(readPos, data, bufSize);
+		return object.readFlash(readPos, data, bufSize);
 	} else {
-		return string.read(readPos, data, bufSize);
+		return object.read(readPos, data, bufSize);
 	}
 }
 
@@ -43,13 +43,13 @@ int Stream::seekFrom(int offset, unsigned origin)
 		newPos = readPos + offset;
 		break;
 	case SEEK_END:
-		newPos = string.length() + offset;
+		newPos = object.length() + offset;
 		break;
 	default:
 		return -1;
 	}
 
-	if(newPos > string.length()) {
+	if(newPos > object.length()) {
 		return -1;
 	}
 
