@@ -103,7 +103,7 @@ public:
 			Serial.print('"');
 			Serial.print(test);
 			Serial.println('"');
-			REQUIRE(sizeof(test) == ALIGNUP(sizeof(DEMO_TEST_TEXT)));
+			REQUIRE(sizeof(test) == ALIGNUP4(sizeof(DEMO_TEST_TEXT)));
 
 			Serial.print("> demoFSTR1 (write): ");
 			Serial.print('"');
@@ -142,7 +142,7 @@ public:
 			Serial.print('"');
 			Serial.write(fsarr, sizeof(fsarr) - 1);
 			Serial.println('"');
-			REQUIRE(sizeof(fsarr) == ALIGNUP(sizeof(DEMO_TEST_TEXT)));
+			REQUIRE(sizeof(fsarr) == ALIGNUP4(sizeof(DEMO_TEST_TEXT)));
 			REQUIRE(memcmp_P(fsarr, DEMO_TEST_TEXT, sizeof(DEMO_TEST_TEXT)) == 0);
 		}
 

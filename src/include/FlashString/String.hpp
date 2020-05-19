@@ -93,7 +93,7 @@ typedef const __FlashStringHelper* flash_string_t;
 #define DEFINE_FSTR_DATA(name, str)                                                                                    \
 	constexpr const struct {                                                                                           \
 		FSTR::ObjectBase object;                                                                                       \
-		char data[ALIGNUP(sizeof(str))];                                                                               \
+		char data[ALIGNUP4(sizeof(str))];                                                                              \
 	} name PROGMEM = {{sizeof(str) - 1}, str};                                                                         \
 	FSTR_CHECK_STRUCT(name);
 
@@ -179,7 +179,7 @@ public:
 	 */
 	size_t size() const
 	{
-		return ALIGNUP(Object::length() + 1);
+		return ALIGNUP4(Object::length() + 1);
 	}
 
 	/**

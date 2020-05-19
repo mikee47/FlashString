@@ -26,3 +26,10 @@
 #define FSTR_INLINE __attribute__((always_inline)) inline
 #define FSTR_ALIGNED __attribute__((aligned(4)))
 #define FSTR_PACKED __attribute__((packed))
+
+#ifndef ALIGNUP4
+/**
+ * @brief Align a size up to the nearest word boundary
+ */
+#define ALIGNUP4(n) (((n) + 3) & ~3)
+#endif
