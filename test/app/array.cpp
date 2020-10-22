@@ -22,7 +22,56 @@
 #include <SmingTest.h>
 #include "data.h"
 
-IMPORT_FSTR_ARRAY_LOCAL(custom_bin, char, COMPONENT_PATH "/files/custom.bin");
+namespace
+{
+IMPORT_FSTR_ARRAY(custom_bin, char, COMPONENT_PATH "/files/custom.bin");
+
+enum class Fruit {
+	bad,
+	orange,
+	pear,
+	kiwi_fruit,
+};
+
+struct Size {
+	size_t cx, cy, cz;
+};
+
+String toString(Fruit fruit)
+{
+	switch(fruit) {
+	case Fruit::bad:
+		return F("BAD");
+	case Fruit::orange:
+		return F("orange");
+	case Fruit::pear:
+		return F("pear");
+	case Fruit::kiwi_fruit:
+		return F("kiwi fruit");
+	default:
+		return nullptr;
+	}
+}
+
+struct Item {
+	Fruit kind;
+	unsigned count;
+	Size size;
+
+	size_t printTo(Print& p) const
+	{
+		return p.printf("%s=%u, %ux%ux%u cm", toString(kind).c_str(), count, size.cx, size.cy, size.cz);
+	}
+};
+
+// clang-format off
+DEFINE_FSTR_ARRAY(basket, Item,
+		{Fruit::orange, 12, {15, 15, 15}},
+		{Fruit::pear, 1, {20, 10, 10}},
+		{Fruit::kiwi_fruit, 4, {5, 5, 5}})
+// clang-format on
+
+} // namespace
 
 class ArrayTest : public TestGroup
 {
@@ -113,6 +162,18 @@ public:
 		TEST_CASE("IMPORT_FSTR_ARRAY")
 		{
 			FSTR::println(Serial, custom_bin);
+		}
+
+		TEST_CASE("Iterate struct with class enum")
+		{
+			for(auto item : basket) {
+				FSTR::println(Serial, item);
+			}
+
+			auto item{basket[1000]};
+			FSTR::println(Serial, item);
+			REQUIRE(item.kind == Fruit::bad);
+			REQUIRE(item.count == 0);
 		}
 	}
 };

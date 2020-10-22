@@ -183,7 +183,7 @@ public:
 		if(index < length()) {
 			return readValue(data() + index);
 		} else {
-			return ElementType{0};
+			return ElementType{};
 		}
 	}
 

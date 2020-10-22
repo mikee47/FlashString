@@ -74,7 +74,7 @@ public:
 	 */
 	static TableRow empty()
 	{
-		return TableRow{0};
+		return TableRow{};
 	}
 
 	/* Private data */
