@@ -32,17 +32,17 @@ uint16_t Stream::readMemoryBlock(char* data, int bufSize)
 	}
 }
 
-int Stream::seekFrom(int offset, unsigned origin)
+int Stream::seekFrom(int offset, SeekOrigin origin)
 {
 	size_t newPos;
 	switch(origin) {
-	case SEEK_SET:
+	case SeekOrigin::Start:
 		newPos = offset;
 		break;
-	case SEEK_CUR:
+	case SeekOrigin::Current:
 		newPos = readPos + offset;
 		break;
-	case SEEK_END:
+	case SeekOrigin::End:
 		newPos = object.length() + offset;
 		break;
 	default:
