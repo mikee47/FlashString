@@ -36,10 +36,10 @@ class Stream : public IDataSourceStream
 public:
 	/**
 	 * @brief Constructor
-	 * @param string
+	 * @param object
 	 * @param flashread Specify true to read using flashmem functions, otherwise data is accessed via cache
 	 */
-	Stream(const String& string, bool flashread = true) : string(string), flashread(flashread)
+	Stream(const ObjectBase& object, bool flashread = true) : object(object), flashread(flashread)
 	{
 	}
 
@@ -54,20 +54,20 @@ public:
 	*/
 	int available() override
 	{
-		return string.length() - readPos;
+		return object.length() - readPos;
 	}
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	int seekFrom(int offset, unsigned origin) override;
+	int seekFrom(int offset, SeekOrigin origin) override;
 
 	bool isFinished() override
 	{
-		return readPos >= string.length();
+		return readPos >= object.length();
 	}
 
 private:
-	const String& string;
+	const ObjectBase& object;
 	size_t readPos = 0;
 	bool flashread;
 };

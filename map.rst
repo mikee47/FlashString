@@ -31,13 +31,32 @@ Here's a basic example using integer keys::
 
    #include <FlashString/Map.hpp>
 
-   IMPORT_FSTR(content1, PROJECT_DIR "/files/index.html");
-   IMPORT_FSTR(content2, PROJECT_DIR "/files/favicon.html");
+   IMPORT_FSTR_LOCAL(content1, PROJECT_DIR "/files/index.html");
+   IMPORT_FSTR_LOCAL(content2, PROJECT_DIR "/files/favicon.html");
 
    DEFINE_FSTR_MAP(intmap, int, FSTR::String,
       {35, &content1},
       {180, &content2}
    );
+
+You should generally use :c:func:`IMPORT_FSTR_LOCAL` when referencing imported objects.
+If you need global access to imported data as well, then use :c:func:`IMPORT_FSTR`.
+
+.. note::
+
+   Older toolchains (generally GCC earlier than version 6) will fail to compile with
+   *error: the value of 'FS_content1' is not usable in a constant expression*.
+
+   You can work around this as follows::
+
+      IMPORT_FSTR(content1, PROJECT_DIR "/files/index.html"); // Make this a global reference
+      IMPORT_FSTR_LOCAL(content2, PROJECT_DIR "/files/favicon.html");
+   
+      DEFINE_FSTR_MAP(intmap, int, FSTR::String,
+         {35, &FSTR_DATA_NAME(FS_content1).as<FSTR::String>()}, // Cast the actual content
+         {180, &content2}
+      );
+
 
 We can now do this::
 
@@ -62,8 +81,8 @@ Both the key and the content are stored as Strings::
 
    DEFINE_FSTR_LOCAL(key1, "index.html");
    DEFINE_FSTR_LOCAL(key2, "favicon.ico");
-   IMPORT_FSTR(content1, PROJECT_DIR "/files/index.html");
-   IMPORT_FSTR(content2, PROJECT_DIR "/files/favicon.html");
+   IMPORT_FSTR_LOCAL(content1, PROJECT_DIR "/files/index.html");
+   IMPORT_FSTR_LOCAL(content2, PROJECT_DIR "/files/favicon.html");
 
    DEFINE_FSTR_MAP(fileMap, FlashString, FlashString,
       {&key1, &content1},
@@ -124,5 +143,7 @@ Class Templates
 ---------------
 
 .. doxygenclass:: FSTR::Map
+   :members:
 
 .. doxygenclass:: FSTR::MapPair
+   :members:

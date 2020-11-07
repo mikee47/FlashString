@@ -25,7 +25,7 @@ Macros follow the same pattern:
    The _LOCAL variant makes the reference ``static constexpr``.
 
 ``DECLARE_FSTR_*``
-   Use this in a header to declare Object reference so it can be used across
+   Use this in a header to declare an Object reference so it can be used across
    translation units.
 
 Created symbols are C++ and adopt any enclosing namespaced.
@@ -164,3 +164,4 @@ Class Template
 --------------
 
 .. doxygenclass:: FSTR::Object
+   :members:

@@ -43,7 +43,7 @@ public:
 	 */
 	FSTR_INLINE size_t size() const
 	{
-		return ALIGNUP(length());
+		return ALIGNUP4(length());
 	}
 
 	/**

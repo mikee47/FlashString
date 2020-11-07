@@ -20,9 +20,9 @@ Defining Vectors
 
 Inline Strings are not supported, so the content has to be defined first::
 
-   DEFINE_FSTR(str1, "Test string #1");
-   DEFINE_FSTR(str2, "Test string #2");
-   IMPORT_FSTR(str3, PROJECT_DIR "/files/somedata.json");
+   DEFINE_FSTR_LOCAL(str1, "Test string #1");
+   DEFINE_FSTR_LOCAL(str2, "Test string #2");
+   IMPORT_FSTR_LOCAL(str3, PROJECT_DIR "/files/somedata.json");
 
 Now we can define the Vector::
 
@@ -92,3 +92,4 @@ Class Template
 --------------
 
 .. doxygenclass:: FSTR::Vector
+   :members:

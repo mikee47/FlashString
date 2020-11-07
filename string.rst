@@ -132,3 +132,4 @@ String Class
 ------------
 
 .. doxygenclass:: FSTR::String
+   :members:

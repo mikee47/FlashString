@@ -98,7 +98,7 @@
  */
 #define IMPORT_FSTR_OBJECT(name, ObjectType, file)                                                                     \
 	IMPORT_FSTR_DATA(FSTR_DATA_NAME(name), file)                                                                       \
-	extern "C" const FSTR::ObjectBase FSTR_DATA_NAME(name);                                                            \
+	extern "C" __attribute__((visibility("hidden"))) const FSTR::ObjectBase FSTR_DATA_NAME(name);                      \
 	DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name));
 
 /**
@@ -106,7 +106,7 @@
  */
 #define IMPORT_FSTR_OBJECT_LOCAL(name, ObjectType, file)                                                               \
 	IMPORT_FSTR_DATA(FSTR_DATA_NAME(name), file)                                                                       \
-	extern "C" const FSTR::ObjectBase FSTR_DATA_NAME(name);                                                            \
+	extern "C" __attribute__((visibility("hidden"))) const FSTR::ObjectBase FSTR_DATA_NAME(name);                      \
 	static constexpr DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name));
 
 namespace FSTR
@@ -183,7 +183,7 @@ public:
 		if(index < length()) {
 			return readValue(data() + index);
 		} else {
-			return ElementType{0};
+			return ElementType{};
 		}
 	}
 

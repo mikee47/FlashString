@@ -12,7 +12,7 @@ using :c:func:`IMPORT_FSTR` or :c:func:`IMPORT_FSTR_ARRAY`. For example::
 This defines a C++ reference to the data called ``myData`` so it can be referred to using
 :c:func:`DECLARE_FSTR` if required.
 
-.. note::
+.. attention::
 
    File paths must be absolute or the compiler won't be able to locate it reliably.
 
@@ -21,11 +21,11 @@ This defines a C++ reference to the data called ``myData`` so it can be referred
 
 .. note::
 
-   A corresponding global C symbol will also be defined, based on the provided name,
+   A corresponding C symbol will also be defined, based on the provided name,
    to provide linkage with the imported data.
 
-   Such symbols cannot be localised as it requires use of ``extern``, so take care with
-   naming to avoid the risk of conflicts, especially if used within a Component.
+   You generally shouldn't have an issue with this as the symbols are restricted to
+   file scope, but it is something to be aware of.
 
 
 One use for imported files is to serve content via HTTP, like this::

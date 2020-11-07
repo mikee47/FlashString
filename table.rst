@@ -44,3 +44,4 @@ Class Template
 --------------
 
 .. doxygenclass:: FSTR::TableRow
+   :members:

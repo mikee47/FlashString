@@ -34,7 +34,7 @@
 
 /**
  * @brief Declare a global Map& reference
- * @param name
+ * @param name Name of the Map& reference to define
  * @param KeyType Integral type to use for key
  * @param ContentType Object type to declare for content
  * @note Use DEFINE_FSTR_MAP to instantiate the global object
@@ -43,7 +43,7 @@
 
 /**
  * @brief Define a Map Object with global reference
- * @name Name of the Map& reference to define
+ * @param name Name of the Map& reference to define
  * @param KeyType Integral type to use for key
  * @param ContentType Object type to declare for content
  * @param ... List of MapPair definitions { key, &content }
@@ -62,7 +62,7 @@
 
 /**
  * @brief Define a Map Object with global reference, specifying the number of elements
- * @name Name of the Map& reference to define
+ * @param name Name of the Map& reference to define
  * @param KeyType Integral type to use for key
  * @param ContentType Object type to declare for content
  * @param size Number of elements
