@@ -96,13 +96,8 @@ template <typename T, typename U> struct argument_type<T(U)> {
 			".incbin \"" file "\"\n"                                                                                   \
 			"_" STR(name) "_end:\n");
 #else
-#ifdef ARCH_HOST
-#define IROM_SECTION ".rodata"
-#else
-#define IROM_SECTION ".irom0.text"
-#endif
 #define IMPORT_FSTR_DATA(name, file)                                                                                   \
-	__asm__(".section " IROM_SECTION "\n"                                                                              \
+	__asm__(".section " ICACHE_RODATA_SECTION "\n"                                                                              \
 			".type " STR(name) ", @object\n"                                                                           \
 			".align 4\n" STR(name) ":\n"                                                                               \
 			".long _" STR(name) "_end - " STR(name) " - 4\n"                                                           \
