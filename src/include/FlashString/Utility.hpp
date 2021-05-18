@@ -125,9 +125,17 @@ template <typename T> FSTR_INLINE typename std::enable_if<sizeof(T) == 2, T>::ty
 	return static_cast<T>(pgm_read_word(ptr));
 }
 
-template <typename T> FSTR_INLINE typename std::enable_if<IS_ALIGNED(sizeof(T)), T>::type readValue(const T* ptr)
+template <typename T> FSTR_INLINE typename std::enable_if<sizeof(T) == 4, T>::type readValue(const T* ptr)
 {
-	return *static_cast<const T*>(ptr);
+	return T(pgm_read_dword(ptr));
+}
+
+template <typename T>
+FSTR_INLINE typename std::enable_if<(sizeof(T) > 4) && IS_ALIGNED(sizeof(T)), T>::type readValue(const T* ptr)
+{
+	T value;
+	memcpy_aligned(&value, ptr, sizeof(T));
+	return value;
 }
 
 /** @} */

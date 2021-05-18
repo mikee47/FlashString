@@ -83,7 +83,7 @@
  * @note Size will be calculated
  */
 #define DEFINE_FSTR_VECTOR_DATA(name, ObjectType, ...)                                                                 \
-	DEFINE_FSTR_VECTOR_DATA_SIZED(name, ObjectType, sizeof((const void* []){__VA_ARGS__}) / sizeof(void*), __VA_ARGS__)
+	DEFINE_FSTR_VECTOR_DATA_SIZED(name, ObjectType, sizeof((const void*[]){__VA_ARGS__}) / sizeof(void*), __VA_ARGS__)
 
 /**
  * @brief Define a Vector data structure and specify the number of elements
