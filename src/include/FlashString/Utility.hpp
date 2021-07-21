@@ -127,7 +127,12 @@ template <typename T> FSTR_INLINE typename std::enable_if<sizeof(T) == 2, T>::ty
 
 template <typename T> FSTR_INLINE typename std::enable_if<sizeof(T) == 4, T>::type readValue(const T* ptr)
 {
-	return T(pgm_read_dword(ptr));
+	union {
+		uint32_t u32;
+		T value;
+	} tmp;
+	tmp.u32 = pgm_read_dword(ptr);
+	return tmp.value;
 }
 
 template <typename T>
