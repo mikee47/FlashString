@@ -95,6 +95,14 @@ template <typename T, typename U> struct argument_type<T(U)> {
 			".long _" STR(name) "_end - _" STR(name) " - 4\n"                                                          \
 			".incbin \"" file "\"\n"                                                                                   \
 			"_" STR(name) "_end:\n");
+#elif defined(__arm__)
+#define IMPORT_FSTR_DATA(name, file)                                                                                   \
+	__asm__(".section " ICACHE_RODATA_SECTION "." #name "\n"                                                           \
+			".type " STR(name) ", %object\n"                                                                           \
+			".align 4\n" STR(name) ":\n"                                                                               \
+			".long _" STR(name) "_end - " STR(name) " - 4\n"                                                           \
+			".incbin \"" file "\"\n"                                                                                   \
+			"_" STR(name) "_end:\n");
 #else
 #define IMPORT_FSTR_DATA(name, file)                                                                                   \
 	__asm__(".section " ICACHE_RODATA_SECTION "." #name "\n"                                                           \
