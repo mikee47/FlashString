@@ -22,6 +22,8 @@
 #pragma once
 
 #include <FakePgmSpace.h>
+#include <cassert>
+#include <stringutil.h>
 
 #define FSTR_INLINE __attribute__((always_inline)) inline
 #define FSTR_ALIGNED __attribute__((aligned(4)))
