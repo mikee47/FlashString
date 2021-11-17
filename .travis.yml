@@ -15,4 +15,4 @@ jobs:
     env: SMING_ARCH=Host
 git:
   submodules: false
-script: ".travis/build-and-execute.sh"
+script: "tools/.travis/build-and-execute.sh"

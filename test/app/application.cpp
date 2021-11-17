@@ -52,13 +52,6 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true);
 
-	// If you need to use the filesystem
-	//	spiffs_mount();
-
-	// Enable if you need network tests
-	WifiStation.enable(false, false);
-	WifiAccessPoint.enable(false, false);
-
 	// Register tests with the framework
 	registerTests();
 
