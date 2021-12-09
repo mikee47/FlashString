@@ -6,7 +6,7 @@ Streams
 Alias: :cpp:class:`FlashMemoryStream`
 
 This is a Sming :cpp:class:`IDataSourceStream` descendant which you can use to stream the contents of
-any FlashString object. It's especially useful when used in conjunction with :c:macro:`IMPORT_FSTR`::
+any FlashString object. It's especially useful when used with :c:macro:`IMPORT_FSTR`::
 
    IMPORT_FSTR(myLargeFile, PROJECT_DIR "/files/lots-of-stuff.txt");
    FSTR::Stream fs(myLargeFile);
