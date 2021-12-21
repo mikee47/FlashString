@@ -51,8 +51,8 @@ Sming Integration
 Sming provides several aliases to provide compatibility with existing code:
 
 -  :cpp:type:`FlashString` -> :cpp:class:`FSTR::String`
--  :cpp:class:`FlashMemoryStream` -> :cpp:class:`FSTR::Stream`
--  :cpp:class:`TemplateFlashMemoryStream` -> :cpp:class:`FSTR::TemplateStream`
+-  :cpp:type:`FlashMemoryStream` -> :cpp:class:`FSTR::Stream`
+-  :cpp:type:`TemplateFlashMemoryStream` -> :cpp:class:`FSTR::TemplateStream`
 
 
 Other pages

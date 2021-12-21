@@ -13,7 +13,7 @@ I created it as a one-file solution to address these specific issues:
    FlashString classes as if they were just stored in flash so I wouldn't have to wrap
    everything in a macro, like F() does.
 
-   Solution: The :cpp:class:`FlashString` class.
+   Solution: The :cpp:class:`FSTR::String` (aka :cpp:type:`FlashString`) class.
 
 2. Using PROGMEM directly for data is cumbersome, slow and fraught with danger: It's inherently unsafe
    because of the alignment issues. Some smart cookie came up with a compiler patch so it could
@@ -38,7 +38,7 @@ I created it as a one-file solution to address these specific issues:
    served up without requiring a filesystem. The long term solution to this is, of course,
    a read-only filesystem but that is a complex thing indeed to do properly.
 
-   Solution: :cpp:class:`FlashMemoryStream`
+   Solution: :cpp:class:`FSTR::Stream` (aka :cpp:type:`FlashMemoryStream`) class.
 
 
 Embedded microsystems

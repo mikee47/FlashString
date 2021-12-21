@@ -37,7 +37,7 @@ Reading Object content
 To read parts of an Object, use the :cpp:func:`FSTR::Object::read` method.
 
 If the data isn't used very often, use the :cpp:func:`FSTR::Object::readFlash` method instead as it avoids
-disrupting the cache. The :cpp:class:`FSTR::Stream` class (alias :cpp:class:`FlashMemoryStream`) does this by default.
+disrupting the cache. The :cpp:class:`FSTR::Stream` class (alias :cpp:type:`FlashMemoryStream`) does this by default.
 
 
 Object Internals
