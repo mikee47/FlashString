@@ -84,14 +84,12 @@ public:
 	{
 		TEST_CASE("print uint8_t[]")
 		{
-			externalFSTR1.as<FSTR::Array<uint8_t>>().printTo(Serial);
-			Serial.println();
+			Serial << externalFSTR1.as<FSTR::Array<uint8_t>>() << endl;
 		}
 
 		TEST_CASE("print uint32_t[]")
 		{
-			externalFSTR1.as<FSTR::Array<uint32_t>>().printTo(Serial);
-			Serial.println();
+			Serial << externalFSTR1.as<FSTR::Array<uint32_t>>() << endl;
 		}
 
 		TEST_CASE("iterate uint32_t[]")
@@ -105,32 +103,30 @@ public:
 
 		TEST_CASE("print char[]")
 		{
-			externalFSTR1.as<FSTR::Array<char>>().printTo(Serial);
-			Serial.println();
+			Serial << externalFSTR1.as<FSTR::Array<char>>() << endl;
 		}
 
 		TEST_CASE("iterate double[]")
 		{
 			Serial.print("{");
 			for(auto f : doubleArray) {
-				Serial.print(f);
-				Serial.print(", ");
+				Serial << f << ", ";
 			}
 			Serial.println(" }");
 		}
 
 		TEST_CASE("for-loop double[]")
 		{
-			Serial.printf(_F("Array[double] length = %u, size = %u"), doubleArray.length(), doubleArray.size());
-			Serial.println();
+			Serial << _F("Array[double] length = ") << doubleArray.length() << _F(", size = ") << doubleArray.size()
+				   << endl;
 			for(unsigned i = 0; i < doubleArray.length(); ++i) {
-				Serial.printf(_F("   arr[%u] = %f\n"), i, doubleArray[i]);
+				Serial << _F("   arr[") << i << _F("] = ") << doubleArray[i] << endl;
 			}
 		}
 
 		TEST_CASE("print double[]")
 		{
-			FSTR::println(Serial, doubleArray);
+			Serial << doubleArray << endl;
 		}
 
 		TEST_CASE("iterate int64_t[]")
@@ -151,8 +147,7 @@ public:
 			for(auto row : tableArray) {
 				Serial.print("    { ");
 				for(auto v : row.values) {
-					Serial.print(v);
-					Serial.print(", ");
+					Serial << v << ", ";
 				}
 				Serial.println("},");
 			}
@@ -161,17 +156,17 @@ public:
 
 		TEST_CASE("IMPORT_FSTR_ARRAY")
 		{
-			FSTR::println(Serial, custom_bin);
+			Serial << custom_bin << endl;
 		}
 
 		TEST_CASE("Iterate struct with class enum")
 		{
 			for(auto item : basket) {
-				FSTR::println(Serial, item);
+				Serial << item << endl;
 			}
 
 			auto item{basket[1000]};
-			FSTR::println(Serial, item);
+			Serial << item << endl;
 			REQUIRE(item.kind == Fruit::bad);
 			REQUIRE(item.count == 0);
 		}

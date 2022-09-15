@@ -33,32 +33,27 @@ public:
 	{
 		TEST_CASE("Map of String => String")
 		{
-			stringMap.printTo(Serial);
-
-			Serial.printf(_F("stringMap[%u]\n"), stringMap.length());
+			Serial << stringMap << _F(" stringMap[") << stringMap.length() << ']' << endl;
 
 			TEST_CASE("for-loop")
 			{
 				for(unsigned i = 0; i < stringMap.length(); ++i) {
 					auto pair = stringMap.valueAt(i);
-					Serial.printf(_F("    stringMap[%u]: '%s' => %u chars\n"), i, String(pair.key()).c_str(),
-								  pair.content().length());
+					Serial << _F("    stringMap[") << i << "]: '" << pair.key() << "' => " << pair.content().length()
+						   << " chars" << endl;
 				}
 			}
 
 			TEST_CASE("lookup")
 			{
-				Serial.print(_F("stringMap['key1']: "));
-				FSTR::println(Serial, stringMap["key1"]);
+				Serial << _F("stringMap['key1']: ") << stringMap["key1"] << endl;
 				REQUIRE(stringMap["key1"]);
 				REQUIRE(stringMap["KEY1"]);
 				REQUIRE(!stringMap["key1"].content().isNull());
-				Serial.print(_F("stringMap['key2']: "));
-				FSTR::println(Serial, stringMap["key2"]);
+				Serial << _F("stringMap['key2']: ") << stringMap["key2"] << endl;
 				REQUIRE(stringMap["key2"]);
 				REQUIRE(!stringMap["key2"].content().isNull());
-				Serial.print(_F("stringMap['non-existent']: "));
-				FSTR::println(Serial, stringMap["key20"]);
+				Serial << _F("stringMap['non-existent']: ") << stringMap["key20"] << endl;
 				REQUIRE(!stringMap["key20"]);
 				REQUIRE(stringMap["key20"].content().isNull());
 			}
@@ -82,26 +77,23 @@ public:
 			Serial.println(_F("  for-loop:"));
 			for(unsigned i = 0; i < enumMap.length(); ++i) {
 				auto pair = enumMap.valueAt(i);
-				Serial.printf(_F("   enumMap[%u] = {%s, %u chars}\r\n"), i, String(pair.key()).c_str(),
-							  pair.content().length());
+				Serial << _F("   enumMap[") << i << "] = {" << pair.key() << ", " << pair.content().length()
+					   << " chars}" << endl;
 			}
 			Serial.println(_F("lookup:"));
-			Serial.print(_F("  enumMap[A]: "));
-			FSTR::println(Serial, enumMap[KeyA]);
-			Serial.print(_F("  enumMap[B]: "));
-			FSTR::println(Serial, enumMap[KeyB]);
-			Serial.print(_F("  enumMap[C]: "));
-			FSTR::println(Serial, enumMap[KeyC]);
+			Serial << _F("  enumMap[A]: ") << enumMap[KeyA] << endl;
+			Serial << _F("  enumMap[B]: ") << enumMap[KeyB] << endl;
+			Serial << _F("  enumMap[C]: ") << enumMap[KeyC] << endl;
 		}
 
 		TEST_CASE("Map of String => Vector<String>")
 		{
-			Serial.printf(_F("vectorMap[%u]\n"), vectorMap.length());
+			Serial << _F("vectorMap[") << vectorMap.length() << ']' << endl;
 
 			TEST_CASE("Iterator")
 			{
 				for(auto pair : vectorMap) {
-					Serial.printf(_F("  \"%s\" => %u items\r\n"), String(pair.key()).c_str(), pair.content().length());
+					Serial << _F("  '") << pair.key() << "' => " << pair.content().length() << " items" << endl;
 				}
 			}
 
@@ -109,8 +101,8 @@ public:
 			{
 				for(unsigned i = 0; i < vectorMap.length(); ++i) {
 					auto pair = vectorMap.valueAt(i);
-					Serial.printf(_F("    vectorMap[%u] = {'%s', %u items}\r\n"), i, String(pair.key()).c_str(),
-								  pair.content().length());
+					Serial << _F("    vectorMap[") << i << "] = {'" << pair.key() << "', " << pair.content().length()
+						   << " items}" << endl;
 				}
 			}
 
@@ -119,8 +111,9 @@ public:
 				auto printTableMapEntry = [&](const char* key) {
 					int i = vectorMap.indexOf(key);
 					auto pair = vectorMap.valueAt(i);
-					Serial.printf(_F("vectorMap[\"%s\"] = %s, %u items\n"), key, pair ? "OK" : "NOT FOUND",
-								  pair.content().length());
+
+					Serial << _F("vectorMap['") << key << "'] = " << (pair ? "OK" : "NOT FOUND") << ", "
+						   << pair.content().length() << " items" << endl;
 				};
 				printTableMapEntry("key1");
 				printTableMapEntry("key2");

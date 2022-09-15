@@ -33,32 +33,29 @@ public:
 	{
 		TEST_CASE("Vector<Array<float>>")
 		{
-			arrayVector.printTo(Serial);
-			Serial.println();
+			Serial << arrayVector << endl;
+			Serial << _F("arrayVector[") << arrayVector.length() << ']' << endl;
 		}
 
 		TEST_CASE("Vector<String>")
 		{
-			stringVector.printTo(Serial);
-			Serial.println();
-
-			Serial.printf(_F("stringVector[%u]\n"), stringVector.length());
+			Serial << stringVector << endl;
+			Serial << _F("stringVector[") << stringVector.length() << ']' << endl;
 
 			TEST_CASE("iterator")
 			{
 				for(auto& obj : stringVector) {
 					Serial.println(obj);
-					Serial.printf(_F("  .length() = %u\n"), obj.length());
+					Serial << _F("  .length() = ") << obj.length() << endl;
 				}
 			}
 
 			TEST_CASE("for-loop")
 			{
 				for(unsigned i = 0; i < stringVector.length(); ++i) {
-					Serial.printf(_F("stringVector[%u] = "), i);
 					auto& content = stringVector[i];
-					Serial.println(content);
-					Serial.printf(_F("  .length() = %u\n"), content.length());
+					Serial << _F("stringVector[") << i << "] = " << content << endl;
+					Serial << _F("  .length() = ") << content.length() << endl;
 				}
 			}
 

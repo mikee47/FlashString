@@ -37,16 +37,11 @@ public:
 
 	void execute() override
 	{
-		Serial.println(FS("Custom object:"));
-		Serial.print(_F("Name: "));
-		Serial.println(customObject.name());
+		Serial << FS("Custom object:") << _F("Name: ") << customObject.name() << endl;
 
-		Serial.print(_F("Desc: "));
-		Serial.println(customObject.description());
+		Serial << _F("Desc: ") << customObject.description() << endl;
 
-		Serial.print(_F("Content: "));
-		customObject.content().printTo(Serial);
-		Serial.println();
+		Serial << _F("Content: ") << customObject.content() << endl;
 
 		unsigned char data[12] = {0x39, 0x87, 0x12, 0x11, 0x27, 0x91, 0x28, 0x79, 0x87, 0xAA, 0x09, 0xD4};
 		REQUIRE(customObject.name() == _F("Object Name "));

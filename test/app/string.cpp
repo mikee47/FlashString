@@ -87,10 +87,7 @@ public:
 
 		TEST_CASE("Implicit conversion to WString")
 		{
-			Serial.print("> demoFSTR1 (print String): ");
-			Serial.print('"');
-			Serial.print(demoFSTR1);
-			Serial.println('"');
+			Serial << "> demoFSTR1 (print String): " << '"' << demoFSTR1 << '"' << endl;
 			String s = demoFSTR1;
 			REQUIRE(s == F(DEMO_TEST_TEXT));
 			REQUIRE(s.length() == sizeof(DEMO_TEST_TEXT) - 1);
@@ -100,9 +97,7 @@ public:
 		{
 			Serial.print("> demoFSTR1 (print char*): ");
 			LOAD_FSTR(test, demoFSTR1);
-			Serial.print('"');
-			Serial.print(test);
-			Serial.println('"');
+			Serial << '"' << test << '"' << endl;
 			REQUIRE(sizeof(test) == ALIGNUP4(sizeof(DEMO_TEST_TEXT)));
 
 			Serial.print("> demoFSTR1 (write): ");
@@ -113,10 +108,7 @@ public:
 
 		TEST_CASE("Print external")
 		{
-			Serial.print("> externalFSTR1 (print): ");
-			Serial.print('"');
-			Serial.print(externalFSTR1);
-			Serial.println('"');
+			Serial << "> externalFSTR1 (print): '" << externalFSTR1 << '"' << endl;
 		}
 
 		TEST_CASE("iterator")
@@ -124,10 +116,7 @@ public:
 			unsigned count = 0;
 			Serial.print("FSTR: { ");
 			for(auto c : externalFSTR1) {
-				Serial.print('\'');
-				Serial.print(c);
-				Serial.print('\'');
-				Serial.print(", ");
+				Serial << '\'' << c << "', ";
 				++count;
 			}
 			Serial.println(" }");
