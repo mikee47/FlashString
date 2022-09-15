@@ -31,14 +31,14 @@ class String;
  * Outputs in chunks to avoid loading the entire content into RAM.
  * Used by String::printTo() method.
  */
-class StringPrinter : public Printable
+class StringPrinter
 {
 public:
 	StringPrinter(const String& string) : string(string)
 	{
 	}
 
-	size_t printTo(Print& p) const override;
+	size_t printTo(Print& p) const;
 
 private:
 	const String& string;

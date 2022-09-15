@@ -85,14 +85,14 @@ template <typename T> typename std::enable_if<std::is_same<T, char>::value, size
  * @brief Class template to provide a simple way to print the contents of an array
  * @note Used by Array::printTo() method
  */
-template <class ArrayType> class ArrayPrinter : public Printable
+template <class ArrayType> class ArrayPrinter
 {
 public:
 	ArrayPrinter(const ArrayType& array) : array(array)
 	{
 	}
 
-	size_t printTo(Print& p) const override
+	size_t printTo(Print& p) const
 	{
 		size_t count = 0;
 

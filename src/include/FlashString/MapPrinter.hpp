@@ -27,14 +27,14 @@ namespace FSTR
  * @brief Class template to provide a simple way to print the contents of a Map
  * @note Used by Map::printTo() method
  */
-template <class MapType> class MapPrinter : public Printable
+template <class MapType> class MapPrinter
 {
 public:
 	MapPrinter(const MapType& map) : map(map)
 	{
 	}
 
-	size_t printTo(Print& p) const override
+	size_t printTo(Print& p) const
 	{
 		size_t count = 0;
 
