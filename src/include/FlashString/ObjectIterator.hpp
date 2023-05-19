@@ -26,9 +26,15 @@
 namespace FSTR
 {
 template <class ObjectType, typename ElementType>
-class ObjectIterator : public std::iterator<std::random_access_iterator_tag, ElementType>
+class ObjectIterator
 {
 public:
+	using iterator_category = std::random_access_iterator_tag;
+	using value_type = ElementType;
+	using difference_type = std::ptrdiff_t;
+	using pointer = ElementType*;
+	using reference = ElementType&;
+
 	ObjectIterator() = default;
 	ObjectIterator(const ObjectIterator&) = default;
 
