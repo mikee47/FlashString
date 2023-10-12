@@ -44,8 +44,8 @@ public:
 		Serial << _F("Content: ") << customObject.content() << endl;
 
 		unsigned char data[12] = {0x39, 0x87, 0x12, 0x11, 0x27, 0x91, 0x28, 0x79, 0x87, 0xAA, 0x09, 0xD4};
-		REQUIRE(customObject.name() == _F("Object Name "));
-		REQUIRE(customObject.description() == _F("Object Description  "));
+		REQUIRE(customObject.name() == F("Object Name "));
+		REQUIRE(customObject.description() == F("Object Description  "));
 		REQUIRE(customObject.content().length() == sizeof(data));
 		REQUIRE(memcmp_P(customObject.content().data(), data, sizeof(data)) == 0);
 	}
