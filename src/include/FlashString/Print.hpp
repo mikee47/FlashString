@@ -61,7 +61,7 @@ template <typename T> typename std::enable_if<!std::is_class<T>::value, size_t>:
  * @param value
  * @retval size_t
  */
-template <typename T> size_t println(Print& p, T value)
+template <typename T> size_t println(Print& p, const T& value)
 {
 	size_t size = print(p, value);
 	size += p.println();

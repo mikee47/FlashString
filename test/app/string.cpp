@@ -66,7 +66,7 @@ public:
 		TEST_CASE("inline")
 		{
 #define INLINE_TEXT "This is an inline\0 Flash String\0\0"
-			auto str = FS(INLINE_TEXT);
+			auto& str = FS(INLINE_TEXT);
 			REQUIRE(str == F(INLINE_TEXT));
 		}
 

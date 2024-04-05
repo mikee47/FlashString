@@ -24,12 +24,12 @@
 
 namespace FSTR
 {
-template <typename T> typename std::enable_if<!std::is_same<T, char>::value, size_t>::type printElement(Print& p, T e)
+template <typename T> typename std::enable_if<!std::is_same<T, char>::value, size_t>::type printElement(Print& p, const T& e)
 {
 	return print(p, e);
 }
 
-template <typename T> typename std::enable_if<std::is_same<T, char>::value, size_t>::type printElement(Print& p, T c)
+template <typename T> typename std::enable_if<std::is_same<T, char>::value, size_t>::type printElement(Print& p, const T& c)
 {
 	auto escape = [](char c) -> char {
 		switch(c) {
