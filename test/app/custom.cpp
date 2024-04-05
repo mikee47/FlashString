@@ -47,7 +47,7 @@ public:
 		REQUIRE(customObject.name() == F("Object Name "));
 		REQUIRE(customObject.description() == F("Object Description  "));
 		REQUIRE(customObject.content().length() == sizeof(data));
-		REQUIRE(memcmp_P(customObject.content().data(), data, sizeof(data)) == 0);
+		REQUIRE(memcmp_P(data, customObject.content().data(), sizeof(data)) == 0);
 	}
 };
 
