@@ -1,5 +1,5 @@
 /****
- * ArrayPrinter.cpp - Print support for arrays
+ * ArrayPrinter.hpp - Print support for arrays
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -24,62 +24,13 @@
 
 namespace FSTR
 {
-template <typename T> typename std::enable_if<!std::is_same<T, char>::value, size_t>::type printElement(Print& p, const T& e)
+template <typename T>
+typename std::enable_if<!std::is_same<T, char>::value, size_t>::type printElement(Print& p, const T& e)
 {
 	return print(p, e);
 }
 
-template <typename T> typename std::enable_if<std::is_same<T, char>::value, size_t>::type printElement(Print& p, const T& c)
-{
-	auto escape = [](char c) -> char {
-		switch(c) {
-		case '\0':
-			return '0';
-		case '\'':
-			return '\'';
-		case '\"':
-			return '"';
-		case '\?':
-			return '?';
-		case '\\':
-			return '\\';
-		case '\a':
-			return 'a';
-		case '\b':
-			return 'b';
-		case '\f':
-			return 'f';
-		case '\n':
-			return 'n';
-		case '\r':
-			return 'r';
-		case '\t':
-			return 't';
-		case '\v':
-			return 'v';
-		default:
-			return '\0';
-		}
-	};
-
-	char buf[8];
-	char* o = buf;
-	*o++ = '\'';
-	char esc = escape(c);
-	if(esc) {
-		*o++ = '\\';
-		*o++ = esc;
-	} else if(isprint(c)) {
-		*o++ = c;
-	} else {
-		*o++ = '\\';
-		*o++ = 'x';
-		*o++ = hexchar(uint8_t(c) >> 4);
-		*o++ = hexchar(uint8_t(c) & 0x0f);
-	}
-	*o++ = '\'';
-	return p.write(buf, o - buf);
-}
+size_t printElement(Print& p, char c);
 
 /**
  * @brief Class template to provide a simple way to print the contents of an array
