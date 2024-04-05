@@ -25,8 +25,7 @@
 
 namespace FSTR
 {
-template <class ObjectType, typename ElementType>
-class ObjectIterator
+template <class ObjectType, typename ElementType> class ObjectIterator
 {
 public:
 	using iterator_category = std::random_access_iterator_tag;
