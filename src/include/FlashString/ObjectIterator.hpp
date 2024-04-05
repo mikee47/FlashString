@@ -31,13 +31,14 @@ public:
 	using iterator_category = std::random_access_iterator_tag;
 	using value_type = ElementType;
 	using difference_type = std::ptrdiff_t;
-	using pointer = ElementType*;
+	using pointer = typename ObjectType::DataPtrType;
 	using reference = ElementType&;
 
 	ObjectIterator() = default;
 	ObjectIterator(const ObjectIterator&) = default;
 
-	ObjectIterator(const ObjectType& object, unsigned index) : object(object), index(index)
+	ObjectIterator(const ObjectType& object, unsigned index)
+		: data(pointer(object.data())), length(object.length()), index(index)
 	{
 	}
 
@@ -63,12 +64,12 @@ public:
 
 	bool operator==(const ObjectIterator& rhs) const
 	{
-		return index == rhs.index;
+		return data == rhs.data && index == rhs.index;
 	}
 
 	bool operator!=(const ObjectIterator& rhs) const
 	{
-		return index != rhs.index;
+		return !operator==(rhs);
 	}
 
 	/**
@@ -77,7 +78,7 @@ public:
 	template <typename T = ElementType>
 	typename std::enable_if<!std::is_pointer<T>::value, const ElementType>::type operator*() const
 	{
-		return object.valueAt(index);
+		return readValue(data + index);
 	}
 
 	/**
@@ -87,11 +88,13 @@ public:
 	typename std::enable_if<std::is_pointer<T>::value, const typename std::remove_pointer<ElementType>::type&>::type
 	operator*() const
 	{
-		return object.valueAt(index);
+		auto ptr = data[index];
+		return ptr ? *ptr : std::remove_pointer<ElementType>::type::empty();
 	}
 
 private:
-	const ObjectType& object;
+	const pointer data;
+	size_t length;
 	unsigned index = 0;
 };
 

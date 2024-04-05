@@ -120,6 +120,7 @@ namespace FSTR
 template <class ObjectType, typename ElementType> class Object : public ObjectBase
 {
 public:
+	using DataPtrType = const ElementType*;
 	using Iterator = ObjectIterator<ObjectType, ElementType>;
 
 	/**
@@ -171,9 +172,11 @@ public:
 
 	template <typename ValueType> int indexOf(const ValueType& value) const
 	{
-		auto len = length();
+		auto& self = as<ObjectType>();
+		auto dataptr = self.data();
+		auto len = self.length();
 		for(unsigned i = 0; i < len; ++i) {
-			if(as<ObjectType>().valueAt(i) == value) {
+			if(self.unsafeValueAt(dataptr, i) == value) {
 				return i;
 			}
 		}
@@ -183,11 +186,7 @@ public:
 
 	FSTR_INLINE ElementType valueAt(unsigned index) const
 	{
-		if(index < length()) {
-			return readValue(data() + index);
-		} else {
-			return ElementType{};
-		}
+		return (index < length()) ? unsafeValueAt(data(), index) : ElementType{};
 	}
 
 	/**
@@ -203,9 +202,9 @@ public:
 		return sizeof(ElementType);
 	}
 
-	FSTR_INLINE const ElementType* data() const
+	FSTR_INLINE DataPtrType data() const
 	{
-		return reinterpret_cast<const ElementType*>(ObjectBase::data());
+		return reinterpret_cast<DataPtrType>(ObjectBase::data());
 	}
 
 	/**
@@ -234,6 +233,11 @@ public:
 		auto offset = index * sizeof(ElementType);
 		count *= sizeof(ElementType);
 		return ObjectBase::readFlash(offset, buffer, count) / sizeof(ElementType);
+	}
+
+	FSTR_INLINE ElementType unsafeValueAt(const DataPtrType dataptr, unsigned index) const
+	{
+		return readValue(dataptr + index);
 	}
 };
 
