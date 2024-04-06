@@ -197,30 +197,32 @@ public:
 	 * @retval bool true if strings are identical
 	 * @note loads string into a stack buffer for the comparison, no heap required
 	 */
-	bool equals(const char* cstr, size_t len = 0) const;
+	bool equals(const char* cstr, size_t len, bool ignoreCase = false) const;
+
+	bool equalsIgnoreCase(const char* cstr, size_t len) const
+	{
+		return equals(cstr, len, true);
+	}
+
+	bool equals(const char* cstr, bool ignoreCase = false) const;
+
+	template <typename T> bool equalsIgnoreCase(const T& str) const
+	{
+		return equals(str, true);
+	}
 
 	/** @brief Check for equality with another String
 	 *  @param str
 	 *  @retval bool true if strings are identical
 	 */
-	bool equals(const String& str) const;
+	bool equals(const String& str, bool ignoreCase = false) const;
 
-	bool operator==(const char* str) const
+	template <typename T> bool operator==(const T& str) const
 	{
 		return equals(str);
 	}
 
-	bool operator==(const String& str) const
-	{
-		return equals(str);
-	}
-
-	bool operator!=(const char* str) const
-	{
-		return !equals(str);
-	}
-
-	bool operator!=(const String& str) const
+	template <typename T> bool operator!=(const T& str) const
 	{
 		return !equals(str);
 	}
@@ -229,19 +231,7 @@ public:
 
 	operator WString() const;
 
-	bool equals(const WString& str) const;
-
-	bool equalsIgnoreCase(const WString& str) const;
-
-	bool operator==(const WString& str) const
-	{
-		return equals(str);
-	}
-
-	bool operator!=(const WString& str) const
-	{
-		return !equals(str);
-	}
+	bool equals(const WString& str, bool ignoreCase = false) const;
 
 	/* Arduino Print support */
 
