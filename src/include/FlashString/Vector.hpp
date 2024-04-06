@@ -113,18 +113,30 @@ public:
 
 	using Object<Vector<ObjectType>, const ObjectType*>::indexOf;
 
+	template <typename T = ObjectType>
+	typename std::enable_if<std::is_same<T, String>::value, int>::type indexOf(const char* value,
+																			   bool ignoreCase = true) const
+	{
+		auto dataptr = this->data();
+		auto len = this->length();
+		auto clen = strlen(value);
+		for(unsigned i = 0; i < len; ++i) {
+			if(unsafeValueAt(dataptr, i).equals(value, clen, ignoreCase)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
 	template <typename ValueType, typename T = ObjectType>
 	typename std::enable_if<std::is_same<T, String>::value, int>::type indexOf(const ValueType& value,
 																			   bool ignoreCase = true) const
 	{
-		if(!ignoreCase) {
-			return Object<Vector<String>, const String*>::indexOf(value);
-		}
-
 		auto dataptr = this->data();
 		auto len = this->length();
 		for(unsigned i = 0; i < len; ++i) {
-			if(unsafeValueAt(dataptr, i).equalsIgnoreCase(value)) {
+			if(unsafeValueAt(dataptr, i).equals(value, ignoreCase)) {
 				return i;
 			}
 		}
