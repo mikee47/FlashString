@@ -35,6 +35,10 @@ public:
 		{
 			Serial << arrayVector << endl;
 			Serial << _F("arrayVector[") << arrayVector.length() << ']' << endl;
+
+			DEFINE_FSTR_ARRAY_LOCAL(vec, float, 1, 2, 3);
+			int i = arrayVector.indexOf(vec);
+			REQUIRE_EQ(i, 0);
 		}
 
 		TEST_CASE("Vector<String>")

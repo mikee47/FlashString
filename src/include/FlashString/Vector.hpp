@@ -111,6 +111,8 @@ template <class ObjectType> class Vector : public Object<Vector<ObjectType>, con
 public:
 	using DataPtrType = const ObjectType* const*;
 
+	using Object<Vector<ObjectType>, const ObjectType*>::indexOf;
+
 	template <typename ValueType, typename T = ObjectType>
 	typename std::enable_if<std::is_same<T, String>::value, int>::type indexOf(const ValueType& value,
 																			   bool ignoreCase = true) const
