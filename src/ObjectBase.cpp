@@ -25,6 +25,17 @@ namespace FSTR
 const ObjectBase ObjectBase::empty_{ObjectBase::lengthInvalid};
 constexpr uint32_t ObjectBase::copyBit;
 
+bool ObjectBase::operator==(const ObjectBase& other) const
+{
+	if(this == &other) {
+		return true;
+	}
+	if(length() != other.length()) {
+		return false;
+	}
+	return memcmp(this, &other, sizeof(flashLength_) + size()) == 0;
+}
+
 size_t ObjectBase::readFlash(size_t offset, void* buffer, size_t count) const
 {
 	auto len = length();

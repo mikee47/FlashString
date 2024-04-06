@@ -55,6 +55,8 @@ public:
 		return ALIGNUP4(length());
 	}
 
+	bool operator==(const ObjectBase& other) const;
+
 	/**
 	 * @brief Cast to a different object type
 	 * @note example:
