@@ -125,19 +125,22 @@ public:
 	/**
 	 * @brief Creates a null object
 	 */
-	Object()
+	Object() : ObjectBase{lengthInvalid}
 	{
-		invalidate();
+#ifndef ARCH_HOST
+		// Illegal on real flash object
+		assert(!isFlashPtr(this));
+#endif
 	}
 
 	/**
 	 * @brief Copy constructor
 	 * @note Objects are usually passed around by reference or as a pointer,
 	 * but for ease of use we need a working copy constructor.
+	 * A copy contains a pointer to the real object.
 	 */
-	Object(const Object& obj)
+	Object(const Object& obj) : ObjectBase{obj.isCopy() ? obj.flashLength_ : uint32_t(&obj) | copyBit}
 	{
-		copy(obj);
 	}
 
 	Iterator begin() const

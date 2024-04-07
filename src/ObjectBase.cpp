@@ -83,16 +83,4 @@ const uint8_t* ObjectBase::data() const
 	return reinterpret_cast<const uint8_t*>(&ptr->flashLength_ + 1);
 }
 
-void ObjectBase::invalidate()
-{
-#ifndef ARCH_HOST
-	// Illegal on real flash object
-	assert(!isFlashPtr(this));
-	if(isFlashPtr(this)) {
-		return;
-	}
-#endif
-	flashLength_ = lengthInvalid;
-}
-
 } // namespace FSTR

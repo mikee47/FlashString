@@ -103,30 +103,11 @@ public:
 
 	/* Member data must be public for initialisation to work but DO NOT ACCESS DIRECTLY !! */
 
-	uint32_t flashLength_;
+	const uint32_t flashLength_;
 	// const uint8_t data[]
 
 protected:
 	static const ObjectBase empty_;
-
-	/*
-	 * @brief Called by Object<> default constructor
-	 */
-	void invalidate();
-
-	/*
-	 * @brief Make a 'copy' of this object by taking a reference to the real one
-	 */
-	void copy(const ObjectBase& obj)
-	{
-		if(obj.isCopy()) {
-			flashLength_ = obj.flashLength_;
-		} else {
-			flashLength_ = reinterpret_cast<uint32_t>(&obj) | copyBit;
-		}
-	}
-
-private:
 	static constexpr uint32_t copyBit = 0x80000000U;	   ///< Set to indicate copy
 	static constexpr uint32_t lengthInvalid = copyBit | 0; ///< Indicates null string in a copy
 };
