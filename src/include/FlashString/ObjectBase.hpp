@@ -69,17 +69,7 @@ public:
 	 * @param count How many bytes to read
 	 * @retval size_t Number of bytes actually read
 	 */
-	size_t read(size_t offset, void* buffer, size_t count) const
-	{
-		auto len = length();
-		if(offset >= len) {
-			return 0;
-		}
-
-		count = std::min(len - offset, count);
-		memcpy_P(buffer, data() + offset, count);
-		return count;
-	}
+	size_t read(size_t offset, void* buffer, size_t count) const;
 
 	/**
 	 * @brief Read contents of a String into RAM, using flashread()

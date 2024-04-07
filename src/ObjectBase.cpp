@@ -37,6 +37,18 @@ size_t ObjectBase::readFlash(size_t offset, void* buffer, size_t count) const
 	return flashmem_read(buffer, addr, count);
 }
 
+size_t ObjectBase::read(size_t offset, void* buffer, size_t count) const
+{
+	auto len = length();
+	if(offset >= len) {
+		return 0;
+	}
+
+	count = std::min(len - offset, count);
+	memcpy_P(buffer, data() + offset, count);
+	return count;
+}
+
 size_t ObjectBase::length() const
 {
 	if(isNull()) {
