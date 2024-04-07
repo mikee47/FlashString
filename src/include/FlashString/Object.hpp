@@ -156,15 +156,15 @@ public:
 	/**
 	 * @brief Return an empty object which evaluates to null
 	 */
-	static const ObjectType& empty()
+	static constexpr const ObjectType& empty()
 	{
-		return empty_.as<ObjectType>();
+		return empty_.as<const ObjectType>();
 	}
 
 	/**
 	 * @brief Get the length of the content in elements
 	 */
-	FSTR_INLINE size_t length() const
+	FSTR_INLINE constexpr const size_t length() const
 	{
 		return ObjectBase::length() / sizeof(ElementType);
 	}

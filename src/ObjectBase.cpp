@@ -49,17 +49,6 @@ size_t ObjectBase::read(size_t offset, void* buffer, size_t count) const
 	return count;
 }
 
-size_t ObjectBase::length() const
-{
-	if(isNull()) {
-		return 0;
-	} else if(isCopy()) {
-		return reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit)->length();
-	} else {
-		return flashLength_;
-	}
-}
-
 const uint8_t* ObjectBase::data() const
 {
 	if(isNull()) {

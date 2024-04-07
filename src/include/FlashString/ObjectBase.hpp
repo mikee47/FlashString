@@ -35,13 +35,22 @@ public:
 	/**
 	 * @brief Get the length of the object data in bytes
 	 */
-	size_t length() const;
+	FSTR_NOINLINE constexpr const size_t length() const
+	{
+		if(isNull()) {
+			return 0;
+		}
+		if(isCopy()) {
+			return reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit)->length();
+		}
+		return flashLength_;
+	}
 
 	/**
 	 * @brief Get the object data size in bytes
 	 * @note Always an integer multiple of 4 bytes
 	 */
-	FSTR_INLINE size_t size() const
+	FSTR_INLINE constexpr const size_t size() const
 	{
 		return ALIGNUP4(length());
 	}
@@ -87,7 +96,7 @@ public:
 	 */
 	size_t readFlash(size_t offset, void* buffer, size_t count) const;
 
-	FSTR_INLINE bool isCopy() const
+	FSTR_INLINE constexpr const bool isCopy() const
 	{
 		return (flashLength_ & copyBit) != 0;
 	}
@@ -96,7 +105,7 @@ public:
 	 * @brief Indicates an invalid String, used for return value from lookups, etc.
 	 * @note A real String can be zero-length, but it cannot be null
 	 */
-	FSTR_INLINE bool isNull() const
+	FSTR_INLINE constexpr const bool isNull() const
 	{
 		return flashLength_ == lengthInvalid;
 	}
