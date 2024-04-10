@@ -106,20 +106,37 @@ namespace FSTR
  * @brief Class to access a Vector of objects stored in flash
  * @tparam ObjectType
  */
-template <class ObjectType> class Vector : public Object<Vector<ObjectType>, ObjectType*>
+template <class ObjectType> class Vector : public Object<Vector<ObjectType>, const ObjectType*>
 {
 public:
+	using DataPtrType = const ObjectType* const*;
+
+	using Object<Vector<ObjectType>, const ObjectType*>::indexOf;
+
+	template <typename T = ObjectType>
+	typename std::enable_if<std::is_same<T, String>::value, int>::type indexOf(const char* value,
+																			   bool ignoreCase = true) const
+	{
+		auto dataptr = this->data();
+		auto len = this->length();
+		auto clen = strlen(value);
+		for(unsigned i = 0; i < len; ++i) {
+			if(unsafeValueAt(dataptr, i).equals(value, clen, ignoreCase)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
 	template <typename ValueType, typename T = ObjectType>
 	typename std::enable_if<std::is_same<T, String>::value, int>::type indexOf(const ValueType& value,
 																			   bool ignoreCase = true) const
 	{
-		if(!ignoreCase) {
-			return Object<Vector<String>, String*>::indexOf(value);
-		}
-
+		auto dataptr = this->data();
 		auto len = this->length();
 		for(unsigned i = 0; i < len; ++i) {
-			if(valueAt(i).equalsIgnoreCase(value)) {
+			if(unsafeValueAt(dataptr, i).equals(value, ignoreCase)) {
 				return i;
 			}
 		}
@@ -129,14 +146,7 @@ public:
 
 	const ObjectType& valueAt(unsigned index) const
 	{
-		if(index < this->length()) {
-			auto ptr = this->data()[index];
-			if(ptr != nullptr) {
-				return *ptr;
-			}
-		}
-
-		return ObjectType::empty();
+		return (index < this->length()) ? this->unsafeValueAt(this->data(), index) : ObjectType::empty();
 	}
 
 	const ObjectType& operator[](unsigned index) const
@@ -154,6 +164,12 @@ public:
 	size_t printTo(Print& p) const
 	{
 		return printer().printTo(p);
+	}
+
+	FSTR_INLINE static const ObjectType& unsafeValueAt(const DataPtrType dataptr, unsigned index)
+	{
+		auto ptr = dataptr[index];
+		return ptr ? *ptr : ObjectType::empty();
 	}
 };
 

@@ -5,4 +5,5 @@
 	XX(array)                                                                                                          \
 	XX(vector)                                                                                                         \
 	XX(map)                                                                                                            \
-	XX(custom)
+	XX(custom)                                                                                                         \
+	XX(speed)

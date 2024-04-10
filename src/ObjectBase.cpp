@@ -25,6 +25,17 @@ namespace FSTR
 const ObjectBase ObjectBase::empty_{ObjectBase::lengthInvalid};
 constexpr uint32_t ObjectBase::copyBit;
 
+bool ObjectBase::operator==(const ObjectBase& other) const
+{
+	if(this == &other) {
+		return true;
+	}
+	if(length() != other.length()) {
+		return false;
+	}
+	return memcmp(this, &other, sizeof(flashLength_) + size()) == 0;
+}
+
 size_t ObjectBase::readFlash(size_t offset, void* buffer, size_t count) const
 {
 	auto len = length();
@@ -37,15 +48,16 @@ size_t ObjectBase::readFlash(size_t offset, void* buffer, size_t count) const
 	return flashmem_read(buffer, addr, count);
 }
 
-size_t ObjectBase::length() const
+size_t ObjectBase::read(size_t offset, void* buffer, size_t count) const
 {
-	if(isNull()) {
+	auto len = length();
+	if(offset >= len) {
 		return 0;
-	} else if(isCopy()) {
-		return reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit)->length();
-	} else {
-		return flashLength_;
 	}
+
+	count = std::min(len - offset, count);
+	memcpy_P(buffer, data() + offset, count);
+	return count;
 }
 
 const uint8_t* ObjectBase::data() const
@@ -69,18 +81,6 @@ const uint8_t* ObjectBase::data() const
 #endif
 
 	return reinterpret_cast<const uint8_t*>(&ptr->flashLength_ + 1);
-}
-
-void ObjectBase::invalidate()
-{
-#ifndef ARCH_HOST
-	// Illegal on real flash object
-	assert(!isFlashPtr(this));
-	if(isFlashPtr(this)) {
-		return;
-	}
-#endif
-	flashLength_ = lengthInvalid;
 }
 
 } // namespace FSTR

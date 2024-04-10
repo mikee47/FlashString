@@ -65,3 +65,10 @@ DECLARE_FSTR_MAP(enumMap, MapKey, FSTR::String);
 DECLARE_FSTR_MAP(stringMap, FSTR::String, FSTR::String);
 DECLARE_FSTR_MAP(arrayMap, int, FSTR::Array<float>);
 DECLARE_FSTR_MAP(vectorMap, FSTR::String, FSTR::Vector<FSTR::String>);
+
+/**
+ * Speed
+ */
+DECLARE_FSTR_ARRAY(largeIntArray, int)
+DECLARE_FSTR_VECTOR(largeStringVector, FSTR::String)
+DECLARE_FSTR_MAP(largeStringMap, int, FSTR::String)

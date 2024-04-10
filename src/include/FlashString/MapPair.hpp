@@ -105,10 +105,10 @@ public:
 
 		if(*this) {
 			count += print(p, key());
-			count += p.print(" => ");
+			count += p.print(_F(" => "));
 			count += print(p, content());
 		} else {
-			count += p.print("(invalid)");
+			count += p.print(_F("(invalid)"));
 		}
 
 		return count;

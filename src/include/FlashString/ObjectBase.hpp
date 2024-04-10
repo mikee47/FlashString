@@ -35,16 +35,27 @@ public:
 	/**
 	 * @brief Get the length of the object data in bytes
 	 */
-	size_t length() const;
+	FSTR_NOINLINE constexpr const size_t length() const
+	{
+		if(isNull()) {
+			return 0;
+		}
+		if(isCopy()) {
+			return reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit)->length();
+		}
+		return flashLength_;
+	}
 
 	/**
 	 * @brief Get the object data size in bytes
 	 * @note Always an integer multiple of 4 bytes
 	 */
-	FSTR_INLINE size_t size() const
+	FSTR_INLINE constexpr const size_t size() const
 	{
 		return ALIGNUP4(length());
 	}
+
+	bool operator==(const ObjectBase& other) const;
 
 	/**
 	 * @brief Cast to a different object type
@@ -69,17 +80,7 @@ public:
 	 * @param count How many bytes to read
 	 * @retval size_t Number of bytes actually read
 	 */
-	size_t read(size_t offset, void* buffer, size_t count) const
-	{
-		auto len = length();
-		if(offset >= len) {
-			return 0;
-		}
-
-		count = std::min(len - offset, count);
-		memcpy_P(buffer, data() + offset, count);
-		return count;
-	}
+	size_t read(size_t offset, void* buffer, size_t count) const;
 
 	/**
 	 * @brief Read contents of a String into RAM, using flashread()
@@ -97,7 +98,7 @@ public:
 	 */
 	size_t readFlash(size_t offset, void* buffer, size_t count) const;
 
-	FSTR_INLINE bool isCopy() const
+	FSTR_INLINE constexpr const bool isCopy() const
 	{
 		return (flashLength_ & copyBit) != 0;
 	}
@@ -106,37 +107,18 @@ public:
 	 * @brief Indicates an invalid String, used for return value from lookups, etc.
 	 * @note A real String can be zero-length, but it cannot be null
 	 */
-	FSTR_INLINE bool isNull() const
+	FSTR_INLINE constexpr const bool isNull() const
 	{
 		return flashLength_ == lengthInvalid;
 	}
 
 	/* Member data must be public for initialisation to work but DO NOT ACCESS DIRECTLY !! */
 
-	uint32_t flashLength_;
+	const uint32_t flashLength_;
 	// const uint8_t data[]
 
 protected:
 	static const ObjectBase empty_;
-
-	/*
-	 * @brief Called by Object<> default constructor
-	 */
-	void invalidate();
-
-	/*
-	 * @brief Make a 'copy' of this object by taking a reference to the real one
-	 */
-	void copy(const ObjectBase& obj)
-	{
-		if(obj.isCopy()) {
-			flashLength_ = obj.flashLength_;
-		} else {
-			flashLength_ = reinterpret_cast<uint32_t>(&obj) | copyBit;
-		}
-	}
-
-private:
 	static constexpr uint32_t copyBit = 0x80000000U;	   ///< Set to indicate copy
 	static constexpr uint32_t lengthInvalid = copyBit | 0; ///< Indicates null string in a copy
 };

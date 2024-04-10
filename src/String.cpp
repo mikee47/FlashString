@@ -23,32 +23,44 @@
 
 namespace FSTR
 {
-bool String::equals(const char* cstr, size_t len) const
+bool String::equals(const char* cstr, size_t clen, bool ignoreCase) const
 {
 	// Unlikely we'd want an empty flash string, but check anyway
 	if(cstr == nullptr) {
 		return length() == 0;
 	}
-	// Don't use strcmp as our data may contain nuls
-	if(len == 0) {
-		len = strlen(cstr);
-	}
-	if(len != length()) {
+	auto len = length();
+	if(clen != len) {
 		return false;
 	}
 	LOAD_FSTR(buf, *this);
+	if(ignoreCase) {
+		return memicmp(buf, cstr, len) == 0;
+	}
 	return memcmp(buf, cstr, len) == 0;
 }
 
-bool String::equals(const String& str) const
+bool String::equals(const char* cstr, bool ignoreCase) const
 {
-	if(data() == str.data()) {
+	return equals(cstr, cstr ? strlen(cstr) : 0, ignoreCase);
+}
+
+bool String::equals(const String& str, bool ignoreCase) const
+{
+	auto dataptr = data();
+	auto strdata = str.data();
+	if(dataptr == strdata) {
 		return true;
 	}
-	if(length() != str.length()) {
+	auto len = length();
+	if(len != str.length()) {
 		return false;
 	}
-	return memcmp_aligned(data(), str.data(), length()) == 0;
+	if(ignoreCase) {
+		LOAD_FSTR(buf, *this);
+		return memicmp(dataptr, buf, len) == 0;
+	}
+	return memcmp_aligned(dataptr, strdata, len) == 0;
 }
 
 /* Wiring String support */
@@ -58,7 +70,7 @@ String::operator WString() const
 	return isNull() ? WString() : WString(data(), length());
 }
 
-bool String::equals(const WString& str) const
+bool String::equals(const WString& str, bool ignoreCase) const
 {
 	auto len = str.length();
 	if(len != length()) {
@@ -66,17 +78,10 @@ bool String::equals(const WString& str) const
 	}
 	// @todo optimise memcmp_P then we won't need to load entire String into RAM first
 	LOAD_FSTR(buf, *this);
-	return memcmp(buf, str.c_str(), len) == 0;
-}
-
-bool String::equalsIgnoreCase(const WString& str) const
-{
-	auto len = str.length();
-	if(len != length()) {
-		return false;
+	if(ignoreCase) {
+		return memicmp(buf, str.c_str(), len) == 0;
 	}
-	LOAD_FSTR(buf, *this);
-	return memicmp(buf, str.c_str(), len) == 0;
+	return memcmp(buf, str.c_str(), len) == 0;
 }
 
 } // namespace FSTR

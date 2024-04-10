@@ -120,24 +120,28 @@ namespace FSTR
 template <class ObjectType, typename ElementType> class Object : public ObjectBase
 {
 public:
+	using DataPtrType = const ElementType*;
 	using Iterator = ObjectIterator<ObjectType, ElementType>;
 
 	/**
 	 * @brief Creates a null object
 	 */
-	Object()
+	Object() : ObjectBase{lengthInvalid}
 	{
-		invalidate();
+#ifndef ARCH_HOST
+		// Illegal on real flash object
+		assert(!isFlashPtr(this));
+#endif
 	}
 
 	/**
 	 * @brief Copy constructor
 	 * @note Objects are usually passed around by reference or as a pointer,
 	 * but for ease of use we need a working copy constructor.
+	 * A copy contains a pointer to the real object.
 	 */
-	Object(const Object& obj)
+	Object(const Object& obj) : ObjectBase{obj.isCopy() ? obj.flashLength_ : uint32_t(&obj) | copyBit}
 	{
-		copy(obj);
 	}
 
 	Iterator begin() const
@@ -153,24 +157,26 @@ public:
 	/**
 	 * @brief Return an empty object which evaluates to null
 	 */
-	static const ObjectType& empty()
+	static constexpr const ObjectType& empty()
 	{
-		return empty_.as<ObjectType>();
+		return empty_.as<const ObjectType>();
 	}
 
 	/**
 	 * @brief Get the length of the content in elements
 	 */
-	FSTR_INLINE size_t length() const
+	FSTR_INLINE constexpr const size_t length() const
 	{
 		return ObjectBase::length() / sizeof(ElementType);
 	}
 
 	template <typename ValueType> int indexOf(const ValueType& value) const
 	{
-		auto len = length();
+		auto& self = as<ObjectType>();
+		auto dataptr = self.data();
+		auto len = self.length();
 		for(unsigned i = 0; i < len; ++i) {
-			if(as<ObjectType>().valueAt(i) == value) {
+			if(self.unsafeValueAt(dataptr, i) == value) {
 				return i;
 			}
 		}
@@ -180,11 +186,7 @@ public:
 
 	FSTR_INLINE ElementType valueAt(unsigned index) const
 	{
-		if(index < length()) {
-			return readValue(data() + index);
-		} else {
-			return ElementType{};
-		}
+		return (index < length()) ? unsafeValueAt(data(), index) : ElementType{};
 	}
 
 	/**
@@ -200,9 +202,9 @@ public:
 		return sizeof(ElementType);
 	}
 
-	FSTR_INLINE const ElementType* data() const
+	FSTR_INLINE DataPtrType data() const
 	{
-		return reinterpret_cast<const ElementType*>(ObjectBase::data());
+		return reinterpret_cast<DataPtrType>(ObjectBase::data());
 	}
 
 	/**
@@ -231,6 +233,11 @@ public:
 		auto offset = index * sizeof(ElementType);
 		count *= sizeof(ElementType);
 		return ObjectBase::readFlash(offset, buffer, count) / sizeof(ElementType);
+	}
+
+	FSTR_INLINE ElementType unsafeValueAt(const DataPtrType dataptr, unsigned index) const
+	{
+		return readValue(dataptr + index);
 	}
 };
 
