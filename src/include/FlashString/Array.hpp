@@ -113,6 +113,8 @@ namespace FSTR
 template <typename ElementType> class Array : public Object<Array<ElementType>, ElementType>
 {
 public:
+	static_assert(!std::is_pointer<ElementType>::value, "Pointer types not supported by Array - use Vector");
+
 	/* Arduino Print support */
 
 	/**
