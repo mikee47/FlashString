@@ -83,7 +83,7 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define DEFINE_FSTR_LOCAL(name, str)                                                                                   \
 	static DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                \
-	static constexpr DEFINE_FSTR_REF_NAMED(name, FSTR::String);
+	static FSTR_CONSTEXPR DEFINE_FSTR_REF_NAMED(name, FSTR::String);
 
 /**
  * @brief Define a FSTR::String data structure

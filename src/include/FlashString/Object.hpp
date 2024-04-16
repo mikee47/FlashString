@@ -84,9 +84,13 @@
 /**
  * @brief Check structure is POD-compliant and correctly aligned
  */
+#ifdef __clang__
+#define FSTR_CHECK_STRUCT(name)
+#else
 #define FSTR_CHECK_STRUCT(name)                                                                                        \
 	static_assert(std::is_pod<decltype(name)>::value, "FSTR structure not POD");                                       \
 	static_assert(offsetof(decltype(name), data) == sizeof(uint32_t), "FSTR structure alignment error");
+#endif
 
 /**
  * @brief Import an object from an external file with reference
@@ -107,7 +111,7 @@
 #define IMPORT_FSTR_OBJECT_LOCAL(name, ObjectType, file)                                                               \
 	IMPORT_FSTR_DATA(FSTR_DATA_NAME(name), file)                                                                       \
 	extern "C" __attribute__((visibility("hidden"))) const FSTR::ObjectBase FSTR_DATA_NAME(name);                      \
-	static constexpr DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name));
+	static FSTR_CONSTEXPR DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name));
 
 namespace FSTR
 {

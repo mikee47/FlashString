@@ -58,7 +58,7 @@
  */
 #define DEFINE_FSTR_MAP_LOCAL(name, KeyType, ContentType, ...)                                                         \
 	static DEFINE_FSTR_MAP_DATA(FSTR_DATA_NAME(name), KeyType, ContentType, __VA_ARGS__);                              \
-	static constexpr DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
+	static FSTR_CONSTEXPR DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
 /**
  * @brief Define a Map Object with global reference, specifying the number of elements
@@ -77,7 +77,7 @@
  */
 #define DEFINE_FSTR_MAP_SIZED_LOCAL(name, KeyType, ContentType, size, ...)                                             \
 	static DEFINE_FSTR_MAP_DATA_SIZED(FSTR_DATA_NAME(name), KeyType, ContentType, size, __VA_ARGS__);                  \
-	static constexpr DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
+	static FSTR_CONSTEXPR DEFINE_FSTR_REF_NAMED(name, DECL((FSTR::Map<KeyType, ContentType>)));
 
 /**
  * @brief Define a Map data structure
@@ -89,9 +89,7 @@
  */
 #define DEFINE_FSTR_MAP_DATA(name, KeyType, ContentType, ...)                                                          \
 	DEFINE_FSTR_MAP_DATA_SIZED(name, KeyType, ContentType,                                                             \
-							   (sizeof((const FSTR::MapPair<KeyType, ContentType>[]){__VA_ARGS__}) /                   \
-								sizeof(FSTR::MapPair<KeyType, ContentType>)),                                          \
-							   __VA_ARGS__)
+							   FSTR_VA_NARGS(DECL((FSTR::MapPair<KeyType, ContentType>)), __VA_ARGS__), __VA_ARGS__)
 
 /**
  * @brief Define a Map data structure, specifying the number of elements
@@ -102,7 +100,7 @@
  * @param ... List of MapPair definitions { key, &content }
  */
 #define DEFINE_FSTR_MAP_DATA_SIZED(name, KeyType, ContentType, size, ...)                                              \
-	constexpr const struct {                                                                                           \
+	FSTR_CONSTEXPR const struct {                                                                                      \
 		FSTR::ObjectBase object;                                                                                       \
 		FSTR::MapPair<KeyType, ContentType> data[size];                                                                \
 	} FSTR_PACKED FSTR_ALIGNED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                    \

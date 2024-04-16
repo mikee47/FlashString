@@ -54,7 +54,7 @@
  */
 #define DEFINE_FSTR_VECTOR_LOCAL(name, ObjectType, ...)                                                                \
 	static DEFINE_FSTR_VECTOR_DATA(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                     \
-	static constexpr DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
+	static FSTR_CONSTEXPR DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
  * @brief Define a Vector Object with global reference, specifying the number of elements
@@ -73,7 +73,7 @@
  */
 #define DEFINE_FSTR_VECTOR_SIZED_LOCAL(name, ObjectType, size, ...)                                                    \
 	static DEFINE_FSTR_VECTOR_DATA_SIZED(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                         \
-	static constexpr DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
+	static FSTR_CONSTEXPR DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
  * @brief Define a Vector data structure
@@ -83,7 +83,7 @@
  * @note Size will be calculated
  */
 #define DEFINE_FSTR_VECTOR_DATA(name, ObjectType, ...)                                                                 \
-	DEFINE_FSTR_VECTOR_DATA_SIZED(name, ObjectType, sizeof((const void*[]){__VA_ARGS__}) / sizeof(void*), __VA_ARGS__)
+	DEFINE_FSTR_VECTOR_DATA_SIZED(name, ObjectType, FSTR_VA_NARGS(ObjectType*, __VA_ARGS__), __VA_ARGS__)
 
 /**
  * @brief Define a Vector data structure and specify the number of elements
@@ -94,7 +94,7 @@
  * @note Use in situations where the array size cannot be automatically calculated
  */
 #define DEFINE_FSTR_VECTOR_DATA_SIZED(name, ObjectType, size, ...)                                                     \
-	constexpr const struct {                                                                                           \
+	FSTR_CONSTEXPR const struct {                                                                                      \
 		FSTR::ObjectBase object;                                                                                       \
 		const ObjectType* data[size];                                                                                  \
 	} name PROGMEM = {{sizeof(name.data)}, __VA_ARGS__};                                                               \

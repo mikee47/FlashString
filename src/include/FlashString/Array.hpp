@@ -54,7 +54,7 @@
  */
 #define DEFINE_FSTR_ARRAY_LOCAL(name, ElementType, ...)                                                                \
 	static DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                     \
-	static constexpr DEFINE_FSTR_REF_NAMED(name, FSTR::Array<ElementType>);
+	static FSTR_CONSTEXPR DEFINE_FSTR_REF_NAMED(name, FSTR::Array<ElementType>);
 
 /**
  * @brief Define an Array data structure
@@ -63,9 +63,9 @@
  * @param ... List of ElementType items
  */
 #define DEFINE_FSTR_ARRAY_DATA(name, ElementType, ...)                                                                 \
-	constexpr const struct {                                                                                           \
+	FSTR_CONSTEXPR const struct {                                                                                      \
 		FSTR::ObjectBase object;                                                                                       \
-		ElementType data[sizeof((const ElementType[]){__VA_ARGS__}) / sizeof(ElementType)];                            \
+		ElementType data[FSTR_VA_NARGS(ElementType, __VA_ARGS__)];                                                     \
 	} FSTR_PACKED FSTR_ALIGNED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                    \
 	FSTR_CHECK_STRUCT(name);
 
