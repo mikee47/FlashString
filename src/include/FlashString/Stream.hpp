@@ -54,7 +54,7 @@ public:
 	*/
 	int available() override
 	{
-		return object.length() - readPos;
+		return int(object.length() - readPos);
 	}
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override;

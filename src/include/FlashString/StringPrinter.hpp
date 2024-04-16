@@ -38,6 +38,15 @@ public:
 	{
 	}
 
+	StringPrinter(const StringPrinter&) = delete;
+	StringPrinter(StringPrinter&&) = delete;
+	StringPrinter& operator=(const StringPrinter&) = delete;
+	StringPrinter& operator=(StringPrinter&&) = delete;
+
+	~StringPrinter()
+	{
+	}
+
 	size_t printTo(Print& p) const;
 
 private:

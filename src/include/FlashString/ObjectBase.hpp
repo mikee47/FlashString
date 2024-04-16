@@ -41,6 +41,7 @@ public:
 			return 0;
 		}
 		if(isCopy()) {
+			// NOLINTNEXTLINE
 			return reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit)->length();
 		}
 		return flashLength_;

@@ -36,9 +36,16 @@ public:
 
 	ObjectIterator() = default;
 	ObjectIterator(const ObjectIterator&) = default;
+	ObjectIterator(ObjectIterator&&) = default;
+	ObjectIterator& operator=(const ObjectIterator&) = default;
+	ObjectIterator& operator=(ObjectIterator&&) = default;
 
 	ObjectIterator(const ObjectType& object, unsigned index)
 		: data(pointer(object.data())), length(object.length()), index(index)
+	{
+	}
+
+	~ObjectIterator()
 	{
 	}
 
@@ -93,9 +100,9 @@ public:
 	}
 
 private:
-	const pointer data;
-	size_t length;
-	unsigned index = 0;
+	pointer data{};
+	size_t length{0};
+	unsigned index{0};
 };
 
 } // namespace FSTR

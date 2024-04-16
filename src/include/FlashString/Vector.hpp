@@ -97,7 +97,7 @@
 	FSTR_CONSTEXPR const struct {                                                                                      \
 		FSTR::ObjectBase object;                                                                                       \
 		const ObjectType* data[size];                                                                                  \
-	} name PROGMEM = {{sizeof(name.data)}, __VA_ARGS__};                                                               \
+	} name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                                             \
 	FSTR_CHECK_STRUCT(name);
 
 namespace FSTR
@@ -111,7 +111,11 @@ template <class ObjectType> class Vector : public Object<Vector<ObjectType>, con
 public:
 	using DataPtrType = const ObjectType* const*;
 
-	using Object<Vector<ObjectType>, const ObjectType*>::indexOf;
+	template <typename ValueType, typename T = ObjectType>
+	typename std::enable_if<!std::is_same<T, String>::value, int>::type indexOf(const ValueType& value) const
+	{
+		return Object<Vector<ObjectType>, const ObjectType*>::indexOf(value);
+	}
 
 	template <typename T = ObjectType>
 	typename std::enable_if<std::is_same<T, String>::value, int>::type indexOf(const char* value,

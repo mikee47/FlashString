@@ -187,6 +187,7 @@ public:
 	 */
 	flash_string_t data() const
 	{
+		// NOLINTNEXTLINE
 		return reinterpret_cast<flash_string_t>(Object::data());
 	}
 

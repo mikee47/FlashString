@@ -148,6 +148,14 @@ public:
 	{
 	}
 
+	~Object()
+	{
+	}
+
+	Object(const Object&& obj) = delete;
+	Object& operator=(const Object& other) = delete;
+	Object& operator=(const Object&& other) = delete;
+
 	Iterator begin() const
 	{
 		return Iterator(as<ObjectType>(), 0);
@@ -181,7 +189,7 @@ public:
 		auto len = self.length();
 		for(unsigned i = 0; i < len; ++i) {
 			if(self.unsafeValueAt(dataptr, i) == value) {
-				return i;
+				return int(i);
 			}
 		}
 
@@ -208,6 +216,7 @@ public:
 
 	FSTR_INLINE DataPtrType data() const
 	{
+		// NOLINTNEXTLINE
 		return reinterpret_cast<DataPtrType>(ObjectBase::data());
 	}
 
