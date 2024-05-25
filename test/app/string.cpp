@@ -22,6 +22,15 @@
 #include <SmingTest.h>
 #include "data.h"
 
+namespace
+{
+/* Verify compiler will accept in-class definitions */
+struct InClassTest {
+	DEFINE_FSTR_LOCAL(str1, "str1")
+	DEFINE_FSTR_LOCAL(str2, "str2")
+};
+} // namespace
+
 class StringTest : public TestGroup
 {
 public:
@@ -162,6 +171,12 @@ public:
 			REQUIRE(demoFSTR1 == demoFSTR2);
 			REQUIRE(String(demoFSTR1) == demoFSTR2);
 			REQUIRE(demoFSTR1 == String(demoFSTR2));
+		}
+
+		TEST_CASE("In-class")
+		{
+			REQUIRE_EQ(F("str1"), InClassTest::str1);
+			REQUIRE_EQ(F("str2"), InClassTest::str2);
 		}
 	}
 };

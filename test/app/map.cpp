@@ -22,6 +22,19 @@
 #include <SmingTest.h>
 #include "data.h"
 
+namespace
+{
+/* Verify compiler will accept in-class definitions */
+struct InClassTest {
+	DEFINE_FSTR_LOCAL(str1, "str1")
+	DEFINE_FSTR_LOCAL(str2, "str2")
+	DEFINE_FSTR_MAP_LOCAL(localData, int64_t, FSTR::String, //
+						  {0x123456789abcdLL, &str1},		//
+						  {0xabcdefab12345LL, &str2},		//
+	)
+};
+} // namespace
+
 class MapTest : public TestGroup
 {
 public:
@@ -117,6 +130,12 @@ public:
 				};
 				printTableMapEntry("key1");
 				printTableMapEntry("key2");
+			}
+
+			TEST_CASE("In-class")
+			{
+				REQUIRE(InClassTest::str1 == InClassTest::localData[0x123456789abcdLL]);
+				REQUIRE(InClassTest::str2 == InClassTest::localData[0xabcdefab12345LL]);
 			}
 		}
 	}

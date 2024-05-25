@@ -71,6 +71,11 @@ DEFINE_FSTR_ARRAY(basket, Item,
 		{Fruit::kiwi_fruit, 4, {5, 5, 5}})
 // clang-format on
 
+/* Verify compiler will accept in-class definitions */
+struct InClassTest {
+	DEFINE_FSTR_ARRAY_LOCAL(localData, int, 10, 20, 30, 40, 50)
+};
+
 } // namespace
 
 class ArrayTest : public TestGroup
@@ -169,6 +174,13 @@ public:
 			Serial << item << endl;
 			REQUIRE(item.kind == Fruit::bad);
 			REQUIRE(item.count == 0);
+		}
+
+		TEST_CASE("in-class")
+		{
+			REQUIRE_EQ(InClassTest::localData[0], 10);
+			REQUIRE_EQ(InClassTest::localData[4], 50);
+			REQUIRE_EQ(InClassTest::localData[5], 0);
 		}
 	}
 };

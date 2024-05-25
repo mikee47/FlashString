@@ -22,6 +22,16 @@
 #include <SmingTest.h>
 #include "data.h"
 
+namespace
+{
+/* Verify compiler will accept in-class definitions */
+struct InClassTest {
+	DEFINE_FSTR_LOCAL(str1, "str1")
+	DEFINE_FSTR_LOCAL(str2, "str2")
+	DEFINE_FSTR_VECTOR_LOCAL(localData, FSTR::String, &str1, &str2)
+};
+} // namespace
+
 class VectorTest : public TestGroup
 {
 public:
@@ -77,6 +87,13 @@ public:
 				REQUIRE(i == 1);
 				i = stringVector.indexOf(String::empty);
 				REQUIRE(i == 1);
+			}
+
+			TEST_CASE("in-class")
+			{
+				REQUIRE_EQ(F("str1"), InClassTest::localData[0]);
+				REQUIRE_EQ(F("str2"), InClassTest::localData[1]);
+				REQUIRE_EQ(String::nullstr, InClassTest::localData[5]);
 			}
 		}
 	}

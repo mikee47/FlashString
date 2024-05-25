@@ -63,10 +63,20 @@
  * @param ... List of ElementType items
  */
 #define DEFINE_FSTR_ARRAY_DATA(name, ElementType, ...)                                                                 \
+	DEFINE_FSTR_ARRAY_DATA_SIZED(name, ElementType, FSTR_VA_NARGS(ElementType, __VA_ARGS__), __VA_ARGS__)
+
+/**
+ * @brief Define an Array data structure, specifying the number of elements
+ * @param name Name of data structure
+ * @param ElementType
+ * @param size Number of elements
+ * @param ... List of ElementType items
+ */
+#define DEFINE_FSTR_ARRAY_DATA_SIZED(name, ElementType, size, ...)                                                     \
 	FSTR_CONSTEXPR const struct {                                                                                      \
 		FSTR::ObjectBase object;                                                                                       \
-		ElementType data[FSTR_VA_NARGS(ElementType, __VA_ARGS__)];                                                     \
-	} FSTR_PACKED FSTR_ALIGNED name PROGMEM = {{sizeof(name.data)}, {__VA_ARGS__}};                                    \
+		ElementType data[size];                                                                                        \
+	} FSTR_PACKED FSTR_ALIGNED name PROGMEM = {{sizeof(ElementType) * size}, {__VA_ARGS__}};                           \
 	FSTR_CHECK_STRUCT(name);
 
 /**
