@@ -42,32 +42,16 @@ Here's a basic example using integer keys::
 You should generally use :c:func:`IMPORT_FSTR_LOCAL` when referencing imported objects.
 If you need global access to imported data as well, then use :c:func:`IMPORT_FSTR`.
 
-.. note::
-
-   Older toolchains (generally GCC earlier than version 6) will fail to compile with
-   *error: the value of 'FS_content1' is not usable in a constant expression*.
-
-   You can work around this as follows::
-
-      IMPORT_FSTR(content1, PROJECT_DIR "/files/index.html"); // Make this a global reference
-      IMPORT_FSTR_LOCAL(content2, PROJECT_DIR "/files/favicon.html");
-   
-      DEFINE_FSTR_MAP(intmap, int, FSTR::String,
-         {35, &FSTR_DATA_NAME(FS_content1).as<FSTR::String>()}, // Cast the actual content
-         {180, &content2}
-      );
-
-
 We can now do this::
 
    void printValue(int key)
    {
       auto value = intmap[key];
       if(value) {
-         Serial.printf("Found '%u' in map, containing %u chars\n", value.key(), value.content().length());
-         Serial.println(value.printer());
+         Serial << "Found '" << value.key() << "' in map, containing " << value.content.length() << " chars" << endl;
+         Serial << value << endl;
       } else {
-         Serial.printf("Couldn't find '%u' in map\n", key);
+         Serial << "Couldn't find '" << key << "' in map" << endl;
       }
    }
 
@@ -97,11 +81,11 @@ We can now do this::
       auto& value = fileMap[fileName];
       if(value) {
          // Found
-         Serial.printf("Found '%s' in fileMap\n", String(value.key()).c_str());
+         Serial << "Found '" << value.key() << "' in fileMap" << endl;
          auto stream = new FlashMemoryStream(value);
          response.sendDataStream(stream, ContentType::fromFullFileName(fileName));
       } else {
-         Serial.printf("File '%s' not found\n", fileName.c_str());
+         Serial << "File '" << fileName << "' not found" << endl;
       }
    }
 

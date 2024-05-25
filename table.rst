@@ -33,8 +33,7 @@ Each row is a fixed size. The :cpp:class:`FSTR::TableRow` class template is prov
       {0.1, 0.2, 0.3},
       {0.6, 0.7, 0.8}
    );
-   table.printTo(Serial);
-   table.println();
+   Serial.println(table);
 
 
 If you want to create a table with rows of different sizes or types, use a :doc:`Vector <vector>`.

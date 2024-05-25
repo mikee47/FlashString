@@ -28,7 +28,7 @@ Within a function::
    DEFINE_FSTR_LOCAL(myFlashString, "This is my flash string");
 
    Serial.println(myFlashString);
-   Serial.printf("myFlashString has %u chars and occupies %u bytes\n", myFlashString.length(), myFlashString.size());
+   Serial << "myFlashString has " << myFlashString.length() << " chars and occupies " << myFlashString.size() << " bytes" << endl;
 
 To use Strings across translation units, we do this in the header::
 
@@ -40,6 +40,8 @@ And in a source file::
 
 You can generally use a Flash String anywhere you can use a regular Wiring String as it has
 an implicit *::String()* operator. Note that ``WString`` is used within the library for disambiguation.
+
+See also :cpp:class:`CStringArray`.
 
 
 Inline Strings
@@ -75,6 +77,15 @@ This is equivalent to::
 
 :cpp:func:`FSTR::String::printTo` uses no heap and imposes no restriction on the string length.
 
+.. note::
+
+   Sming contains general streaming support via :cpp:class:`Print`, so FlashString objects can
+   be printed like this::
+
+      Serial.println(myFlashString);
+      Serial << myFlashString << endl;
+
+   This is implemented via non-virtual `printTo` overrides.
 
 
 Nested Inline Strings
