@@ -117,6 +117,8 @@ template <typename KeyType, class ContentType, class Pair = MapPair<KeyType, Con
 class Map : public Object<Map<KeyType, ContentType>, Pair>
 {
 public:
+	static_assert(offsetof(Pair, content_) % sizeof(uint32_t) == 0, "Misaligned MapPair");
+
 	/**
 	 * @brief Get a map entry by index, if it exists
 	 * @note Result validity can be checked using if()
@@ -126,8 +128,6 @@ public:
 		if(index >= this->length()) {
 			return Pair::empty();
 		}
-
-		static_assert(offsetof(Pair, content_) == sizeof(uint32_t), "Misaligned MapPair");
 
 		auto ptr = this->data() + index;
 		return Pair{readValue(&ptr->key_), readValue(&ptr->content_)};
