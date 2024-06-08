@@ -37,14 +37,7 @@ public:
 	 */
 	FSTR_NOINLINE constexpr const size_t length() const
 	{
-		if(isNull()) {
-			return 0;
-		}
-		if(isCopy()) {
-			// NOLINTNEXTLINE
-			return reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit)->length();
-		}
-		return flashLength_;
+		return flashLength_ & ~lengthInvalid;
 	}
 
 	/**
@@ -99,11 +92,6 @@ public:
 	 */
 	size_t readFlash(size_t offset, void* buffer, size_t count) const;
 
-	FSTR_INLINE constexpr const bool isCopy() const
-	{
-		return (flashLength_ & copyBit) != 0;
-	}
-
 	/**
 	 * @brief Indicates an invalid String, used for return value from lookups, etc.
 	 * @note A real String can be zero-length, but it cannot be null
@@ -120,8 +108,7 @@ public:
 
 protected:
 	static const ObjectBase empty_;
-	static constexpr uint32_t copyBit = 0x80000000U;	   ///< Set to indicate copy
-	static constexpr uint32_t lengthInvalid = copyBit | 0; ///< Indicates null string in a copy
+	static constexpr uint32_t lengthInvalid = 0x80000000U; ///< Indicates null string
 };
 
 } // namespace FSTR

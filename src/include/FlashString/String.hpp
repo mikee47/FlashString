@@ -42,8 +42,8 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define FS_PTR(str)                                                                                                    \
 	(__extension__({                                                                                                   \
-		static DEFINE_FSTR_DATA(__fstr__, str);                                                                        \
-		static_cast<const FSTR::String*>(&__fstr__.object);                                                            \
+		static FSTR_VOLATILE DEFINE_FSTR_DATA(FSTR_DATA_NAME(tmp), str);                                               \
+		const_cast<const FSTR::String*>(&FSTR_DATA_NAME(tmp).object);                                                  \
 	}))
 
 /**
@@ -83,7 +83,7 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define DEFINE_FSTR_LOCAL(name, str)                                                                                   \
 	static DEFINE_FSTR_DATA(FSTR_DATA_NAME(name), str);                                                                \
-	static FSTR_CONSTEXPR DEFINE_FSTR_REF_NAMED(name, FSTR::String);
+	static constexpr const FSTR::String& name = FSTR_DATA_NAME(name).object;
 
 /**
  * @brief Define a FSTR::String data structure
@@ -92,7 +92,7 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define DEFINE_FSTR_DATA(name, str)                                                                                    \
 	constexpr const struct {                                                                                           \
-		FSTR::ObjectBase object;                                                                                       \
+		FSTR::String object;                                                                                           \
 		char data[ALIGNUP4(sizeof(str))];                                                                              \
 	} name PROGMEM = {{sizeof(str) - 1}, str};                                                                         \
 	FSTR_CHECK_STRUCT(name);

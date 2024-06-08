@@ -54,7 +54,7 @@
  */
 #define DEFINE_FSTR_VECTOR_LOCAL(name, ObjectType, ...)                                                                \
 	static DEFINE_FSTR_VECTOR_DATA(FSTR_DATA_NAME(name), ObjectType, __VA_ARGS__);                                     \
-	static FSTR_CONSTEXPR DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
+	static constexpr const FSTR::Vector<ObjectType>& name = FSTR_DATA_NAME(name).object;
 
 /**
  * @brief Define a Vector Object with global reference, specifying the number of elements
@@ -73,7 +73,7 @@
  */
 #define DEFINE_FSTR_VECTOR_SIZED_LOCAL(name, ObjectType, size, ...)                                                    \
 	static DEFINE_FSTR_VECTOR_DATA_SIZED(FSTR_DATA_NAME(name), ObjectType, size, __VA_ARGS__);                         \
-	static FSTR_CONSTEXPR DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
+	static constexpr DEFINE_FSTR_REF_NAMED(name, FSTR::Vector<ObjectType>);
 
 /**
  * @brief Define a Vector data structure
@@ -83,7 +83,7 @@
  * @note Size will be calculated
  */
 #define DEFINE_FSTR_VECTOR_DATA(name, ObjectType, ...)                                                                 \
-	DEFINE_FSTR_VECTOR_DATA_SIZED(name, ObjectType, FSTR_VA_NARGS(ObjectType*, __VA_ARGS__), __VA_ARGS__)
+	DEFINE_FSTR_VECTOR_DATA_SIZED(name, ObjectType, FSTR_VA_NARGS(void*, __VA_ARGS__), __VA_ARGS__)
 
 /**
  * @brief Define a Vector data structure and specify the number of elements
@@ -94,10 +94,10 @@
  * @note Use in situations where the array size cannot be automatically calculated
  */
 #define DEFINE_FSTR_VECTOR_DATA_SIZED(name, ObjectType, size, ...)                                                     \
-	FSTR_CONSTEXPR const struct {                                                                                      \
-		FSTR::ObjectBase object;                                                                                       \
+	constexpr const struct {                                                                                           \
+		FSTR::Vector<ObjectType> object;                                                                               \
 		const ObjectType* data[size];                                                                                  \
-	} name PROGMEM = {{sizeof(ObjectType*) * size}, {__VA_ARGS__}};                                                    \
+	} name PROGMEM = {{sizeof(void*) * size}, {__VA_ARGS__}};                                                          \
 	FSTR_CHECK_STRUCT(name);
 
 namespace FSTR
@@ -175,7 +175,7 @@ public:
 		auto ptr = dataptr[index];
 		return ptr ? *ptr : ObjectType::empty();
 	}
-};
+} FSTR_PACKED;
 
 } // namespace FSTR
 

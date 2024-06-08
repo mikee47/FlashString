@@ -54,7 +54,7 @@
  */
 #define DEFINE_FSTR_ARRAY_LOCAL(name, ElementType, ...)                                                                \
 	static DEFINE_FSTR_ARRAY_DATA(FSTR_DATA_NAME(name), ElementType, __VA_ARGS__);                                     \
-	static FSTR_CONSTEXPR DEFINE_FSTR_REF_NAMED(name, FSTR::Array<ElementType>);
+	static constexpr const FSTR::Array<ElementType>& name = FSTR_DATA_NAME(name).object;
 
 /**
  * @brief Define an Array data structure
@@ -73,8 +73,8 @@
  * @param ... List of ElementType items
  */
 #define DEFINE_FSTR_ARRAY_DATA_SIZED(name, ElementType, size, ...)                                                     \
-	FSTR_CONSTEXPR const struct {                                                                                      \
-		FSTR::ObjectBase object;                                                                                       \
+	constexpr const struct {                                                                                           \
+		FSTR::Array<ElementType> object;                                                                               \
 		ElementType data[size];                                                                                        \
 	} FSTR_PACKED FSTR_ALIGNED name PROGMEM = {{sizeof(ElementType) * size}, {__VA_ARGS__}};                           \
 	FSTR_CHECK_STRUCT(name);
@@ -140,7 +140,7 @@ public:
 	{
 		return printer().printTo(p);
 	}
-};
+} FSTR_PACKED;
 
 } // namespace FSTR
 

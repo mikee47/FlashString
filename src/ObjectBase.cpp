@@ -23,7 +23,6 @@
 namespace FSTR
 {
 const ObjectBase ObjectBase::empty_{ObjectBase::lengthInvalid};
-constexpr uint32_t ObjectBase::copyBit;
 
 bool ObjectBase::operator==(const ObjectBase& other) const
 {
@@ -62,25 +61,7 @@ size_t ObjectBase::read(size_t offset, void* buffer, size_t count) const
 
 const uint8_t* ObjectBase::data() const
 {
-	if(isNull()) {
-		// Return a pointer to a valid memory location
-		return reinterpret_cast<const uint8_t*>(&flashLength_);
-	}
-
-	auto ptr = this;
-
-	if(isCopy()) {
-		// Get real object
-		ptr = reinterpret_cast<const ObjectBase*>(flashLength_ & ~copyBit);
-	}
-
-	// Cannot yet differentiate memory addresses on Host
-#ifndef ARCH_HOST
-	// Check we've got a real flash pointer
-	assert(isFlashPtr(ptr));
-#endif
-
-	return reinterpret_cast<const uint8_t*>(&ptr->flashLength_ + 1);
+	return reinterpret_cast<const uint8_t*>(&flashLength_ + 1);
 }
 
 } // namespace FSTR

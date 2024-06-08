@@ -43,6 +43,13 @@ public:
 		}
 	}
 
+	template <typename T> static void __noinline profile_iterator(const FSTR::Vector<T>& object)
+	{
+		for(auto& value : object) {
+			sum(value);
+		}
+	}
+
 	template <typename T, typename U> static void __noinline profile_indexOf(const T& object, const U& value)
 	{
 		total += object.indexOf(value);
