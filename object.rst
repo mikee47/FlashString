@@ -87,26 +87,8 @@ relative addressing, and if the references aren't declared PROGMEM they'll consu
 Copy behaviour
 --------------
 
-Whilst references are the preferred way to access flash Objects, they can also be created dynamically::
-
-   FSTR::String emptyString;
-   FSTR::String stringCopy(FS("Inline string"));
-
-Such instances are stored in RAM but only consume 4 bytes as they simply keep a pointer
-to the real flash Object.
-
-.. note::
-
-   Don't try to copy ObjectBase!
-   
-Here's a somewhat contrived example to demonstrate::
-
-   DEFINE_FSTR_DATA_LOCAL(flashHelloData, "Hello");
-   auto myCopy = flashHelloData.object;
-   Serial.print("myCopy.length() = ");
-   Serial.println(myCopy.length());
-
-In debug builds, this will throw an assertion. In release builds, you'll get a zero-length object.
+Objects cannot be created dynamically, nor can they be copied.
+Always pass by reference.
 
 
 Aggregate initialization

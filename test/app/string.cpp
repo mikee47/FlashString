@@ -40,26 +40,13 @@ public:
 
 	void execute() override
 	{
-		FSTR::String empty;
+		auto& empty = FSTR::String::empty();
 
 		TEST_CASE("empty")
 		{
-			REQUIRE(empty.isCopy() == true);
+			REQUIRE(empty.isNull());
 			REQUIRE(empty == "");
-		}
-
-		TEST_CASE("empty copy")
-		{
-			auto copy = empty;
-			REQUIRE(copy.isCopy() == true);
-			REQUIRE(copy == "");
-		}
-
-		TEST_CASE("normal copy")
-		{
-			auto copy = externalFSTR1;
-			REQUIRE(copy.isCopy() == true);
-			REQUIRE(copy == F(EXTERNAL_FSTR1_TEXT));
+			REQUIRE(empty.length() == 0);
 		}
 
 		TEST_CASE("Assign to WString")
@@ -68,14 +55,13 @@ public:
 			REQUIRE(!s);
 			s = externalFSTR1;
 			REQUIRE(s == externalFSTR1);
-			auto copy = externalFSTR1;
-			REQUIRE(s == copy);
 		}
 
 		TEST_CASE("inline")
 		{
 #define INLINE_TEXT "This is an inline\0 Flash String\0\0"
 			auto& str = FS(INLINE_TEXT);
+			Serial << str << endl;
 			REQUIRE(str == F(INLINE_TEXT));
 		}
 

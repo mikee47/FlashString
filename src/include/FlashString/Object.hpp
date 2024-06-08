@@ -41,14 +41,13 @@
 #define DECLARE_FSTR_OBJECT(name, ObjectType) extern const ObjectType& name;
 
 /**
- * @brief Define a reference to an object
- * @param name Name for reference
- * @param ObjectType Fully qualified typename of object required, e.g. FSTR::String, FlashString, FSTR::Vector<int>, etc.
- * @param object Object instance to cast
+ * @name Internal macros
+ * @{
  */
-#define DEFINE_FSTR_REF(name, ObjectType, object) const ObjectType& name PROGMEM = object.template as<ObjectType>();
-
-#define DEFINE_FSTR_REF_NAMED(name, ObjectType) DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name).object);
+#define DEFINE_FSTR_OBJREF(name, object) const decltype(object)& name PROGMEM = object;
+#define DEFINE_FSTR_REF(name) DEFINE_FSTR_OBJREF(name, FSTR_DATA_NAME(name).object)
+#define DEFINE_FSTR_REF_LOCAL(name) static constexpr DEFINE_FSTR_REF(name)
+/** @} */
 
 /**
  * @brief Provide internal name for generated flash string structures
@@ -79,18 +78,14 @@
  * We can only do this of course if the data structure is in scope.
  *
  */
-#define FSTR_PTR(objref) static_cast<std::remove_reference<decltype(objref)>::type*>(&FSTR_DATA_NAME(objref).object)
+#define FSTR_PTR(objref) (&FSTR_DATA_NAME(objref).object)
 
 /**
  * @brief Check structure is POD-compliant and correctly aligned
  */
-#ifdef __clang__
-#define FSTR_CHECK_STRUCT(name)
-#else
 #define FSTR_CHECK_STRUCT(name)                                                                                        \
-	static_assert(std::is_pod<decltype(name)>::value, "FSTR structure not POD");                                       \
+	static_assert(std::is_standard_layout<decltype(name)>::value, "FSTR structure not Standard Layout");               \
 	static_assert(offsetof(decltype(name), data) == sizeof(uint32_t), "FSTR structure alignment error");
-#endif
 
 /**
  * @brief Import an object from an external file with reference
@@ -102,16 +97,16 @@
  */
 #define IMPORT_FSTR_OBJECT(name, ObjectType, file)                                                                     \
 	IMPORT_FSTR_DATA(FSTR_DATA_NAME(name), file)                                                                       \
-	extern "C" __attribute__((visibility("hidden"))) const FSTR::ObjectBase FSTR_DATA_NAME(name);                      \
-	DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name));
+	extern "C" __attribute__((visibility("hidden"))) const ObjectType FSTR_DATA_NAME(name);                            \
+	DEFINE_FSTR_OBJREF(name, FSTR_DATA_NAME(name))
 
 /**
  * @brief Like IMPORT_FSTR_OBJECT except reference is declared static constexpr
  */
 #define IMPORT_FSTR_OBJECT_LOCAL(name, ObjectType, file)                                                               \
 	IMPORT_FSTR_DATA(FSTR_DATA_NAME(name), file)                                                                       \
-	extern "C" __attribute__((visibility("hidden"))) const FSTR::ObjectBase FSTR_DATA_NAME(name);                      \
-	static FSTR_CONSTEXPR DEFINE_FSTR_REF(name, ObjectType, FSTR_DATA_NAME(name));
+	extern "C" __attribute__((visibility("hidden"))) const ObjectType FSTR_DATA_NAME(name);                            \
+	static constexpr DEFINE_FSTR_OBJREF(name, FSTR_DATA_NAME(name))
 
 namespace FSTR
 {
@@ -127,34 +122,10 @@ public:
 	using DataPtrType = const ElementType*;
 	using Iterator = ObjectIterator<ObjectType, ElementType>;
 
-	/**
-	 * @brief Creates a null object
-	 */
-	Object() : ObjectBase{lengthInvalid}
-	{
-#ifndef ARCH_HOST
-		// Illegal on real flash object
-		assert(!isFlashPtr(this));
-#endif
-	}
-
-	/**
-	 * @brief Copy constructor
-	 * @note Objects are usually passed around by reference or as a pointer,
-	 * but for ease of use we need a working copy constructor.
-	 * A copy contains a pointer to the real object.
-	 */
-	Object(const Object& obj) : ObjectBase{obj.isCopy() ? obj.flashLength_ : uint32_t(&obj) | copyBit}
-	{
-	}
-
-	~Object()
-	{
-	}
-
-	Object(const Object&& obj) = delete;
-	Object& operator=(const Object& other) = delete;
-	Object& operator=(const Object&& other) = delete;
+	Object(const Object&) = delete;
+	Object(const Object&&) = delete;
+	Object& operator=(const Object&) = delete;
+	Object& operator=(const Object&&) = delete;
 
 	Iterator begin() const
 	{

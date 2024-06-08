@@ -24,7 +24,7 @@
 
 namespace
 {
-IMPORT_FSTR_ARRAY(custom_bin, char, COMPONENT_PATH "/files/custom.bin");
+IMPORT_FSTR_ARRAY(custom_bin, char, COMPONENT_PATH "/files/custom.bin")
 
 enum class Fruit {
 	bad,
