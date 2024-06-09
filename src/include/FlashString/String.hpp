@@ -212,18 +212,28 @@ public:
 		return equals(str, true);
 	}
 
+	bool operator==(const char* cstr) const
+	{
+		return equals(cstr);
+	}
+
+	bool operator!=(const char* cstr) const
+	{
+		return !equals(cstr);
+	}
+
 	/** @brief Check for equality with another String
 	 *  @param str
 	 *  @retval bool true if strings are identical
 	 */
 	bool equals(const String& str, bool ignoreCase = false) const;
 
-	template <typename T> bool operator==(const T& str) const
+	bool operator==(const String& str) const
 	{
 		return equals(str);
 	}
 
-	template <typename T> bool operator!=(const T& str) const
+	bool operator!=(const String& str) const
 	{
 		return !equals(str);
 	}
@@ -233,6 +243,16 @@ public:
 	operator WString() const;
 
 	bool equals(const WString& str, bool ignoreCase = false) const;
+
+	bool operator==(const WString& str) const
+	{
+		return equals(str);
+	}
+
+	bool operator!=(const WString& str) const
+	{
+		return !equals(str);
+	}
 
 	/* Arduino Print support */
 
