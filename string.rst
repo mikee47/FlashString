@@ -91,7 +91,7 @@ This is equivalent to::
 Nested Inline Strings
 ---------------------
 
-It would be really useful to be able to use inline Strings this within nested structures,
+It would be really useful to be able to use inline Strings within nested structures,
 and this can be done **provided those structures are in RAM**.
 
 .. important:: Inline Strings cannot be used when defining Vectors or Maps.
@@ -99,7 +99,7 @@ and this can be done **provided those structures are in RAM**.
 Here's is a simplified structure we will attempt to initialize::
 
       static const struct {
-         FlashString* string;
+         const FlashString* string;
       } flashData PROGMEM = { FS_PTR("Inline Flash String") };
       Serial.println(*flashData.string);
 

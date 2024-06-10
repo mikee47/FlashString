@@ -48,6 +48,11 @@ public:
 		REQUIRE(customObject.description() == F("Object Description  "));
 		REQUIRE(customObject.content().length() == sizeof(data));
 		REQUIRE(memcmp_P(data, customObject.content().data(), sizeof(data)) == 0);
+
+		static const struct {
+			const FlashString* string;
+		} flashData = {FS_PTR("Inline Flash String")};
+		Serial.println(*flashData.string);
 	}
 };
 

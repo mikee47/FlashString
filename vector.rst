@@ -6,12 +6,7 @@ Vectors
 Introduction
 ------------
 
-A :cpp:class:`FSTR::Vector` is an array of Object pointers::
-
-   struct Vector<ObjectType> {
-      FSTR::Object object;
-      ObjectType* entries[];
-   };
+A :cpp:class:`FSTR::Vector` is an array of Object pointers.
 
 A key use for this is the construction of string tables.
 
@@ -67,8 +62,8 @@ Structure
 
 The above example generates a structure like this::
 
-   const struct {
-      ObjectBase object;
+   constexpr const struct {
+      Vector<String*> object;
       String* entries[4];
    } __fstr__myTable PROGMEM = {
       {16},
@@ -77,7 +72,7 @@ The above example generates a structure like this::
       nullptr,
       &str3,
    };
-   const Vector<String>& myTable PROGMEM = __fstr__myTable.as<Vector<String>>();
+   const Vector<String>& myTable PROGMEM = __fstr__myTable.object;
 
 Note: ``FSTR::`` namespace qualifier omitted for clarity.
 

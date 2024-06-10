@@ -16,6 +16,15 @@ This library was introduced to Sming in version 4.0.1.
 If you are migrating from Sming 3.7.0 or later and have used FlashString in your projects,
 some minor changes may be necessary.
 
+Version 2.1
+-----------
+
+Support for copied strings was removed to improve portability and performance.
+Code simplification allowed use of compilers other than GCC, such as Clang/LLVM.
+
+Code impact is minimal since FlashString objects should be passed by reference or pointer.
+
+
 FlashString
 ~~~~~~~~~~~
 

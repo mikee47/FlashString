@@ -57,28 +57,9 @@
 /**
  * @brief Given an Object& reference, return a pointer to the actual object
  * @param objref
- *
- * When an Object pointer is required, such when defining entries for a Vector or Map,
- * it is usually sufficient to use &objref.
- *
- * However, some older compilers such as GCC 4.8.5 requires such references to
- * be declared constexpr. For example, this fails with `FSTR structure not POD`:
- *
- * 		DEFINE_FSTR(globalStringRef, "This creates a global reference");
- * 		DEFINE_VECTOR(myVector, FSTR::String, &globalStringRef);
- *                                            ^^^
- *
- * Global references cannot be declared constexpr, so changing DEFINE_FSTR to DEFINE_FSTR_LOCAL
- * will fix the problem.
- *
- * Another solution is to get a direct pointer to the actual data structure:
- *
- * 		DEFINE_VECTOR(myVector, FSTR::String, FSTR_PTR(globalStringRef));
- *
- * We can only do this of course if the data structure is in scope.
- *
+ * @note  This macro was provided for use with old compilers (e.g. GCC 4.8.5) but is no longer required.
  */
-#define FSTR_PTR(objref) (&FSTR_DATA_NAME(objref).object)
+#define FSTR_PTR(objref) (&objref)
 
 /**
  * @brief Check structure is POD-compliant and correctly aligned

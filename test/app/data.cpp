@@ -64,8 +64,7 @@ DEFINE_FSTR_MAP(stringMap, FSTR::String, FSTR::String, {&key1, &FS_content1}, {&
 
 DEFINE_FSTR_MAP(enumMap, MapKey, FSTR::String, {KeyA, &FS_content1}, {KeyB, &FS_content2});
 
-// Note the use of FSTR_PTR(), required for GCC 4.8.5 because stringVector is a global reference and therefore not constexpr
-DEFINE_FSTR_MAP(vectorMap, FSTR::String, FSTR::Vector<FSTR::String>, {&key1, FSTR_PTR(stringVector)});
+DEFINE_FSTR_MAP(vectorMap, FSTR::String, FSTR::Vector<FSTR::String>, {&key1, &stringVector});
 
 /**
  * Speed

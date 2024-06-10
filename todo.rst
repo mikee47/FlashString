@@ -14,14 +14,6 @@ Benchmark filemap
    - File access times
    - File transfer times
 
-Implement stream operator <<
-   For simpler printing. This is a large architectural decision as Sming doesn't have any of this,
-   neither it seems does Arduino although some libraries add support for it.
-
-   The advantage over Print/Printable is that support can be added using template functions
-   without modifying the classes themselves. Formatting statements can be inserted to customise
-   the output.
-
 
 Formatted print output
    We have separate argument for Array printing, but if we want to customise the text for each item

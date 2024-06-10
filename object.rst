@@ -59,29 +59,34 @@ base class, and looks like this (methods omitted)::
 
    ``flashLength_`` must not be accessed directly; use the ``length()`` method instead.
 
-Data structures are created like this::
+Data structures are created using, for example, ``DEFINE_FSTR(helloData, "hello")``.
+This generates the following layout::
 
    constexpr const struct {
-      ObjectBase object;
+      FSTR::String object;
       char data[8];
-   } flashHelloData PROGMEM = {
+   } __fstr__helloData PROGMEM = {
       {5},
       "hello"
    };
+   const FSTR::String& helloData PROGMEM = __fstr__helloData.object;
 
-The ``object`` field may then be cast to a reference of the required type, like this::
+.. note::
 
-   auto& str = flashHelloData.object.as<FSTR::String>();
+   The ``__fstr__`` prefix ensures that these structures are stored in flash memory on the esp8266.
+   When templates are involved the ``PROGMEM`` segment attribute gets discarded.
 
-If you want to access it as an array, do this::
-
-   auto& arr = str.as<FSTR::Array<char>>();
+   Do not access ``__fstr__helloData`` directly, it may change in future library versions.
 
 References are an efficient and convenient way to access an Object, and should not consume
-any memory themselves as the compiler/linker resolve them to the actual object.
+any memory themselves as the compiler/linker resolves them to the actual object.
 
 However, in practice the Espressif compiler stores a full pointer to most things to support
 relative addressing, and if the references aren't declared PROGMEM they'll consume RAM.
+
+Objects may be cast to a reference of another required type, like this::
+
+   auto& arr = helloData.as<FSTR::Array<char>>();
 
 
 Copy behaviour
@@ -105,16 +110,7 @@ This means classes cannot have:
 -  virtual functions
 -  base classes (until C++17)
 
-This is why :cpp:class:`FSTR::ObjectBase` is used to define data structures.
-
-Classes created using the :cpp:class:`FSTR::Object` template ensures the necessary constructors
-are available to do this::
-
-   auto myCopy = flashHelloData.object.as<FSTR::String>();
-   Serial.print("myCopy.length() = ");
-   Serial.println(myCopy.length());
-
-The macros create an appropriate Object& reference for you.
+This is why objects have no constructors or assignment operators.
 
 
 Structure checks
@@ -129,12 +125,10 @@ You may encounter one of the following errors during compilation:
 -  FSTR structure not POD
 
 This generally means one or more of the arguments in the initialisation data is not ``constexpr``.
-Most compilers are quite relaxed about this but ``GCC 4.8.5`` is particularly thick.
 
 In testing, this happens with references for global Objects, which of course cannot be constexpr.
-To fix it, the offending Object either needs to be redefined LOCAL, or if the Object data is in
-scope (i.e. defined in the same source file) then you can get a direct pointer to it using
-the :c:func:`FSTR_PTR` macro.
+To fix it, the offending Object needs to be redefined LOCAL.
+
 
 Macros
 ------
