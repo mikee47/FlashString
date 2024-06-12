@@ -103,7 +103,7 @@
 	constexpr const struct {                                                                                           \
 		FSTR::Map<KeyType, ContentType> object;                                                                        \
 		FSTR::MapPair<KeyType, ContentType> data[size];                                                                \
-	} FSTR_PACKED FSTR_ALIGNED name PROGMEM = {{sizeof(FSTR::MapPair<KeyType, ContentType>) * size}, {__VA_ARGS__}};   \
+	} FSTR_PACKED name PROGMEM = {{sizeof(FSTR::MapPair<KeyType, ContentType>) * size}, {__VA_ARGS__}};   \
 	FSTR_CHECK_STRUCT(name);
 
 namespace FSTR

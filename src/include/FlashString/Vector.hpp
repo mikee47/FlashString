@@ -97,7 +97,7 @@
 	constexpr const struct {                                                                                           \
 		FSTR::Vector<ObjectType> object;                                                                               \
 		const ObjectType* data[size];                                                                                  \
-	} name PROGMEM = {{sizeof(ObjectType*) * size}, {__VA_ARGS__}};                                                    \
+	} FSTR_PACKED name PROGMEM = {{sizeof(ObjectType*) * size}, {__VA_ARGS__}};                                                    \
 	FSTR_CHECK_STRUCT(name);
 
 namespace FSTR

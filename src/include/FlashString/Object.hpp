@@ -168,7 +168,6 @@ public:
 
 	FSTR_INLINE DataPtrType data() const
 	{
-		// NOLINTNEXTLINE
 		return reinterpret_cast<DataPtrType>(ObjectBase::data());
 	}
 

@@ -94,7 +94,7 @@ typedef const __FlashStringHelper* flash_string_t;
 	constexpr const struct {                                                                                           \
 		FSTR::String object;                                                                                           \
 		char data[ALIGNUP4(sizeof(str))];                                                                              \
-	} name PROGMEM = {{sizeof(str) - 1}, str};                                                                         \
+	} FSTR_PACKED name PROGMEM = {{sizeof(str) - 1}, str};                                                \
 	FSTR_CHECK_STRUCT(name);
 
 /**
@@ -187,7 +187,6 @@ public:
 	 */
 	flash_string_t data() const
 	{
-		// NOLINTNEXTLINE
 		return reinterpret_cast<flash_string_t>(Object::data());
 	}
 
@@ -274,7 +273,7 @@ public:
 	{
 		return printer().printTo(p);
 	}
-};
+} FSTR_PACKED;
 
 } // namespace FSTR
 
