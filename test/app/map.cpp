@@ -59,13 +59,16 @@ public:
 
 			TEST_CASE("lookup")
 			{
+				String contentKey1 = F("This is content from file \"content1.txt\".");
+				String contentKey2 = F("This is content from file \"content2.txt\".");
+
 				Serial << _F("stringMap['key1']: ") << stringMap["key1"] << endl;
 				REQUIRE(stringMap["key1"]);
 				REQUIRE(stringMap["KEY1"]);
-				REQUIRE(!stringMap["key1"].content().isNull());
+				REQUIRE_EQ(contentKey1, stringMap["key1"].content());
 				Serial << _F("stringMap['key2']: ") << stringMap["key2"] << endl;
 				REQUIRE(stringMap["key2"]);
-				REQUIRE(!stringMap["key2"].content().isNull());
+				REQUIRE_EQ(contentKey2, stringMap["key2"].content());
 				Serial << _F("stringMap['non-existent']: ") << stringMap["key20"] << endl;
 				REQUIRE(!stringMap["key20"]);
 				REQUIRE(stringMap["key20"].content().isNull());
@@ -85,7 +88,7 @@ public:
 
 		TEST_CASE("Map of enum MapKey => String")
 		{
-			Serial.printf(_F("enumMap[%u]\n"), enumMap.length());
+			Serial.printf(_F("enumMap[%lu]\n"), enumMap.length());
 
 			Serial.println(_F("  for-loop:"));
 			for(unsigned i = 0; i < enumMap.length(); ++i) {

@@ -34,7 +34,9 @@ enum class Fruit {
 };
 
 struct Size {
-	size_t cx, cy, cz;
+	unsigned cx;
+	unsigned cy;
+	unsigned cz;
 };
 
 String toString(Fruit fruit)
