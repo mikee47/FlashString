@@ -76,7 +76,7 @@
 	constexpr const struct {                                                                                           \
 		FSTR::Array<ElementType> object;                                                                               \
 		ElementType data[size];                                                                                        \
-	} FSTR_PACKED name PROGMEM = {{sizeof(ElementType) * size}, {__VA_ARGS__}};                           \
+	} FSTR_PACKED name PROGMEM = {{sizeof(ElementType) * size}, {__VA_ARGS__}};                                        \
 	FSTR_CHECK_STRUCT(name);
 
 /**

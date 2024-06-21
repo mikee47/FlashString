@@ -94,7 +94,7 @@ typedef const __FlashStringHelper* flash_string_t;
 	constexpr const struct {                                                                                           \
 		FSTR::String object;                                                                                           \
 		char data[ALIGNUP4(sizeof(str))];                                                                              \
-	} FSTR_PACKED name PROGMEM = {{sizeof(str) - 1}, str};                                                \
+	} FSTR_PACKED name PROGMEM = {{sizeof(str) - 1}, str};                                                             \
 	FSTR_CHECK_STRUCT(name);
 
 /**
