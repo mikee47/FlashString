@@ -170,7 +170,7 @@ public:
 		return printer().printTo(p);
 	}
 
-	FSTR_INLINE static const ObjectType& unsafeValueAt(const DataPtrType dataptr, unsigned index)
+	FSTR_ALIGN32 static const ObjectType& unsafeValueAt(const DataPtrType dataptr, unsigned index)
 	{
 		auto ptr = dataptr[index];
 		return ptr ? *ptr : ObjectType::empty();

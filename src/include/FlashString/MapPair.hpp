@@ -62,7 +62,8 @@ public:
 	/**
 	 * @brief Get the key (non-class key types)
 	 */
-	template <typename T = KeyType> typename std::enable_if<!std::is_class<T>::value, KeyType>::type key() const
+	template <typename T = KeyType>
+	FSTR_ALIGN32 typename std::enable_if<!std::is_class<T>::value, KeyType>::type key() const
 	{
 		// Ensure access is aligned for 1/2 byte keys
 		return readValue<KeyType>(&key_);
@@ -72,7 +73,7 @@ public:
 	 * @brief Get the key (String key type)
 	 */
 	template <typename T = KeyType>
-	typename std::enable_if<std::is_same<T, String>::value, const KeyType&>::type key() const
+	FSTR_ALIGN32 typename std::enable_if<std::is_same<T, String>::value, const KeyType&>::type key() const
 	{
 		return (key_ == nullptr) ? String::empty() : *key_;
 	}

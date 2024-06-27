@@ -29,6 +29,7 @@
 #define FSTR_NOINLINE __attribute__((noinline))
 #define FSTR_ALIGNED __attribute__((aligned(4)))
 #define FSTR_PACKED __attribute__((packed))
+#define FSTR_ALIGN32 __attribute__((no_sanitize("alignment")))
 
 #ifdef __clang__
 // Clang has a habit of throwing stuff away we want

@@ -123,7 +123,7 @@ public:
 	 * @brief Get a map entry by index, if it exists
 	 * @note Result validity can be checked using if()
 	 */
-	const Pair valueAt(unsigned index) const
+	FSTR_ALIGN32 const Pair valueAt(unsigned index) const
 	{
 		if(index >= this->length()) {
 			return Pair::empty();
@@ -139,7 +139,7 @@ public:
 	 * @retval int If key isn't found, return -1
 	 */
 	template <typename TRefKey, typename T = KeyType>
-	typename std::enable_if<!std::is_class<T>::value, int>::type indexOf(const TRefKey& key) const
+	FSTR_ALIGN32 typename std::enable_if<!std::is_class<T>::value, int>::type indexOf(const TRefKey& key) const
 	{
 		auto p = this->data();
 		auto len = this->length();
@@ -159,8 +159,8 @@ public:
 	 * @retval int If key isn't found, return -1
 	 */
 	template <typename TRefKey, typename T = KeyType>
-	typename std::enable_if<std::is_same<T, String>::value, int>::type indexOf(const TRefKey& key,
-																			   bool ignoreCase = true) const
+	FSTR_ALIGN32 typename std::enable_if<std::is_same<T, String>::value, int>::type
+	indexOf(const TRefKey& key, bool ignoreCase = true) const
 	{
 		auto p = this->data();
 		auto len = this->length();

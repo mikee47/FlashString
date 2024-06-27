@@ -141,7 +141,7 @@ template <typename T> FSTR_INLINE typename std::enable_if<sizeof(T) == 2, T>::ty
 	return static_cast<T>(pgm_read_word(ptr));
 }
 
-template <typename T> FSTR_INLINE typename std::enable_if<sizeof(T) == 4, T>::type readValue(const T* ptr)
+template <typename T> FSTR_ALIGN32 FSTR_INLINE typename std::enable_if<sizeof(T) == 4, T>::type readValue(const T* ptr)
 {
 	union {
 		uint32_t u32;

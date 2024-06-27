@@ -92,8 +92,9 @@ public:
 	 * @brief Accessor returns a reference for pointer-type elements
 	 */
 	template <typename T = ElementType>
-	typename std::enable_if<std::is_pointer<T>::value, const typename std::remove_pointer<ElementType>::type&>::type
-	operator*() const
+	FSTR_ALIGN32
+		typename std::enable_if<std::is_pointer<T>::value, const typename std::remove_pointer<ElementType>::type&>::type
+		operator*() const
 	{
 		auto ptr = data[index];
 		return ptr ? *ptr : std::remove_pointer<ElementType>::type::empty();
