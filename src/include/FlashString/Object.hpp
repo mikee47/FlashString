@@ -129,7 +129,7 @@ public:
 	/**
 	 * @brief Get the length of the content in elements
 	 */
-	FSTR_INLINE constexpr const size_t length() const
+	FSTR_INLINE constexpr size_t length() const
 	{
 		return ObjectBase::length() / sizeof(ElementType);
 	}

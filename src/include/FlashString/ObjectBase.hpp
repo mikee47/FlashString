@@ -35,7 +35,7 @@ public:
 	/**
 	 * @brief Get the length of the object data in bytes
 	 */
-	FSTR_INLINE constexpr const size_t length() const
+	FSTR_INLINE constexpr size_t length() const
 	{
 		return flashLength_ & ~lengthInvalid;
 	}
@@ -44,7 +44,7 @@ public:
 	 * @brief Get the object data size in bytes
 	 * @note Always an integer multiple of 4 bytes
 	 */
-	FSTR_INLINE constexpr const size_t size() const
+	FSTR_INLINE constexpr size_t size() const
 	{
 		return ALIGNUP4(length());
 	}
@@ -96,7 +96,7 @@ public:
 	 * @brief Indicates an invalid String, used for return value from lookups, etc.
 	 * @note A real String can be zero-length, but it cannot be null
 	 */
-	FSTR_INLINE constexpr const bool isNull() const
+	FSTR_INLINE constexpr bool isNull() const
 	{
 		return flashLength_ == lengthInvalid;
 	}
