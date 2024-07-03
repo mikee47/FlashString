@@ -45,9 +45,7 @@ public:
 	{
 	}
 
-	~ObjectIterator()
-	{
-	}
+	~ObjectIterator() = default;
 
 	ObjectIterator& operator++()
 	{

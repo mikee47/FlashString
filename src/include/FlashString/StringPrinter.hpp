@@ -43,9 +43,7 @@ public:
 	StringPrinter& operator=(const StringPrinter&) = delete;
 	StringPrinter& operator=(StringPrinter&&) = delete;
 
-	~StringPrinter()
-	{
-	}
+	~StringPrinter() = default;
 
 	size_t printTo(Print& p) const;
 
