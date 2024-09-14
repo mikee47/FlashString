@@ -103,10 +103,15 @@ public:
 	using DataPtrType = const ElementType*;
 	using Iterator = ObjectIterator<ObjectType, ElementType>;
 
+// This is precautionary to prevent misuse. No known fix for C++20
+// NB. esp-quick-toolchain 10.3 reports 201703L for C++17,
+// and 201709L for C++20 - standard says 202002L.
+#if __cplusplus <= 201703L
 	Object(const Object&) = delete;
 	Object(const Object&&) = delete;
 	Object& operator=(const Object&) = delete;
 	Object& operator=(const Object&&) = delete;
+#endif
 
 	Iterator begin() const
 	{
