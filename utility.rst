@@ -57,7 +57,7 @@ You'll need to define an appropriate symbol::
       uint8_t data[1024];
    };
 
-   extern "C" const MyCustomStruct myCustomData;
+   DECLARE_FSTR_IMPORT(MyCustomStruct, myCustomData)
 
 You'll still have to consider how the data is accessed. If it's small and un-complicated
 you can just copy it into RAM::

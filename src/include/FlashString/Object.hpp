@@ -78,7 +78,7 @@
  */
 #define IMPORT_FSTR_OBJECT(name, ObjectType, file)                                                                     \
 	IMPORT_FSTR_DATA(FSTR_DATA_NAME(name), file)                                                                       \
-	extern "C" __attribute__((visibility("hidden"))) const ObjectType ASM_LABEL(FSTR_DATA_NAME(name));                 \
+	__attribute__((visibility("hidden"))) DECLARE_FSTR_IMPORT(ObjectType, FSTR_DATA_NAME(name));                       \
 	DEFINE_FSTR_OBJREF(name, FSTR_DATA_NAME(name))
 
 /**
@@ -86,7 +86,7 @@
  */
 #define IMPORT_FSTR_OBJECT_LOCAL(name, ObjectType, file)                                                               \
 	IMPORT_FSTR_DATA(FSTR_DATA_NAME(name), file)                                                                       \
-	extern "C" __attribute__((visibility("hidden"))) const ObjectType ASM_LABEL(FSTR_DATA_NAME(name));                 \
+	__attribute__((visibility("hidden"))) DECLARE_FSTR_IMPORT(ObjectType, FSTR_DATA_NAME(name));                       \
 	static constexpr DEFINE_FSTR_OBJREF(name, FSTR_DATA_NAME(name))
 
 namespace FSTR

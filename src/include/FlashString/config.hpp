@@ -46,13 +46,3 @@
  */
 #define ALIGNUP4(n) (((n) + 3) & ~3)
 #endif
-
-/*
-  When referencing inline assembler labels using `extern "C"` tells the compiler not to
-  mangle the name. GCC 15 ignores this so requires an additional `asm(label)` directive.
-*/
-#if defined(__clang__) || defined(__WIN32)
-#define ASM_LABEL(name) name
-#else
-#define ASM_LABEL(name) name asm(STR(name))
-#endif

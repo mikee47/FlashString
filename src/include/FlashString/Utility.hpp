@@ -79,48 +79,51 @@ template <typename T, typename U> struct argument_type<T(U)> {
  *
  * No C/C++ symbol is declared, this is type-dependent and must be done separately:
  *
- *		extern "C" FSTR::String myFlashData;
+ *		DECLARE_FSTR_IMPORT(FSTR::String, myFlashData);
  *
  * If the symbol is not referenced the content will be discarded by the linker.
+ *
  */
 // clang-format off
 #define STR(x) XSTR(x)
 #define XSTR(x) #x
 #ifdef __WIN32
-#define IMPORT_FSTR_DATA(name, file)                                                                                   \
-	__asm__(".section .rodata\n"                                                                                       \
-			".def _" STR(name) "; .scl 2; .type 32; .endef\n"                                                          \
-			".align 4\n"                                                                                               \
-			"_" STR(name) ":\n"                                                                                        \
-			".long _" STR(name) "_end - _" STR(name) " - 4\n"                                                          \
-			".incbin \"" file "\"\n"                                                                                   \
-			"_" STR(name) "_end:\n");
+#define IMPORT_FSTR_DATA_SECTION(name)                         \
+	".section .rodata\n"                                       \
+	".def " STR(name) "; .scl 2; .type 32; .endef\n"
 #elif defined(__APPLE__)
-#define IMPORT_FSTR_DATA(name, file)                                                                                   \
-	__asm__(".const_data\n"                                                                                            \
-			".globl _" STR(name) "\n"                                                                                  \
-			".align 4\n" "_" STR(name) ":\n"                                                                           \
-			".long _" STR(name) "_end - _" STR(name) " - 4\n"                                                          \
-			".incbin \"" file "\"\n"                                                                                   \
-			"_" STR(name) "_end:\n");
+#define IMPORT_FSTR_DATA_SECTION(name)                         \
+	".const_data\n"                                            \
+	".globl " STR(name) "\n"
 #elif defined(__arm__)
-#define IMPORT_FSTR_DATA(name, file)                                                                                   \
-	__asm__(".section " ICACHE_RODATA_SECTION "." STR(name) "\n"                                                       \
-			".type " STR(name) ", %object\n"                                                                           \
-			".align 4\n" STR(name) ":\n"                                                                               \
-			".long _" STR(name) "_end - " STR(name) " - 4\n"                                                           \
-			".incbin \"" file "\"\n"                                                                                   \
-			"_" STR(name) "_end:\n");
+#define IMPORT_FSTR_DATA_SECTION(name)                         \
+	".section " ICACHE_RODATA_SECTION "." STR(name) "\n"       \
+	".type " STR(name) ", %object\n"
 #else
-#define IMPORT_FSTR_DATA(name, file)                                                                                   \
-	__asm__(".section " ICACHE_RODATA_SECTION "." STR(name) "\n"                                                       \
-			".type " STR(name) ", @object\n"                                                                           \
-			".align 4\n" STR(name) ":\n"                                                                               \
-			".long _" STR(name) "_end - " STR(name) " - 4\n"                                                           \
-			".incbin \"" file "\"\n"                                                                                   \
-			"_" STR(name) "_end:\n");
+#define IMPORT_FSTR_DATA_SECTION(name)                         \
+	".section " ICACHE_RODATA_SECTION "." STR(name) "\n"       \
+	".type " STR(name) ", @object\n"
 #endif
+
+#define IMPORT_FSTR_DATA(name, file)                           \
+	__asm__(IMPORT_FSTR_DATA_SECTION(name)                     \
+			".align 4\n"                                       \
+			STR(name) ":\n"                                    \
+			".long " STR(name) "_end - " STR(name) " - 4\n"    \
+			".incbin \"" file "\"\n"                           \
+			STR(name) "_end:\n");
 // clang-format on
+
+/**
+ * @brief Declare a reference to an `IMPORT_FSTR_DATA` block
+ *
+ * When referencing inline assembler labels using `extern "C"` tells the compiler
+ * not to mangle the name. However, doing that inside an anonymous namespace leads
+ * to undefined behaviour and breaks with GCC 15.
+ * Using an explicit `asm(label)` directive makes this unambiguous.
+ * See https://gcc.gnu.org/onlinedocs/gcc/Asm-Labels.html
+*/
+#define DECLARE_FSTR_IMPORT(ObjectType, name) extern const ObjectType name __asm__(STR(name));
 
 namespace FSTR
 {
