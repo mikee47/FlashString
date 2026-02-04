@@ -88,7 +88,7 @@ public:
 
 		TEST_CASE("Map of enum MapKey => String")
 		{
-			Serial.printf(_F("enumMap[%lu]\n"), enumMap.length());
+			Serial << _F("enumMap[") << enumMap.length() << "]" << endl;
 
 			Serial.println(_F("  for-loop:"));
 			for(unsigned i = 0; i < enumMap.length(); ++i) {
